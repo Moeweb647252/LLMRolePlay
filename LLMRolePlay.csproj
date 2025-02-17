@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GenerateEmbeddedFilesManifest Condition="'$(Configuration)' == 'Release' ">true</GenerateEmbeddedFilesManifest>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.2" />
+    <Compile Remove="webui/**"></Compile>
+    <Watch Remove="webui/**" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="9.0.2" />
+    <EmbeddedResource Include="webui/dist/**" Condition="'$(Configuration)' == 'Release' "/>
+  </ItemGroup>
+  
+</Project>
