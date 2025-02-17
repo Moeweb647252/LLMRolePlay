@@ -20,11 +20,6 @@ namespace LLMRolePlay.Models
       DbPath = Path.Join(directory, "/llmroleplay.db");
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-      base.OnModelCreating(modelBuilder);
-    }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
       optionsBuilder.UseSqlite($"Data Source={DbPath}");

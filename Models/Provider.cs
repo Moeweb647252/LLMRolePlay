@@ -1,3 +1,5 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace LLMRolePlay.Models
 {
   public class Provider
@@ -7,6 +9,8 @@ namespace LLMRolePlay.Models
     public string? Description { get; set; }
     public required string Type { get; set; }
     public required string Settings { get; set; }
-    public User? User { get; set; }
+    [ForeignKey("User")]
+    public required int UserId { get; set; }
+    public required User User { get; set; }
   }
 }
