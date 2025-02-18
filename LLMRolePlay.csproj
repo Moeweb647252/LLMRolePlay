@@ -8,11 +8,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.2" />
     <Compile Remove="webui/**"></Compile>
     <Watch Remove="webui/**" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="9.0.2" />
-    <EmbeddedResource Include="webui/dist/**" Condition="'$(Configuration)' == 'Release' "/>
+    <PackageReference Include="Scalar.AspNetCore" Version="2.0.14" />
+    <EmbeddedResource Include="webui/dist/**" Condition="'$(Configuration)' == 'Release' " />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\LLMRolePlay\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\LLMRolePlay\.editorconfig" />
   </ItemGroup>
   
 </Project>

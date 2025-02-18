@@ -1,24 +1,35 @@
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LLMRolePlay.Models
 {
+  public partial class DBContext : Microsoft.EntityFrameworkCore.DbContext
+  {
+    public DbSet<Chat> Chats { get; set; }
+  }
   public class Chat
   {
-    public int Id { get; set; }
-    public required string Name { get; set; }
-    public required string Settings { get; set; }
-    [ForeignKey("User")]
-    public required int UserId { get; set; }
-    public required User User { get; set; }
-    [ForeignKey("Model")]
-    public required int ModelId { get; set; }
-    public required Model Model { get; set; }
-    [ForeignKey("Character")]
-    public required int CharacterId { get; set; }
-    public required Character Character { get; set; }
-    [ForeignKey("Preset")]
-    public required int PresetId { get; set; }
-    public required Preset Preset { get; set; }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public uint Id { get; set; }
+    public string Name { get; set; }
+    public string Settings { get; set; }
+    public Model Model { get; private set; }
+    public Character Character { get; private set; }
+    public Preset Preset { get; private set; }
+    public List<Message> Messages { get; private set; } = new List<Message>();
+    public Chat()
+    {
 
+    }
+    public Chat(string name, string settings, Model model, Character character, Preset preset)
+    {
+      Name = name;
+      Settings = settings;
+      Model = model;
+      Character = character;
+      Preset = preset;
+    }
   }
 }

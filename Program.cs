@@ -1,29 +1,31 @@
-using LLMRolePlay.Apis;
+﻿using LLMRolePlay.APIs;
+using LLMRolePlay.Models;
 using Microsoft.Extensions.FileProviders;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
-var env = builder.Environment;
-var dbContext = new LLMRolePlay.Models.DbContext();
+builder.Services.AddOpenApi();
+builder.Services.AddControllers();
+builder.Services.AddSqlite<DBContext>(DBContext.DbPath);
 
-if (dbContext.Database.EnsureCreated())
-{
-  var password = Utils.GetRandomString(8);
-  var username = "admin";
-  var email = "user@example.com";
-  var user = new LLMRolePlay.Models.User
-  {
-    UserName = username,
-    Email = email,
-    Password = password,
-    Token = null
-  };
-  dbContext.Users.Add(user);
-  dbContext.SaveChanges();
-  Console.WriteLine($"Default user created: {username} / {email} / {password}");
-}
-
-var api = new Api(dbContext);
 var app = builder.Build();
+
+app.MapControllers();
+
+if (app.Environment.IsDevelopment())
+{
+  app.MapOpenApi();
+  app.MapScalarApiReference();
+}
+else
+{
+  app.UseFileServer(new FileServerOptions
+  {
+    FileProvider = new ManifestEmbeddedFileProvider(
+    typeof(Program).Assembly, "webui/dist"
+  )
+  });
+}
 
 app.UseExceptionHandler(h =>
 {
@@ -34,17 +36,5 @@ app.UseExceptionHandler(h =>
     await context.Response.WriteAsync("{\"code\":500,\"message\":\"Internal Server Error\"}");
   });
 });
-
-if (!env.IsDevelopment())
-{
-  app.UseFileServer(new FileServerOptions
-  {
-    FileProvider = new ManifestEmbeddedFileProvider(
-    typeof(Program).Assembly, "webui/dist"
-  )
-  });
-}
-
-app.MapGroup("/api").MapPost("login", api.Login);
 
 app.Run();

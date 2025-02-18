@@ -1,18 +1,25 @@
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace LLMRolePlay.Models
 {
+  public partial class DBContext : Microsoft.EntityFrameworkCore.DbContext
+  {
+    public DbSet<Message> Messages { get; set; }
+  }
   public class Message
   {
-    public int Id { get; set; }
-    public required string Role { get; set; }
-    public required string Content { get; set; }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public ulong Id { get; set; }
+    public string Role { get; set; }
+    public string Content { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    [ForeignKey("User")]
-    public required int UserId { get; set; }
-    public required User User { get; set; }
-    [ForeignKey("Chat")]
-    public required int ChatId { get; set; }
-    public required Chat Chat { get; set; }
+    public Message(string role,string content)
+    {
+      Role = role;
+      Content = content;
+    }
   }
 }

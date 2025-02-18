@@ -1,18 +1,26 @@
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace LLMRolePlay.Models
 {
+  public partial class DBContext : Microsoft.EntityFrameworkCore.DbContext
+  {
+    public DbSet<Model> Models { get; set; }
+  }
   public class Model
   {
-    public int Id { get; set; }
-    public required string Name { get; set; }
-    public string? Description { get; set; }
-    public required string Settings { get; set; }
-    [ForeignKey("User")]
-    public required int UserId { get; set; }
-    public required User User { get; set; }
-    [ForeignKey("Provider")]
-    public required int ProviderId { get; set; }
-    public required Provider Provider { get; set; }
+    [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+    public uint Id { get; set; }
+    public string Name { get; set; }
+    public string Settings { get; set; }
+    public string Description { get; set; }
+    public Model(string name, string settings, string description = "")
+    {
+      Name = name;
+      Settings = settings;
+      Description = description;
+    }
   }
 }
