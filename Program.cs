@@ -1,14 +1,13 @@
 using LLMRolePlay.Models;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Scalar.AspNetCore;
-using Microsoft.Extensions.DependencyInjection;
 
 
 var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LLMRolePlay");
 Directory.CreateDirectory(directory);
-string connectionString= $"Data Source={Path.Combine(directory, "LLMRolePlay.db")}";
+string dbPath = Path.Combine(directory, "LLMRolePlay.db");
+string connectionString = $"Data Source={dbPath}";
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
@@ -19,10 +18,18 @@ var app = builder.Build();
 
 app.MapControllers();
 
+
 using (var serviceScope = app.Services.GetService<IServiceScopeFactory>().CreateScope())
 {
-  var context = serviceScope.ServiceProvider.GetRequiredService<DBContext>();
-  context.Database.Migrate();
+  using (var context = serviceScope.ServiceProvider.GetRequiredService<DBContext>())
+  {
+    if (await context.Database.EnsureCreatedAsync())
+    {
+      string password = Utils.GenerateRandomString(8);
+      await User.CreateAdmin(context, "admin", "admin@example.com", password);
+      Console.WriteLine($"Admin user created, UserName: admin, Email: admin@example.com, Password: {password}");
+    }
+  }
 }
 
 if (app.Environment.IsDevelopment())

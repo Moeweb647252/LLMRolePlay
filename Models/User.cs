@@ -41,6 +41,18 @@ namespace LLMRolePlay.Models
       await db.Users.AddAsync(new User(userName, email, password, Group.User));
       await db.SaveChangesAsync();
     }
+    public static async Task<bool> Authenticate(DBContext db, string token, Group lowestGroup)
+    {
+      List<User> tokenUsers = db.Users.Where(user => user.Token == token).ToList();
+      if (tokenUsers.Count > 0)
+      {
+        if (tokenUsers[0].Group >= lowestGroup)
+        {
+          return true;
+        }
+      }
+      return false;
+    }
     public static async Task<User?> GetUserById(DBContext db, uint id)
     {
       return await db.Users.FindAsync(id);
@@ -68,6 +80,6 @@ namespace LLMRolePlay.Models
   }
   public enum Group : byte
   {
-    Admin = 0, User = 1
+    User = 0, Admin = 1
   }
 }
