@@ -1,4 +1,4 @@
-using LLMRolePlay.Models;
+﻿using LLMRolePlay.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Scalar.AspNetCore;
