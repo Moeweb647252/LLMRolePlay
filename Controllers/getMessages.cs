@@ -1,9 +1,0 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-
-namespace LLMRolePlay.Controllers
-{
-  public partial class API : ControllerBase
-  {
-  }
-}

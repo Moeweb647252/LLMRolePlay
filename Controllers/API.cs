@@ -1,3 +1,4 @@
+using LLMRolePlay.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LLMRolePlay.Controllers
@@ -6,5 +7,10 @@ namespace LLMRolePlay.Controllers
   [Route("api")]
   public partial class API : ControllerBase
   {
+    private readonly DBContext _dBContext;
+    public API(DBContext dBContext)
+    {
+      _dBContext = dBContext;
+    }
   }
 }

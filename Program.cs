@@ -1,15 +1,29 @@
 using LLMRolePlay.Models;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Scalar.AspNetCore;
+using Microsoft.Extensions.DependencyInjection;
+
+
+var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LLMRolePlay");
+Directory.CreateDirectory(directory);
+string connectionString= $"Data Source={Path.Combine(directory, "LLMRolePlay.db")}";
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
-builder.Services.AddSqlite<DBContext>(DBContext.DbPath);
+builder.Services.AddDbContext<DBContext>(o => o.UseSqlite(connectionString));
 
 var app = builder.Build();
 
 app.MapControllers();
+
+using (var serviceScope = app.Services.GetService<IServiceScopeFactory>().CreateScope())
+{
+  var context = serviceScope.ServiceProvider.GetRequiredService<DBContext>();
+  context.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment())
 {

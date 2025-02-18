@@ -18,60 +18,56 @@ namespace LLMRolePlay.Models
     public string Email { get; set; }
     public string Password { get; set; }
     public string? Token { get; private set; }
+    public Group Group { get; set; }
     public List<Chat> Chats { get; private set; } = new List<Chat>();
     public List<Character> Characters { get; private set; } = new List<Character>();
     public List<Preset> Presets { get; private set; } = new List<Preset>();
     public List<Provider> Providers { get; private set; } = new List<Provider>();
 
-    public User(string userName, string email, string password)
+    public User(string userName, string email, string password, Group group)
     {
       UserName = userName;
       Email = email;
       Password = password;
+      Group = group;
     }
-    public static async Task CreateUser(string userName, string email, string password)
+    public static async Task CreateAdmin(DBContext db, string userName, string email, string password)
     {
-      using (var db = new DBContext())
-      {
-        await db.Users.AddAsync(new User(userName, email, password));
-        await db.SaveChangesAsync();
-      }
+      await db.Users.AddAsync(new User(userName, email, password, Group.Admin));
+      await db.SaveChangesAsync();
     }
-    public static async Task<User?> GetUserById(uint id)
+    public static async Task CreateUser(DBContext db, string userName, string email, string password)
     {
-      using (var db = new DBContext())
-      {
-        return await db.Users.FindAsync(id);
-      }
+      await db.Users.AddAsync(new User(userName, email, password, Group.User));
+      await db.SaveChangesAsync();
     }
-    public async Task SaveChanges()
+    public static async Task<User?> GetUserById(DBContext db, uint id)
     {
-      using (var db = new DBContext())
-      {
-        db.Entry(this).State = EntityState.Modified;
-        await db.SaveChangesAsync();
-      }
+      return await db.Users.FindAsync(id);
     }
-    public async Task Delete()
+    public async Task SaveChanges(DBContext db)
     {
-      using (var db = new DBContext())
-      {
-        db.Users.Remove(this);
-        await db.SaveChangesAsync();
-      }
+      db.Entry(this).State = EntityState.Modified;
+      await db.SaveChangesAsync();
     }
-    public async Task<string> UpdateToken()
+    public async Task Delete(DBContext db)
     {
-      using (var db = new DBContext())
-      {
-        Token = GenerateToken();
-        await SaveChanges();
-        return Token;
-      }
+      db.Users.Remove(this);
+      await db.SaveChangesAsync();
+    }
+    public async Task<string> UpdateToken(DBContext db)
+    {
+      Token = GenerateToken();
+      await SaveChanges(db);
+      return Token;
     }
     private string GenerateToken()
     {
       return Guid.NewGuid().ToString("D");
     }
+  }
+  public enum Group : byte
+  {
+    Admin = 0, User = 1
   }
 }
