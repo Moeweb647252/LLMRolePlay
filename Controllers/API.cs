@@ -1,8 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace LLMRolePlay.Controllers
 {
+  [ApiController]
+  [Route("api")]
   public partial class API : ControllerBase
   {
   }

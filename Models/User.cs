@@ -12,7 +12,7 @@ namespace LLMRolePlay.Models
   public class User
   {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]//×ÔÔöid
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]//è‡ªå¢žid
     public uint Id { get; set; }
     public string UserName { get; set; }
     public string Email { get; set; }
@@ -29,11 +29,12 @@ namespace LLMRolePlay.Models
       Email = email;
       Password = password;
     }
-    public static async void CreateUser(string userName, string email, string password)
+    public static async Task CreateUser(string userName, string email, string password)
     {
       using (var db = new DBContext())
       {
         await db.Users.AddAsync(new User(userName, email, password));
+        await db.SaveChangesAsync();
       }
     }
     public static async Task<User?> GetUserById(uint id)
