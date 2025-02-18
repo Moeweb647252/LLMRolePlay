@@ -1,10 +1,8 @@
 using LLMRolePlay.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LLMRolePlay.APIs
+namespace LLMRolePlay.Controllers
 {
-  [ApiController]
-  [Route("api")]
   public partial class API : ControllerBase
   {
     [HttpGet("login")]
