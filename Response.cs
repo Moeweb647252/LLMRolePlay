@@ -2,15 +2,15 @@ namespace LLMRolePlay
 {
   public class Response
   {
-    public int StatusCode { get; set; }
-    public object? Data { get; set; }
-    public string StatusMessage { get; set; }
+    public int code { get; set; }
+    public object? data { get; set; }
+    public string msg { get; set; }
 
     public Response(int statusCode, object? data = null, string statusMessage = "")
     {
-      StatusCode = statusCode;
-      Data = data;
-      StatusMessage = statusMessage;
+      code = statusCode;
+      this.data = data;
+      msg = statusMessage;
     }
   }
 }
