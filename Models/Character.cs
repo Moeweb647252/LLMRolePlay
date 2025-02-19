@@ -22,5 +22,29 @@ namespace LLMRolePlay.Models
       Description = description;
       Settings = settings;
     }
+    /// <summary>
+    /// 不会自动绑定到用户。Do not bind to user automically.
+    /// </summary>
+    /// <param name="db"></param>
+    /// <param name="name"></param>
+    /// <param name="settings"></param>
+    /// <param name="description"></param>
+    /// <returns></returns>
+    public static async Task<Character> CreateCharacter(DBContext db, string name, string settings, string description)
+    {
+      Character character = new Character(name, settings, description);
+      await db.Characters.AddAsync(character);
+      await db.SaveChangesAsync();
+      return character;
+    }
+    public static async Task<Character?> GetCharacterById(DBContext db,uint id)
+    {
+      return await db.Characters.FindAsync(id);
+    }
+    public async Task Delete(DBContext db)
+    {
+      db.Characters.Remove(this);
+      await db.SaveChangesAsync();
+    }
   }
 }

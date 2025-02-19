@@ -22,5 +22,21 @@ namespace LLMRolePlay.Models
       Settings = settings;
       Description = description;
     }
+    public static async Task<Model> CreateModel(DBContext db, string name, string settings, string description)
+    {
+      Model model = new Model(name, settings, description);
+      await db.Models.AddAsync(model);
+      await db.SaveChangesAsync();
+      return model;
+    }
+    public static async Task<Model?> GetModelById(DBContext db,uint id)
+    {
+      return await db.Models.FindAsync(id);
+    }
+    public async Task Delete(DBContext db)
+    {
+      db.Models.Remove(this);
+      await db.SaveChangesAsync();
+    }
   }
 }

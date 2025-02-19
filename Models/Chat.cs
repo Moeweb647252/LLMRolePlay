@@ -31,5 +31,30 @@ namespace LLMRolePlay.Models
       Character = character;
       Preset = preset;
     }
+    /// <summary>
+    /// 不会自动绑定到用户。Do not bind to user automically.
+    /// </summary>
+    /// <param name="db"></param>
+    /// <param name="name"></param>
+    /// <param name="settings"></param>
+    /// <param name="modelId"></param>
+    /// <param name="characterId"></param>
+    /// <param name="presetId"></param>
+    /// <returns></returns>
+    public static async Task<Chat?> CreateChat(DBContext db, string name, string settings, uint modelId, uint characterId, uint presetId)
+    {
+      Model? model = await Model.GetModelById(db, modelId);
+      Character? character = await Character.GetCharacterById(db, characterId);
+      Preset? preset = await Preset.GetPresetById(db, presetId);
+      if (model == null || character == null || preset == null) return null;
+      Chat chat = new Chat(name, settings, model, character, preset);
+      await db.Chats.AddAsync(chat);
+      await db.SaveChangesAsync();
+      return chat;
+    }
+    public static async Task<Chat?> GetChatById(DBContext db,uint chatId)
+    {
+      return await db.Chats.FindAsync(chatId);
+    }
   }
 }
