@@ -1,4 +1,5 @@
-﻿using LLMRolePlay.Models;
+using LLMRolePlay;
+using LLMRolePlay.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 using Scalar.AspNetCore;
@@ -12,7 +13,14 @@ string connectionString = $"Data Source={dbPath}";
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddOpenApi();
 builder.Services.AddControllers();
-builder.Services.AddDbContext<DBContext>(o => o.UseSqlite(connectionString));
+builder.Services.AddDbContext<DBContext>(options => options.UseSqlite(connectionString));
+builder.Services.AddAuthentication(option =>
+{
+  option.AddScheme<TokenAuthentication>("TokenAuthentication", null);
+  option.DefaultAuthenticateScheme = "TokenAuthentication";
+  option.DefaultChallengeScheme = "TokenAuthentication";
+  option.DefaultForbidScheme = "TokenAuthentication";
+});
 
 var app = builder.Build();
 

@@ -31,25 +31,34 @@ namespace LLMRolePlay.Models
       Password = password;
       Group = group;
     }
-    public static async Task CreateAdmin(DBContext db, string userName, string email, string password)
+    public static async Task<User> Create(DBContext db, string userName, string email, string password,Group group)
     {
-      await db.Users.AddAsync(new User(userName, email, password, Group.Admin));
+      User user = new User(userName, email, password, group);
+      await db.Users.AddAsync(user);
       await db.SaveChangesAsync();
+      return user;
     }
-    public static async Task CreateUser(DBContext db, string userName, string email, string password)
+    public static async Task<User> CreateAdmin(DBContext db, string userName, string email, string password)
     {
-      await db.Users.AddAsync(new User(userName, email, password, Group.User));
+      User user = new User(userName, email, password, Group.Admin);
+      await db.Users.AddAsync(user);
       await db.SaveChangesAsync();
+      return user;
+    }
+    public static async Task<User> CreateUser(DBContext db, string userName, string email, string password)
+    {
+      User user = new User(userName, email, password, Group.User);
+      await db.Users.AddAsync(user);
+      await db.SaveChangesAsync();
+      return user;
     }
     public static async Task<bool> Authenticate(DBContext db, string token, Group lowestGroup)
     {
-      List<User> tokenUsers = db.Users.Where(user => user.Token == token).ToList();
-      if (tokenUsers.Count > 0)
+      User? user = await GetUserByToken(db, token);
+      if (user == null) return false;
+      if (user.Group >= lowestGroup)
       {
-        if (tokenUsers[0].Group >= lowestGroup)
-        {
-          return true;
-        }
+        return true;
       }
       return false;
     }
@@ -57,10 +66,16 @@ namespace LLMRolePlay.Models
     {
       return await db.Users.FindAsync(id);
     }
-    public async Task SaveChanges(DBContext db)
+
+    public static async Task<User?> GetUserByToken(DBContext db,string token)
+    {
+      List<User> users = await db.Users.Where(user => user.Token == token).ToListAsync();
+      if (users.Count == 0) return null;
+      return users[0];
+    }
+    public void MarkAsModified(DBContext db)
     {
       db.Entry(this).State = EntityState.Modified;
-      await db.SaveChangesAsync();
     }
     public async Task Delete(DBContext db)
     {
@@ -70,7 +85,8 @@ namespace LLMRolePlay.Models
     public async Task<string> UpdateToken(DBContext db)
     {
       Token = GenerateToken();
-      await SaveChanges(db);
+      MarkAsModified(db);
+      await db.SaveChangesAsync();
       return Token;
     }
     private string GenerateToken()
@@ -78,8 +94,10 @@ namespace LLMRolePlay.Models
       return Guid.NewGuid().ToString("D");
     }
   }
-  public enum Group : byte
+  [Flags]
+  public enum Group : ushort
   {
-    User = 0, Admin = 1
+    User = 0b_0000_0001,
+    Admin = 0b_0000_0010
   }
 }

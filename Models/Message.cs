@@ -21,5 +21,12 @@ namespace LLMRolePlay.Models
       Role = role;
       Content = content;
     }
+    public static async Task<Message> CreateMessage(DBContext db, string role, string content)
+    {
+      Message message = new Message(role, content);
+      await db.Messages.AddAsync(message);
+      await db.SaveChangesAsync();
+      return message;
+    }
   }
 }

@@ -25,5 +25,34 @@ namespace LLMRolePlay.Models
       Settings = settings;
       Description = description;
     }
+    /// <summary>
+    /// 不会自动绑定到用户。Do not bind to user automically.
+    /// </summary>
+    /// <param name="db"></param>
+    /// <param name="name"></param>
+    /// <param name="type"></param>
+    /// <param name="settings"></param>
+    /// <param name="description"></param>
+    /// <returns></returns>
+    public static async Task<Provider> CreateProvider(DBContext db, string name, string type, string settings, string description)
+    {
+      Provider provider = new Provider(name, type, settings, description);
+      await db.Providers.AddAsync(provider);
+      await db.SaveChangesAsync();
+      return provider;
+    }
+    public static async Task<Provider?> GetProviderById(DBContext db, uint id)
+    {
+      return await db.Providers.FindAsync(id);
+    }
+    public void MarkAsModified(DBContext db)
+    {
+      db.Entry(this).State = EntityState.Modified;
+    }
+    public async Task Delete(DBContext db)
+    {
+      db.Providers.Remove(this);
+      await db.SaveChangesAsync();
+    }
   }
 }
