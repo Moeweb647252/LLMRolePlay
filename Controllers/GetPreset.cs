@@ -8,7 +8,7 @@ namespace LLMRolePlay.Controllers
   {
     [HttpGet("getPreset")]
     [AllowAnonymous]
-    public async Task<IActionResult> GetPreset(string token, uint presetId)
+    public async Task<ActionResult<Preset>> GetPreset(string token, uint presetId)
     {
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       Preset? preset = await Preset.GetPresetById(_dBContext, presetId);

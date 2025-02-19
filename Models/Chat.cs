@@ -52,5 +52,9 @@ namespace LLMRolePlay.Models
       await db.SaveChangesAsync();
       return chat;
     }
+    public static async Task<Chat?> GetChatById(DBContext db,uint chatId)
+    {
+      return await db.Chats.FindAsync(chatId);
+    }
   }
 }
