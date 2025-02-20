@@ -6,6 +6,13 @@ namespace LLMRolePlay.Controllers
 {
   public partial class API : ControllerBase
   {
+    public class CreateCharacterRequest
+    {
+      public string token;
+      public string name;
+      public string settings;
+      public string description;
+    }
     [HttpGet("createCharacter")]
     [AllowAnonymous]
     public async Task<IActionResult> CreateCharacter(string token, string name, string settings, string description)
