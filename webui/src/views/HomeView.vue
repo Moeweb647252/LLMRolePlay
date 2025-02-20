@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import ChatBox from '@/components/ChatBox.vue'
+import { useSettingsStore } from '@/stores/settings'
 import { IosMenu, MdContact } from '@vicons/ionicons4'
+import { useRouter } from 'vue-router'
+
+const settings = useSettingsStore()
+const router = useRouter()
+
+if (!settings.user) {
+  router.push('/login')
+}
 
 const dropdownOptions = [
   {

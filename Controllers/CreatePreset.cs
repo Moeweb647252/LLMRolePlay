@@ -4,19 +4,29 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LLMRolePlay.Controllers
 {
+  public class CreatePresetRequest
+  {
+    public required string name { get; set; }
+    public required string settings { get; set; }
+    public required string description { get; set; }
+  }
+
   public partial class API : ControllerBase
   {
-    [HttpGet("createPreset")]
+    [HttpPost("createPreset")]
     [AllowAnonymous]
-    public async Task<IActionResult> CreatePreset(string token, string name, string settings, string description)
+    public async Task<ApiResponse> CreatePreset(HttpContext req, [FromBody] CreatePresetRequest data)
     {
-      User? user = await Models.User.GetUserByToken(_dBContext, token);
-      if (user == null) return StatusCode(404);
-      Preset preset = await Preset.CreatePreset(_dBContext, name, settings, description);
+      User? user = await Models.User.GetUserByRequest(_dBContext, req);
+      if (user == null) return ApiResponse.TokenError();
+      Preset preset = await Preset.CreatePreset(_dBContext, data.name, data.settings, data.description);
       user.Presets.Add(preset);
       user.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();
-      return StatusCode(200, preset.Id);
+      return ApiResponse.Success(new
+      {
+        id = preset.Id
+      });
     }
   }
 }

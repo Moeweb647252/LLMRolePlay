@@ -4,19 +4,28 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LLMRolePlay.Controllers
 {
+  public class CreateCharacterRequest
+  {
+    public required string name { get; set; }
+    public required string settings { get; set; }
+    public required string description { get; set; }
+  }
   public partial class API : ControllerBase
   {
-    [HttpGet("createCharacter")]
+    [HttpPost("createCharacter")]
     [AllowAnonymous]
-    public async Task<IActionResult> CreateCharacter(string token, string name, string settings, string description)
+    public async Task<ApiResponse> CreateCharacter(HttpContext req, [FromBody] CreateCharacterRequest data)
     {
-      User? user = await Models.User.GetUserByToken(_dBContext, token);
-      if (user == null) return StatusCode(404);
-      Character character = await Character.CreateCharacter(_dBContext, name, settings, description);
+      User? user = await Models.User.GetUserByRequest(_dBContext, req);
+      if (user == null) return ApiResponse.TokenError();
+      Character character = await Character.CreateCharacter(_dBContext, data.name, data.settings, data.description);
       user.Characters.Add(character);
       user.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();
-      return StatusCode(200, character.Id);
+      return ApiResponse.Success(new
+      {
+        id = character.Id
+      });
     }
   }
 }

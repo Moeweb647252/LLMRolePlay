@@ -1,22 +1,28 @@
 using LLMRolePlay.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+
+
 
 namespace LLMRolePlay.Controllers
 {
+  public class ChangePasswordRequest
+  {
+    public required string password { get; set; }
+  }
+
   public partial class API : ControllerBase
   {
-    [HttpGet("changePassword")]
+    [HttpPost("changePassword")]
     [AllowAnonymous]
-    public async Task<IActionResult> ChangePassword(string token, string password)
+    public async Task<ApiResponse> ChangePassword(HttpContext req, [FromBody] ChangePasswordRequest data)
     {
-      User? user = await Models.User.GetUserByToken(_dBContext, token);
-      if (user == null) return StatusCode(404);
-      user.Password = password;
+      User? user = await Models.User.GetUserByRequest(_dBContext, req);
+      if (user == null) return ApiResponse.TokenError();
+      user.Password = data.password;
       user.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();
-      return StatusCode(200);
+      return ApiResponse.Success(null);
     }
   }
 }

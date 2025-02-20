@@ -7,8 +7,10 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    CharacterSettings: typeof import('./src/components/settings/CharacterSettings.vue')['default']
     ChatBox: typeof import('./src/components/ChatBox.vue')['default']
     Ettings: typeof import('./src/components/ettings.vue')['default']
+    GeneralSettings: typeof import('./src/components/settings/GeneralSettings.vue')['default']
     Message: typeof import('./src/components/Message.vue')['default']
     NAvatar: typeof import('naive-ui')['NAvatar']
     NButton: typeof import('naive-ui')['NButton']
@@ -30,8 +32,11 @@ declare module 'vue' {
     NScrollbar: typeof import('naive-ui')['NScrollbar']
     NSpace: typeof import('naive-ui')['NSpace']
     NThing: typeof import('naive-ui')['NThing']
+    PresetSettings: typeof import('./src/components/settings/PresetSettings.vue')['default']
+    ProviderSettings: typeof import('./src/components/settings/ProviderSettings.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     Settings: typeof import('./src/components/settings.vue')['default']
+    UserSettings: typeof import('./src/components/settings/UserSettings.vue')['default']
   }
 }

@@ -20,13 +20,13 @@ namespace LLMRolePlay
     }
     public async Task<AuthenticateResult> AuthenticateAsync()
     {
-      string? token = _context?.Request.Query["token"];
+      string? token = _context?.Request.Headers["Token"];
       if (token == null) return AuthenticateResult.Fail("null token");
       User? user = await User.GetUserByToken(_dBContext, token);
       if (user == null) return AuthenticateResult.Fail("user not found");
 
       ClaimsPrincipal claimsPrincipal = new ClaimsPrincipal();
-      foreach(Group group in Enum.GetValues<Group>())
+      foreach (Group group in Enum.GetValues<Group>())
       {
         if (user.Group.HasFlag(group))
         {
@@ -53,6 +53,6 @@ namespace LLMRolePlay
       return;
     }
 
-    
+
   }
 }

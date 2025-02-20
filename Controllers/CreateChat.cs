@@ -4,20 +4,31 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LLMRolePlay.Controllers
 {
+  public class CreateChatRequest
+  {
+    public required string name { get; set; }
+    public required string settings { get; set; }
+    public required uint modelId { get; set; }
+    public required uint characterId { get; set; }
+    public required uint presetId { get; set; }
+  }
   public partial class API : ControllerBase
   {
-    [HttpGet("createChat")]
+    [HttpPost("createChat")]
     [AllowAnonymous]
-    public async Task<IActionResult> CreateChat(string token, string name, string settings, uint modelId, uint characterId, uint presetId)
+    public async Task<ApiResponse> CreateChat(HttpContext req, [FromBody] CreateChatRequest data)
     {
-      User? user = await Models.User.GetUserByToken(_dBContext,token);
-      if (user == null) return StatusCode(404, "token error");
-      Chat? chat = await Chat.CreateChat(_dBContext, name, settings, modelId, characterId, presetId);
-      if (chat == null) return StatusCode(404, "provided id can not cast to a specific object");
+      User? user = await Models.User.GetUserByRequest(_dBContext, req);
+      if (user == null) return ApiResponse.TokenError();
+      Chat? chat = await Chat.CreateChat(_dBContext, data.name, data.settings, data.modelId, data.characterId, data.presetId);
+      if (chat == null) return ApiResponse.Message(502, "Chat creation failed");
       user.Chats.Add(chat);
       user.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();
-      return StatusCode(200, chat.Id);
+      return ApiResponse.Success(new
+      {
+        id = chat.Id
+      });
     }
   }
 }

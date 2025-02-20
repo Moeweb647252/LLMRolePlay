@@ -4,18 +4,24 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LLMRolePlay.Controllers
 {
+
+  public class ChangeUserNameRequest
+  {
+    public required string username { get; set; }
+  }
+
   public partial class API : ControllerBase
   {
-    [HttpGet("changeUserName")]
+    [HttpPost("changeUserName")]
     [AllowAnonymous]
-    public async Task<IActionResult> ChangeUserName(string token, string userName)
+    public async Task<ApiResponse> ChangeUserName(HttpContext req, [FromBody] ChangeUserNameRequest data)
     {
-      User? user = await Models.User.GetUserByToken(_dBContext, token);
-      if (user == null) return StatusCode(404);
-      user.UserName = userName;
+      User? user = await Models.User.GetUserByRequest(_dBContext, req);
+      if (user == null) return ApiResponse.TokenError();
+      user.UserName = data.username;
       user.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();
-      return StatusCode(200);
+      return ApiResponse.Success(null);
     }
   }
 }

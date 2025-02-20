@@ -6,11 +6,11 @@ namespace LLMRolePlay.Controllers
 {
   public partial class API : ControllerBase
   {
-    [HttpGet("getMessages")]
+    [HttpPost("getMessages")]
     [AllowAnonymous]
-    public async Task<ActionResult<List<Message>>> GetMessages(string token, uint chatId)
+    public async Task<ActionResult<List<Message>>> GetMessages(HttpContext req, uint chatId)
     {
-      User? user = await Models.User.GetUserByToken(_dBContext, token);
+      User? user = await Models.User.GetUserByRequest(_dBContext, req);
       Chat? chat = await Chat.GetChatById(_dBContext, chatId);
       if (user == null || chat == null) return StatusCode(404);
       if (!user.Chats.Contains(chat)) return StatusCode(404, "chat not belongs to this user");
