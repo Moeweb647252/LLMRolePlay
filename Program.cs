@@ -27,14 +27,14 @@ var app = builder.Build();
 app.MapControllers();
 
 
-using (var serviceScope = app.Services.GetService<IServiceScopeFactory>().CreateScope())
+using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
 {
   using (var context = serviceScope.ServiceProvider.GetRequiredService<DBContext>())
   {
     if (await context.Database.EnsureCreatedAsync())
     {
       string password = Utils.GenerateRandomString(8);
-      await User.CreateAdmin(context, "admin", "admin@example.com", password);
+      await User.CreateAdmin(context, "admin", "admin@example.com", Utils.Sha256Encode(password));
       Console.WriteLine($"Admin user created, UserName: admin, Email: admin@example.com, Password: {password}");
     }
   }

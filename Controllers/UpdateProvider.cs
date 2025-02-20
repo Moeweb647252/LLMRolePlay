@@ -1,0 +1,44 @@
+using LLMRolePlay.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace LLMRolePlay.Controllers
+{
+  public partial class API : ControllerBase
+  {
+    public class UpdateProviderRequest
+    {
+      public uint providerId;
+      public string? name = null;
+      public string? type = null;
+      public string? settings = null;
+      public string? description = null;
+    }
+
+    [HttpPost("updateProvider")]
+    [AllowAnonymous]
+    public async Task<ApiResponse> UpdateProvider([FromBody] UpdateProviderRequest data)
+    {
+      string? token = Request.Headers["token"];
+      if (token == null) return ApiResponse.TokenError();
+
+      User? user = await Models.User.GetUserByToken(_dBContext, token);
+      if (user == null) return ApiResponse.TokenError();
+
+
+      Provider? provider = await Provider.GetProviderById(_dBContext, data.providerId);
+      if(provider==null) return ApiResponse.MessageOnly(500, "provider not found");
+
+      if (!user.Providers.Contains(provider)) return ApiResponse.MessageOnly(505, "provider not belongs to current user");
+
+      if (data.name != null) provider.Name = data.name;
+      if (data.type != null) provider.Type = data.type;
+      if (data.settings != null) provider.Settings = data.settings;
+      if (data.description != null) provider.Description = data.description;
+
+      provider.MarkAsModified(_dBContext);
+      await _dBContext.SaveChangesAsync();
+      return ApiResponse.Success();
+    }
+  }
+}

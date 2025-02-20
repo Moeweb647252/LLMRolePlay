@@ -38,5 +38,9 @@ namespace LLMRolePlay.Models
       db.Models.Remove(this);
       await db.SaveChangesAsync();
     }
+    public void MarkAsModified(DBContext db)
+    {
+      db.Entry(this).State = EntityState.Modified;
+    }
   }
 }

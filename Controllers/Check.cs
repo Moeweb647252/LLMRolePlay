@@ -1,26 +1,27 @@
-using LLMRolePlay.Models;
 using Microsoft.AspNetCore.Authorization;
+using LLMRolePlay.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LLMRolePlay.Controllers
 {
   public partial class API : ControllerBase
   {
-    [HttpPost("getMessages")]
+    [HttpGet("check")]
     [AllowAnonymous]
-    public async Task<ApiResponse> GetMessages(uint chatId)
+    public async Task<ApiResponse> Check()
     {
       string? token = Request.Headers["token"];
       if (token == null) return ApiResponse.TokenError();
 
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
-
-      Chat? chat = await Chat.GetChatById(_dBContext, chatId);
-      if (chat == null) return ApiResponse.TokenError();
-
-      if (!user.Chats.Contains(chat)) return ApiResponse.MessageOnly(500, "chat not belongs to this user");
-      return ApiResponse.Success(chat.Messages);
+      return ApiResponse.Success(new
+      {
+        group = user.Group,
+        id = user.Id,
+        username = user.UserName,
+        email = user.Email
+      });
     }
   }
 }

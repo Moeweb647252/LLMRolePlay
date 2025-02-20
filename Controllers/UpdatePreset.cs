@@ -1,0 +1,44 @@
+using LLMRolePlay.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace LLMRolePlay.Controllers
+{
+  public class UpdatePresetRequest
+  {
+    public uint presetId;
+    public string? name = null;
+    public string? settings = null;
+    public string? description = null;
+  }
+
+  public partial class API : ControllerBase
+  {
+    [HttpPost("updatePreset")]
+    [AllowAnonymous]
+    public async Task<ApiResponse> UpdatePreset([FromBody] UpdatePresetRequest data)
+    {
+      string? token = Request.Headers["token"];
+      if (token == null) return ApiResponse.TokenError();
+
+      User? user = await Models.User.GetUserByToken(_dBContext, token);
+      if (user == null) return ApiResponse.TokenError();
+
+      Preset? preset = await Preset.GetPresetById(_dBContext, data.presetId);
+      if (preset == null) return ApiResponse.MessageOnly(500, "preset not found");
+
+      if (!user.Presets.Contains(preset)) return ApiResponse.MessageOnly(505, "preset not belongs to current user");
+
+      if (data.name != null) preset.Name = data.name;
+      if (data.settings != null) preset.Settings = data.settings;
+      if (data.description != null) preset.Description = data.description;
+
+      preset.MarkAsModified(_dBContext);
+      await _dBContext.SaveChangesAsync();
+      return ApiResponse.Success(new
+      {
+        id = preset.Id
+      });
+    }
+  }
+}

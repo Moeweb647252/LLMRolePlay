@@ -1,23 +1,39 @@
 using LLMRolePlay.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+
+
 
 namespace LLMRolePlay.Controllers
 {
+  public class LoginRequst
+  {
+    public required string email { get; set; }
+    public required string password { get; set; }
+  }
   public partial class API : ControllerBase
   {
-    [HttpGet("login")]
-    public async Task<IActionResult> Login(string email, string password)
+    [HttpPost("login")]
+    [AllowAnonymous]
+    public async Task<ApiResponse> Login([FromBody] LoginRequst req)
     {
-      List<User> users = _dBContext.Users.Where((user) => user.Email == email & user.Password == password).ToList();
+      List<User> users = _dBContext.Users.Where((user) => user.Email == req.email & user.Password == req.password).ToList();
       if (users.Count > 0)
       {
         User user = users[0];
         string token = await user.UpdateToken(_dBContext);
-        return StatusCode(200, token);
+        return ApiResponse.Success(new
+        {
+          token = token,
+          group = user.Group,
+          id = user.Id,
+          username = user.UserName,
+          email = user.Email
+        });
       }
       else
       {
-        return StatusCode(404);
+        return new ApiResponse(401, null, "email or password error");
       }
     }
   }

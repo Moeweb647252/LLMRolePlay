@@ -15,9 +15,9 @@ namespace LLMRolePlay.Models
     public uint Id { get; set; }
     public string Name { get; set; }
     public string Settings { get; set; }
-    public Model Model { get; private set; }
-    public Character Character { get; private set; }
-    public Preset Preset { get; private set; }
+    public Model Model { get; set; }
+    public Character Character { get; set; }
+    public Preset Preset { get; set; }
     public List<Message> Messages { get; private set; } = new List<Message>();
     public Chat()
     {
@@ -55,6 +55,10 @@ namespace LLMRolePlay.Models
     public static async Task<Chat?> GetChatById(DBContext db,uint chatId)
     {
       return await db.Chats.FindAsync(chatId);
+    }
+    public void MarkAsModified(DBContext db)
+    {
+      db.Entry(this).State = EntityState.Modified;
     }
   }
 }

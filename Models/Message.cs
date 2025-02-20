@@ -28,5 +28,9 @@ namespace LLMRolePlay.Models
       await db.SaveChangesAsync();
       return message;
     }
+    public void MarkAsModified(DBContext db)
+    {
+      db.Entry(this).State = EntityState.Modified;
+    }
   }
 }

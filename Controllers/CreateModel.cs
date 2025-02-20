@@ -6,20 +6,36 @@ namespace LLMRolePlay.Controllers
 {
   public partial class API : ControllerBase
   {
-    [HttpGet("createModel")]
-    [AllowAnonymous]
-    public async Task<IActionResult> CreateModel(string token, uint providerId, string name, string settings, string description)
+    public class CreateModelRequest
     {
-      User? user = await Models.User.GetUserByToken(_dBContext, token);
-      Provider? provider = await Provider.GetProviderById(_dBContext, providerId);
-      if (user == null || provider == null) return StatusCode(404);
-      if (!user.Providers.Contains(provider)) return StatusCode(404, "provider not belongs to this user");
+      public required uint providerId { get; set; }
+      public required string name { get; set; }
+      public required string settings { get; set; }
+      public required string description { get; set; }
+    }
+    [HttpPost("createModel")]
+    [AllowAnonymous]
+    public async Task<ApiResponse> CreateModel([FromBody] CreateModelRequest data)
+    {
+      string? token = Request.Headers["token"];
+      if (token == null) return ApiResponse.TokenError();
 
-      Model model = await Model.CreateModel(_dBContext, name, settings, description);
+      User? user = await Models.User.GetUserByToken(_dBContext, token);
+      if (user == null) return ApiResponse.TokenError();
+
+      Provider? provider = await Provider.GetProviderById(_dBContext, data.providerId);
+      if (provider == null) return ApiResponse.TokenError();
+
+      if (!user.Providers.Contains(provider)) return ApiResponse.MessageOnly(502, "provider not belongs to this user");
+
+      Model model = await Model.CreateModel(_dBContext, data.name, data.settings, data.description);
       provider.Models.Add(model);
       provider.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();
-      return StatusCode(200, model.Id);
+      return ApiResponse.Success(new
+      {
+        id = model.Id
+      });
     }
   }
 }
