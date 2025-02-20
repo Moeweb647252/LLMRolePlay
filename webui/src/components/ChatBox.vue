@@ -7,13 +7,15 @@ import { IosSend } from '@vicons/ionicons4'
   <div class="container">
     <div style="height: 4em">
       <n-flex align="center" justify="space-between" style="height: 100%; width: 100%">
-        <h3>Chat Name</h3>
+        <h2>Chat Name</h2>
       </n-flex>
     </div>
-    <div style="height: calc(100% - 4em); padding-top: 4em">
+    <div style="height: calc(100% - 2em); padding-top: 2em; overflow: hidden">
       <div class="chat-box">
         <div class="messages">
-          <Message></Message>
+          <n-scrollbar style="height: 100%; width: calc(100% - 2em)">
+            <Message v-for="i in 20" class="message"></Message>
+          </n-scrollbar>
         </div>
         <div class="input">
           <n-input
@@ -67,5 +69,9 @@ import { IosSend } from '@vicons/ionicons4'
   flex-direction: column;
   margin-left: 2em;
   margin-right: 2em;
+}
+
+.message {
+  padding-top: 1em;
 }
 </style>

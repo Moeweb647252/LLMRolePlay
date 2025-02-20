@@ -1,10 +1,33 @@
 <script setup lang="ts">
 import ChatBox from '@/components/ChatBox.vue'
+import { IosMenu, MdContact } from '@vicons/ionicons4'
+
+const dropdownOptions = [
+  {
+    label: 'Option 1',
+    key: 'option1',
+  },
+  {
+    label: 'Option 2',
+    key: 'option2',
+  },
+]
 </script>
 <template>
   <n-layout has-sider class="full bfc">
     <n-layout-sider width="200" theme="dark" class="bfc">
       <div class="sider bfc">
+        <div
+          style="
+            margin: 2px 4px;
+            height: 3.5em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+          "
+        >
+          <h2>LLMRolePlay</h2>
+        </div>
         <div style="margin: 2px 4px; height: 2.5em">
           <n-button type="default" @click="() => {}" style="width: 100%; height: 100%"
             >Button 1</n-button
@@ -19,9 +42,31 @@ import ChatBox from '@/components/ChatBox.vue'
         </n-scrollbar>
       </div>
     </n-layout-sider>
-    <n-layout-content class="full bfc">
-      <ChatBox chat-id="1"></ChatBox>
-    </n-layout-content>
+    <n-layout class="full bfc">
+      <n-layout-header
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding-top: 0.5em;
+          height: 3em;
+        "
+      >
+        <n-button type="default" @click="() => {}" strong secondary>
+          <n-icon size="2em">
+            <IosMenu />
+          </n-icon>
+        </n-button>
+        <n-dropdown :options="dropdownOptions">
+          <n-icon size="2.5em" style="padding-right: 0.5em">
+            <MdContact />
+          </n-icon>
+        </n-dropdown>
+      </n-layout-header>
+      <n-layout-content class="bfc" style="height: calc(100% - 3.5em)">
+        <ChatBox chat-id="1"></ChatBox>
+      </n-layout-content>
+    </n-layout>
   </n-layout>
 </template>
 
