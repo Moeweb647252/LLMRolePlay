@@ -17,6 +17,7 @@ namespace LLMRolePlay
     {
       _context = context;
     }
+    // token 验证，添加权限
     public async Task<AuthenticateResult> AuthenticateAsync()
     {
       string? token = _context?.Request.Headers["Token"];
@@ -38,6 +39,7 @@ namespace LLMRolePlay
       return AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, "TokenAuthentication"));
     }
 
+    //验证失败
     public async Task ChallengeAsync(AuthenticationProperties? properties)
     {
       if (_context == null) return;
@@ -45,6 +47,7 @@ namespace LLMRolePlay
       return;
     }
 
+    //验证失败
     public async Task ForbidAsync(AuthenticationProperties? properties)
     {
       if (_context == null) return;

@@ -8,7 +8,7 @@ namespace LLMRolePlay.Controllers
   {
     public class UpdateProviderRequest
     {
-      public uint providerId;
+      public required uint providerId;
       public string? name = null;
       public string? type = null;
       public string? settings = null;

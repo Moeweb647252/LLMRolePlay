@@ -6,7 +6,7 @@ namespace LLMRolePlay.Controllers
 {
   public class UpdatePresetRequest
   {
-    public uint presetId;
+    public required uint presetId;
     public string? name = null;
     public string? settings = null;
     public string? description = null;
