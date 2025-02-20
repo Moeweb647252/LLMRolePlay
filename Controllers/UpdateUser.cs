@@ -10,6 +10,8 @@ namespace LLMRolePlay.Controllers
     {
       public string? username = null;
       public string? password = null;
+      public string? email = null;
+      public Group? group = null;
     }
 
     [HttpPost("updateUser")]
@@ -24,6 +26,8 @@ namespace LLMRolePlay.Controllers
 
       if (data.username != null) user.UserName = data.username;
       if (data.password != null) user.Password = data.password;
+      if (data.email != null) user.Email = data.email;
+      if (data.group != null) user.Group = (Group)data.group;
 
       user.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();
