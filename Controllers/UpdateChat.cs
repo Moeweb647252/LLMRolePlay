@@ -6,12 +6,12 @@ namespace LLMRolePlay.Controllers
 {
   public class UpdateChatRequest
   {
-    public uint chatId;
+    public required uint chatId;
     public string? name = null;
     public string? settings = null;
-    public uint modelId;
-    public uint characterId;
-    public uint presetId;
+    public required uint modelId;
+    public required uint characterId;
+    public required uint presetId;
   }
   public partial class API : ControllerBase
   {

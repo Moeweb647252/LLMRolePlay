@@ -8,7 +8,7 @@ namespace LLMRolePlay.Controllers
   {
     public class UpdateModelRequest
     {
-      public uint modelId;
+      public required uint modelId;
       public string? name = null;
       public string? settings = null;
       public string? description = null;
