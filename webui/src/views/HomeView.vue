@@ -13,14 +13,16 @@ if (!settings.user) {
 
 const dropdownOptions = [
   {
-    label: 'Option 1',
-    key: 'option1',
-  },
-  {
-    label: 'Option 2',
-    key: 'option2',
+    label: '设置',
+    key: 'settings',
   },
 ]
+
+const onDropdownSelect = (key: string) => {
+  if (key === 'settings') {
+    router.push('/settings')
+  }
+}
 </script>
 <template>
   <n-layout has-sider class="full bfc">
@@ -66,7 +68,7 @@ const dropdownOptions = [
             <IosMenu />
           </n-icon>
         </n-button>
-        <n-dropdown :options="dropdownOptions">
+        <n-dropdown :options="dropdownOptions" @select="onDropdownSelect">
           <n-icon size="2.5em" style="padding-right: 0.5em">
             <MdContact />
           </n-icon>

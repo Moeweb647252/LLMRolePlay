@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace LLMRolePlay
 {
   public enum StatusCode
@@ -7,8 +9,11 @@ namespace LLMRolePlay
   }
   public class ApiResponse
   {
+    [JsonPropertyName("code")]
     public int StatusCode { get; set; }
+    [JsonPropertyName("data")]
     public object? Data { get; set; }
+    [JsonPropertyName("msg")]
     public string Message { get; set; }
 
     public ApiResponse(int statusCode, object? data = null, string message = "")

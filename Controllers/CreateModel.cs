@@ -10,6 +10,7 @@ namespace LLMRolePlay.Controllers
     {
       public required uint providerId { get; set; }
       public required string name { get; set; }
+      public required string modelName { get; set; }
       public required string settings { get; set; }
       public required string description { get; set; }
     }
@@ -28,7 +29,7 @@ namespace LLMRolePlay.Controllers
 
       if (!user.Providers.Contains(provider)) return ApiResponse.MessageOnly(502, "provider not belongs to this user");
 
-      Model model = await Model.CreateModel(_dBContext, data.name, data.settings, data.description);
+      Model model = await Model.CreateModel(_dBContext, data.name, data.modelName, data.settings, data.description);
       provider.Models.Add(model);
       provider.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();

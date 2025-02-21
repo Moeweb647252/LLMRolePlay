@@ -14,22 +14,24 @@ namespace LLMRolePlay.Models
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public uint Id { get; set; }
     public string Name { get; set; }
+    public string ModelName { get; set; }
     public string Settings { get; set; }
     public string Description { get; set; }
-    public Model(string name, string settings, string description = "")
+    public Model(string name, string modelName, string settings, string description = "")
     {
       Name = name;
       Settings = settings;
       Description = description;
+      ModelName = modelName;
     }
-    public static async Task<Model> CreateModel(DBContext db, string name, string settings, string description)
+    public static async Task<Model> CreateModel(DBContext db, string name, string settings, string description, string modelName)
     {
-      Model model = new Model(name, settings, description);
+      Model model = new Model(name, modelName, settings, description);
       await db.Models.AddAsync(model);
       await db.SaveChangesAsync();
       return model;
     }
-    public static async Task<Model?> GetModelById(DBContext db,uint id)
+    public static async Task<Model?> GetModelById(DBContext db, uint id)
     {
       return await db.Models.FindAsync(id);
     }

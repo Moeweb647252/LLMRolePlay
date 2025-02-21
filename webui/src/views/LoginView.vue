@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import axios from 'axios'
-import { useSettingsStore } from '@/stores/settings'
 import { useMessage } from 'naive-ui'
-import { sha256 } from 'js-sha256'
 import { useRouter } from 'vue-router'
+import { api } from '@/api'
 
-const seettings = useSettingsStore()
 const message = useMessage()
 const router = useRouter()
 
@@ -15,26 +12,8 @@ const password = ref<string>('')
 
 const login = async () => {
   try {
-    const response = await axios.post('/api/login', {
-      email: email.value,
-      password: sha256(password.value),
-    })
-    console.log(response)
-    if (response.status === 200) {
-      // Handle successful login
-      if (response.data.code === 200) {
-        seettings.user = {
-          email: response.data.data.email,
-          username: response.data.data.username,
-          id: response.data.data.id,
-          group: response.data.data.group,
-          token: response.data.data.token,
-        }
-        router.push('/')
-      } else {
-        message.error(response.data.msg)
-      }
-    }
+    await api.login(email.value, password.value)
+    router.push('/')
   } catch (error) {
     // Handle error
     console.log(error)

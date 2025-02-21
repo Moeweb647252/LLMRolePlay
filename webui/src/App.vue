@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
+import Main from './Main.vue'
 </script>
 
 <template>
-  <n-message-provider>
-    <RouterView />
-  </n-message-provider>
+  <Suspense>
+    <Main></Main>
+    <template #fallback>
+      <n-spin tip="Loading..." />
+    </template>
+  </Suspense>
 </template>
 
 <style scoped></style>

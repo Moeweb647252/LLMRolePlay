@@ -3,6 +3,10 @@ import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import SettingsView from '@/views/SettingsView.vue'
 import UserSettings from '@/components/settings/UserSettings.vue'
+import PresetSettings from '@/components/settings/PresetSettings.vue'
+import CharacterSettings from '@/components/settings/CharacterSettings.vue'
+import GeneralSettings from '@/components/settings/GeneralSettings.vue'
+import ProviderSettings from '@/components/settings/ProviderSettings.vue'
 import { useSettingsStore } from '@/stores/settings'
 
 
@@ -25,8 +29,28 @@ const router = createRouter({
       component: SettingsView,
       children: [
         {
+          path: '',
+          redirect: '/settings/user'
+        },
+        {
           path: 'user',
           component: UserSettings
+        },
+        {
+          path: 'preset',
+          component: PresetSettings
+        },
+        {
+          path: 'character',
+          component: CharacterSettings
+        },
+        {
+          path: 'general',
+          component: GeneralSettings
+        },
+        {
+          path: 'provider',
+          component: ProviderSettings
         }
       ]
     }

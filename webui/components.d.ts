@@ -9,7 +9,6 @@ declare module 'vue' {
   export interface GlobalComponents {
     CharacterSettings: typeof import('./src/components/settings/CharacterSettings.vue')['default']
     ChatBox: typeof import('./src/components/ChatBox.vue')['default']
-    Ettings: typeof import('./src/components/ettings.vue')['default']
     GeneralSettings: typeof import('./src/components/settings/GeneralSettings.vue')['default']
     Message: typeof import('./src/components/Message.vue')['default']
     NAvatar: typeof import('naive-ui')['NAvatar']
@@ -21,7 +20,6 @@ declare module 'vue' {
     NFormItem: typeof import('naive-ui')['NFormItem']
     NIcon: typeof import('naive-ui')['NIcon']
     NInput: typeof import('naive-ui')['NInput']
-    NInputGroup: typeof import('naive-ui')['NInputGroup']
     NLayout: typeof import('naive-ui')['NLayout']
     NLayoutContent: typeof import('naive-ui')['NLayoutContent']
     NLayoutHeader: typeof import('naive-ui')['NLayoutHeader']
@@ -29,14 +27,16 @@ declare module 'vue' {
     NList: typeof import('naive-ui')['NList']
     NListItem: typeof import('naive-ui')['NListItem']
     NMessageProvider: typeof import('naive-ui')['NMessageProvider']
+    NModal: typeof import('naive-ui')['NModal']
     NScrollbar: typeof import('naive-ui')['NScrollbar']
+    NSelect: typeof import('naive-ui')['NSelect']
     NSpace: typeof import('naive-ui')['NSpace']
+    NSpin: typeof import('naive-ui')['NSpin']
     NThing: typeof import('naive-ui')['NThing']
     PresetSettings: typeof import('./src/components/settings/PresetSettings.vue')['default']
     ProviderSettings: typeof import('./src/components/settings/ProviderSettings.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    Settings: typeof import('./src/components/settings.vue')['default']
     UserSettings: typeof import('./src/components/settings/UserSettings.vue')['default']
   }
 }

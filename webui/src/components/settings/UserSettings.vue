@@ -11,5 +11,21 @@ const passwordConfirmation = ref('')
 </script>
 
 <template>
-  <n-form label-placement="left"> </n-form>
+  <n-form label-placement="left">
+    <n-form-item label="Username">
+      <n-input v-model:value="username" />
+    </n-form-item>
+    <n-form-item label="Email">
+      <n-input v-model:value="email" />
+    </n-form-item>
+    <n-form-item label="Password">
+      <n-input v-model:value="password" type="password" />
+    </n-form-item>
+    <n-form-item label="Confirm Password">
+      <n-input v-model:value="passwordConfirmation" type="password" />
+    </n-form-item>
+    <n-form-item>
+      <n-button type="primary">Save</n-button>
+    </n-form-item>
+  </n-form>
 </template>

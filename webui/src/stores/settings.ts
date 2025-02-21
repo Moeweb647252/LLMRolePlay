@@ -14,4 +14,6 @@ export const useSettingsStore = defineStore("settings", () => {
   return {
     user,
   }
+}, {
+  persist: true,
 })
