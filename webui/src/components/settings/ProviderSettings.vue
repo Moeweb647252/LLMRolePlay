@@ -27,7 +27,7 @@ const addProviderForm = ref({
   url: '',
   apiKey: '',
   models: [] as Model[],
-  settings: {},
+  settings: [] as { key: string; value: string }[],
   type: 'openai' as 'openai' | 'google' | 'azure',
 })
 
@@ -63,7 +63,7 @@ const addModel = () => {
     name: '',
     modelName: '',
     description: '',
-    settings: {},
+    settings: [],
   }
 }
 
@@ -72,7 +72,7 @@ const addModelForm = ref({
   name: '',
   modelName: '',
   description: '',
-  settings: {},
+  settings: [] as { key: string; value: string }[],
 })
 
 const addProvider = async () => {
@@ -85,7 +85,7 @@ const addProvider = async () => {
     url: '',
     apiKey: '',
     models: [] as Model[],
-    settings: {},
+    settings: [] as { key: string; value: string }[],
     type: 'openai' as 'openai' | 'google' | 'azure',
   }
   try {
@@ -147,11 +147,14 @@ const addProvider = async () => {
             :title-extra="provider.type"
           >
           </n-thing>
+
+          <template #suffix>
+            <n-space :wrap="false">
+              <n-button type="primary">编辑</n-button>
+              <n-button type="error">删除</n-button>
+            </n-space>
+          </template>
         </n-list-item>
-        <template #suffix>
-          <n-button type="text">编辑</n-button>
-          <n-button type="text">删除</n-button>
-        </template>
       </n-list>
     </div>
   </div>
@@ -192,8 +195,10 @@ const addProvider = async () => {
       </n-dynamic-tags>
     </n-form>
     <template #footer>
-      <n-button type="primary" @click="addProvider">添加</n-button>
-      <n-button @click="addProviderForm.visible = false">取消</n-button>
+      <n-space justify="end">
+        <n-button @click="addProviderForm.visible = false">取消</n-button>
+        <n-button type="primary" @click="addProvider">添加</n-button>
+      </n-space>
     </template>
   </n-modal>
   <n-modal
@@ -215,8 +220,10 @@ const addProvider = async () => {
       </n-form-item>
     </n-form>
     <template #footer>
-      <n-button type="primary" @click="addModel">添加</n-button>
-      <n-button>取消</n-button>
+      <n-space justify="end">
+        <n-button type="primary" @click="addModel">添加</n-button>
+        <n-button @click="addModelForm.visible = false">取消</n-button>
+      </n-space>
     </template>
   </n-modal>
 </template>

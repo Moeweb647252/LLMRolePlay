@@ -60,11 +60,12 @@ export class Api {
   }
 
   async addPreset(name: string, description: string, settings: object) {
-    await this.request('createPreset', {
+    let data = await this.request('createPreset', {
       name: name,
       description: description,
-      settings: settings,
+      settings: JSON.stringify(settings),
     })
+    return data.id
   }
 
   async addModel(

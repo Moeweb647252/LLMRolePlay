@@ -5,9 +5,7 @@ export interface Preset {
   id: number
   name: string
   description: string
-  settings: {
-    [key: string]: string
-  }
+  settings: { key: string; value: string }[]
 }
 
 export const usePresetStore = defineStore('presets', () => {

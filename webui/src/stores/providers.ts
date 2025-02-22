@@ -6,9 +6,7 @@ export interface Model {
   name: string
   modelName: string
   description: string
-  settings: {
-    [key: string]: string
-  }
+  settings: { key: string; value: string }[]
   provider: Provider | null
 }
 
@@ -18,9 +16,7 @@ export interface Provider {
   url: string
   apiKey: string
   description: string
-  settings: {
-    [key: string]: string
-  }
+  settings: { key: string; value: string }[]
   type: 'openai' | 'google' | 'azure'
   models: Model[]
 }

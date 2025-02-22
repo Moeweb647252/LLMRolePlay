@@ -5,9 +5,7 @@ export interface Character {
   id: number
   name: string
   modelName: string
-  settings: {
-    [key: string]: string
-  }
+  settings: { key: string; value: string }[]
   description: string
 }
 

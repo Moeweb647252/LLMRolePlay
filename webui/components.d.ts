@@ -15,6 +15,7 @@ declare module 'vue' {
     NButton: typeof import('naive-ui')['NButton']
     NCard: typeof import('naive-ui')['NCard']
     NDropdown: typeof import('naive-ui')['NDropdown']
+    NDynamicInput: typeof import('naive-ui')['NDynamicInput']
     NDynamicTags: typeof import('naive-ui')['NDynamicTags']
     NFlex: typeof import('naive-ui')['NFlex']
     NForm: typeof import('naive-ui')['NForm']
