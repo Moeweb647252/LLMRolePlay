@@ -1,24 +1,34 @@
-import { defineStore } from "pinia";
-import { ref } from "vue";
+import { defineStore } from 'pinia'
+import { ref } from 'vue'
 
 export interface Model {
-  id: number;
-  name: string;
-  modelName: string;
-  description: string;
-  provider: Provider;
+  id: number | null
+  name: string
+  modelName: string
+  description: string
+  provider: Provider | null
 }
 
 export interface Provider {
-  id: number;
-  name: string;
-  url: string;
-  apiKey: string;
-  type: "openai" | "google" | "azure";
+  id: number
+  name: string
+  url: string
+  apiKey: string
+  description: string
+  settings: {
+    [key: string]: string
+  }
+  type: 'openai' | 'google' | 'azure'
   models: Model[]
 }
 
-export const useProviderStore = defineStore("providers", ()=>{
-  const providers = ref<Provider[]>([]);
-  return providers;
+export const useProviderStore = defineStore('providers', () => {
+  const providers = ref([] as Provider[])
+  const set = (value: Provider[]) => {
+    providers.value = value
+  }
+  return {
+    providers,
+    set,
+  }
 })

@@ -6,7 +6,17 @@ import Main from './Main.vue'
   <Suspense>
     <Main></Main>
     <template #fallback>
-      <n-spin tip="Loading..." />
+      <div
+        style="
+          width: 100%;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        "
+      >
+        <n-spin tip="Loading..." />
+      </div>
     </template>
   </Suspense>
 </template>

@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
+import { useProviderStore, type Model } from '@/stores/providers'
+import { h, reactive } from 'vue'
+import { MdAdd } from '@vicons/ionicons4'
+import { NTag } from 'naive-ui'
 
-const providers = reactive([])
+const providers = useProviderStore().providers
 
 const providerTypeOptions = [
   { label: 'Openai-Compatible', value: 'openai' },
@@ -18,9 +21,50 @@ const providerTypeOptions = [
 const addProviderForm = reactive({
   visible: false,
   name: '',
+  description: '',
   url: '',
   apiKey: '',
+  models: [] as Model[],
   type: 'openai',
+})
+
+const renderProviderTag = (model: Model, index: number) => {
+  return h(
+    NTag,
+    {
+      closable: true,
+      onClose: () => {
+        addProviderForm.models.splice(index, 1)
+      },
+      onClick: () => {
+        console.log(model)
+      },
+    },
+    {
+      default: () => model.name,
+    },
+  )
+}
+
+const addModel = () => {
+  addProviderForm.models.push({
+    id: null,
+    name: addModelForm.name,
+    modelName: addModelForm.modelName,
+    description: addModelForm.description,
+    provider: null,
+  })
+  addModelForm.name = ''
+  addModelForm.modelName = ''
+  addModelForm.description = ''
+  addModelForm.visible = false
+}
+
+const addModelForm = reactive({
+  visible: false,
+  name: '',
+  modelName: '',
+  description: '',
 })
 
 const addProvider = () => {}
@@ -32,7 +76,20 @@ const addProvider = () => {}
       <n-button type="primary" @click="addProviderForm.visible = true">添加</n-button>
     </div>
     <div>
-      <n-thing v-for="provider in providers"></n-thing>
+      <n-list>
+        <n-list-item v-for="provider in providers" :key="provider.id">
+          <n-thing
+            :title="provider.name"
+            :description="provider.description"
+            :title-extra="provider.type"
+          >
+          </n-thing>
+        </n-list-item>
+        <template #suffix>
+          <n-button type="text">编辑</n-button>
+          <n-button type="text">删除</n-button>
+        </template>
+      </n-list>
     </div>
   </div>
   <n-modal
@@ -49,16 +106,54 @@ const addProvider = () => {}
       <n-form-item label="名称">
         <n-input v-model:value="addProviderForm.name"></n-input>
       </n-form-item>
+      <n-form-item label="描述">
+        <n-input v-model:value="addProviderForm.description"></n-input>
+      </n-form-item>
       <n-form-item label="Base URL">
         <n-input v-model:value="addProviderForm.url"></n-input>
       </n-form-item>
       <n-form-item label="API Key">
         <n-input v-model:value="addProviderForm.apiKey"></n-input>
       </n-form-item>
+      <n-dynamic-tags v-model:value="addProviderForm.models" :render-tag="renderProviderTag">
+        <template #trigger>
+          <n-button size="small" type="primary" dashed @click="addModelForm.visible = true">
+            <template #icon>
+              <n-icon>
+                <MdAdd />
+              </n-icon>
+            </template>
+            添加模型
+          </n-button>
+        </template>
+      </n-dynamic-tags>
     </n-form>
     <template #footer>
       <n-button type="primary" @click="addProvider">添加</n-button>
       <n-button @click="addProviderForm.visible = false">取消</n-button>
+    </template>
+  </n-modal>
+  <n-modal
+    v-model:show="addModelForm.visible"
+    preset="card"
+    title="添加模型"
+    size="medium"
+    style="width: fit-content; min-width: 25em"
+  >
+    <n-form label-placement="left">
+      <n-form-item label="名称">
+        <n-input v-model:value="addModelForm.name"></n-input>
+      </n-form-item>
+      <n-form-item label="模型名">
+        <n-input v-model:value="addModelForm.modelName"></n-input>
+      </n-form-item>
+      <n-form-item label="描述">
+        <n-input v-model:value="addModelForm.description"></n-input>
+      </n-form-item>
+    </n-form>
+    <template #footer>
+      <n-button type="primary" @click="addModel">添加</n-button>
+      <n-button>取消</n-button>
     </template>
   </n-modal>
 </template>

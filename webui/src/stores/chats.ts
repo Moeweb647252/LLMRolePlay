@@ -1,0 +1,30 @@
+import { defineStore } from 'pinia'
+import type { Character } from './characters'
+import type { Preset } from './presets'
+import { ref } from 'vue'
+
+export interface Message {
+  id: number
+  content: string
+  role: 'user' | 'ai'
+  cretedAt: string
+}
+
+export interface Chat {
+  id: number
+  name: string
+  character: Character
+  preset: Preset
+  messages: Message[]
+}
+
+export const useChatStore = defineStore('chats', () => {
+  const chats = ref([] as Chat[])
+  const set = (value: Chat[]) => {
+    chats.value = value
+  }
+  return {
+    chats,
+    set,
+  }
+})
