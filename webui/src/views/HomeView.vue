@@ -20,7 +20,7 @@ const dropdownOptions = [
 
 const onDropdownSelect = (key: string) => {
   if (key === 'settings') {
-    router.push('/settings')
+    router.push('/main/settings')
   }
 }
 </script>

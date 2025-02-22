@@ -13,11 +13,11 @@ const password = ref<string>('')
 const login = async () => {
   try {
     await api.login(email.value, password.value)
-    router.push('/')
+    router.push('/main')
   } catch (error) {
     // Handle error
     console.log(error)
-    message.error('Login failed.')
+    message.error(Object(error).toString())
   }
 }
 </script>

@@ -6,6 +6,9 @@ export interface Model {
   name: string
   modelName: string
   description: string
+  settings: {
+    [key: string]: string
+  }
   provider: Provider | null
 }
 

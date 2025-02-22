@@ -1,6 +1,7 @@
 import { sha256 } from 'js-sha256'
 import { useSettingsStore } from './stores/settings'
 import axios from 'axios'
+import { useRouter } from 'vue-router'
 
 class NoTokenError extends Error {
   constructor() {
@@ -13,6 +14,7 @@ export class Api {
   constructor() {}
 
   async request(path: string, body: object, method: string = 'POST') {
+    const router = useRouter()
     const token = this.store!.user?.token
     if (!token) {
       throw new NoTokenError()
@@ -30,10 +32,11 @@ export class Api {
       throw new Error('Request failed')
     }
     let data = response.data
-    if (data.code != 200) {
+    if (data.code == 501) {
+      router.push('/login')
+      return {}
+    } else if (data.code != 200) {
       throw new Error(data.msg)
-    } else if (data.code == 501) {
-      throw new NoTokenError()
     }
     return data.data
   }
@@ -44,11 +47,11 @@ export class Api {
       password: sha256(password),
     })
     this.store!.user = {
-      email: resp.data.email,
-      username: resp.data.username,
-      id: resp.data.id,
-      group: resp.data.group,
-      token: resp.data.token,
+      email: resp.email,
+      username: resp.username,
+      id: resp.id,
+      group: resp.group,
+      token: resp.token,
     }
   }
 
@@ -76,8 +79,56 @@ export class Api {
       modelName: modelName,
       description: description,
       providerId: providerId,
-      settings: settings,
+      settings: JSON.stringify(settings),
     })
+  }
+
+  async addProvider(
+    name: string,
+    url: string,
+    apiKey: string,
+    description: string,
+    settings: object,
+    type: 'openai' | 'google' | 'azure',
+  ) {
+    let resp = await this.request('createProvider', {
+      name: name,
+      baseUrl: url,
+      apiKey: apiKey,
+      description: description,
+      settings: JSON.stringify(settings),
+      type: type,
+    })
+    return resp.id
+  }
+
+  async getProviders() {
+    let data: {
+      providers: any[]
+    } = await this.request('getProviders', {})
+    let providers = data.providers.map((provider) => {
+      let ret = {
+        id: provider.Id,
+        name: provider.Name,
+        url: provider.Url,
+        apiKey: provider.ApiKey,
+        description: provider.Description,
+        settings: provider.Settings,
+        type: provider.Type,
+        models: [],
+      }
+      ret.models = provider.Models.map((model: any) => {
+        return {
+          id: model.Id,
+          name: model.Name,
+          modelName: model.ModelName,
+          description: model.Description,
+          provider: ret,
+        }
+      })
+      return ret
+    })
+    return providers
   }
 
   async getPresets() {

@@ -10,6 +10,8 @@ namespace LLMRolePlay.Controllers
     {
       public required string name { get; set; }
       public required string type { get; set; }
+      public required string baseUrl { get; set; }
+      public required string apiKey { get; set; }
       public required string settings { get; set; }
       public required string description { get; set; }
     }
@@ -24,7 +26,7 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Provider provider = await Provider.CreateProvider(_dBContext, data.name, data.type, data.settings, data.description);
+      Provider provider = await Provider.CreateProvider(_dBContext, data.name, data.type, data.settings, data.baseUrl, data.apiKey, data.description);
       user.Providers.Add(provider);
       user.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();

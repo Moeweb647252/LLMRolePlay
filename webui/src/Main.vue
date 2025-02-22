@@ -13,10 +13,9 @@ const presets = usePresetStore()
 const characters = useCharacterStore()
 
 presets.set(await api.getPresets())
+providers.set(await api.getProviders())
 </script>
 
 <template>
-  <n-message-provider>
-    <RouterView />
-  </n-message-provider>
+  <RouterView />
 </template>

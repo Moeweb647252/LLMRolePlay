@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { useProviderStore, type Model } from '@/stores/providers'
-import { h, reactive } from 'vue'
+import { h, ref } from 'vue'
 import { MdAdd } from '@vicons/ionicons4'
-import { NTag } from 'naive-ui'
+import { NTag, useMessage } from 'naive-ui'
+import { api } from '@/api'
 
 const providers = useProviderStore().providers
+const messgae = useMessage()
 
 const providerTypeOptions = [
   { label: 'Openai-Compatible', value: 'openai' },
@@ -18,14 +20,15 @@ const providerTypeOptions = [
   },
 ]
 
-const addProviderForm = reactive({
+const addProviderForm = ref({
   visible: false,
   name: '',
   description: '',
   url: '',
   apiKey: '',
   models: [] as Model[],
-  type: 'openai',
+  settings: {},
+  type: 'openai' as 'openai' | 'google' | 'azure',
 })
 
 const renderProviderTag = (model: Model, index: number) => {
@@ -34,7 +37,7 @@ const renderProviderTag = (model: Model, index: number) => {
     {
       closable: true,
       onClose: () => {
-        addProviderForm.models.splice(index, 1)
+        addProviderForm.value.models.splice(index, 1)
       },
       onClick: () => {
         console.log(model)
@@ -47,27 +50,87 @@ const renderProviderTag = (model: Model, index: number) => {
 }
 
 const addModel = () => {
-  addProviderForm.models.push({
+  addProviderForm.value.models.push({
     id: null,
-    name: addModelForm.name,
-    modelName: addModelForm.modelName,
-    description: addModelForm.description,
+    name: addModelForm.value.name,
+    modelName: addModelForm.value.modelName,
+    description: addModelForm.value.description,
     provider: null,
+    settings: addModelForm.value.settings,
   })
-  addModelForm.name = ''
-  addModelForm.modelName = ''
-  addModelForm.description = ''
-  addModelForm.visible = false
+  addModelForm.value = {
+    visible: false,
+    name: '',
+    modelName: '',
+    description: '',
+    settings: {},
+  }
 }
 
-const addModelForm = reactive({
+const addModelForm = ref({
   visible: false,
   name: '',
   modelName: '',
   description: '',
+  settings: {},
 })
 
-const addProvider = () => {}
+const addProvider = async () => {
+  addProviderForm.value.visible = false
+  let data = JSON.parse(JSON.stringify(addProviderForm.value))
+  addProviderForm.value = {
+    visible: false,
+    name: '',
+    description: '',
+    url: '',
+    apiKey: '',
+    models: [] as Model[],
+    settings: {},
+    type: 'openai' as 'openai' | 'google' | 'azure',
+  }
+  try {
+    let providerId = await api.addProvider(
+      data.name,
+      data.url,
+      data.apiKey,
+      data.description,
+      data.settings,
+      data.type,
+    )
+    let models = []
+    for (let model of data.models) {
+      let id = await api.addModel(
+        model.name,
+        model.modelName,
+        model.description,
+        providerId,
+        model.settings,
+      )
+      model.id = id
+      models.push(model)
+    }
+    let provider = {
+      id: providerId,
+      name: data.name,
+      description: data.description,
+      url: data.url,
+      apiKey: data.apiKey,
+      models: models,
+      settings: data.settings,
+      type: data.type,
+    }
+    provider.models.forEach((model) => {
+      model.provider = provider
+    })
+    providers.push(provider)
+  } catch (error) {
+    console.error(error)
+    messgae.error('Provider添加失败.')
+    return
+  }
+
+  messgae.success('Provider添加成功.')
+}
 </script>
 <template>
   <div style="padding: 2em">

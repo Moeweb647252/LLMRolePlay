@@ -1,11 +1,11 @@
 <script setup lang="ts">
 const links = [
   { name: '返回', path: '/' },
-  { name: '通用', path: '/settings/general' },
-  { name: '用户', path: '/settings/user' },
-  { name: '角色', path: '/settings/character' },
-  { name: '预设', path: '/settings/preset' },
-  { name: 'Provider', path: '/settings/provider' },
+  { name: '通用', path: '/main/settings/general' },
+  { name: '用户', path: '/main/settings/user' },
+  { name: '角色', path: '/main/settings/character' },
+  { name: '预设', path: '/main/settings/preset' },
+  { name: 'Provider', path: '/main/settings/provider' },
 ]
 </script>
 
