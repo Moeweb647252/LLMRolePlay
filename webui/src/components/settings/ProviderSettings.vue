@@ -2,11 +2,12 @@
 import { useProviderStore, type Model } from '@/stores/providers'
 import { h, ref } from 'vue'
 import { MdAdd } from '@vicons/ionicons4'
-import { NTag, useMessage } from 'naive-ui'
+import { NTag, useMessage, useModal } from 'naive-ui'
 import { api } from '@/api'
 
 const providers = useProviderStore().providers
 const messgae = useMessage()
+const model = useModal()
 
 const providerTypeOptions = [
   { label: 'Openai-Compatible', value: 'openai' },
@@ -49,22 +50,50 @@ const renderProviderTag = (model: Model, index: number) => {
   )
 }
 
-const addModel = () => {
-  addProviderForm.value.models.push({
+const deleteProvider = async (provider: any) => {
+  model.create({
+    title: '删除Provider',
+    content: `确定删除Provider ${provider.name} ?`,
+    preset: 'dialog',
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      try {
+        await api.deleteProvider(provider.id)
+        providers.splice(providers.indexOf(provider), 1)
+      } catch (error) {
+        console.error(error)
+        messgae.error('Provider删除失败.')
+        return
+      }
+      messgae.success('Provider删除成功.')
+    },
+  })
+}
+
+const addProviderAddModel = () => {
+  addModelForm.value = {
+    visible: true,
+    name: '',
+    modelName: '',
+    description: '',
+    settings: [],
+    onAdd: (data: any) => {
+      addProviderForm.value.models.push(data)
+    },
+  }
+}
+
+const addModelConfirm = () => {
+  let data = {
     id: null,
     name: addModelForm.value.name,
     modelName: addModelForm.value.modelName,
     description: addModelForm.value.description,
     provider: null,
     settings: addModelForm.value.settings,
-  })
-  addModelForm.value = {
-    visible: false,
-    name: '',
-    modelName: '',
-    description: '',
-    settings: [],
   }
+  addModelForm.value.onAdd!(data)
 }
 
 const addModelForm = ref({
@@ -73,6 +102,7 @@ const addModelForm = ref({
   modelName: '',
   description: '',
   settings: [] as { key: string; value: string }[],
+  onAdd: null as ((data: any) => void) | null,
 })
 
 const addProvider = async () => {
@@ -131,6 +161,12 @@ const addProvider = async () => {
 
   messgae.success('Provider添加成功.')
 }
+
+const editProviderForm = ref({
+  visible: false,
+  name: '',
+  description: '',
+})
 </script>
 <template>
   <div style="padding: 2em">
@@ -151,7 +187,7 @@ const addProvider = async () => {
           <template #suffix>
             <n-space :wrap="false">
               <n-button type="primary">编辑</n-button>
-              <n-button type="error">删除</n-button>
+              <n-button type="error" @click="deleteProvider(provider)">删除</n-button>
             </n-space>
           </template>
         </n-list-item>
@@ -183,7 +219,7 @@ const addProvider = async () => {
       </n-form-item>
       <n-dynamic-tags v-model:value="addProviderForm.models" :render-tag="renderProviderTag">
         <template #trigger>
-          <n-button size="small" type="primary" dashed @click="addModelForm.visible = true">
+          <n-button size="small" type="primary" dashed @click="addProviderAddModel">
             <template #icon>
               <n-icon>
                 <MdAdd />
@@ -221,10 +257,24 @@ const addProvider = async () => {
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button type="primary" @click="addModel">添加</n-button>
+        <n-button type="primary" @click="addModelConfirm">添加</n-button>
         <n-button @click="addModelForm.visible = false">取消</n-button>
       </n-space>
     </template>
+  </n-modal>
+  <n-modal title="编辑Provider"> </n-modal>
+  <n-modal title="编辑Modal">
+    <n-form label-placement="left">
+      <n-form-item label="名称">
+        <n-input></n-input>
+      </n-form-item>
+      <n-form-item label="模型名">
+        <n-input></n-input>
+      </n-form-item>
+      <n-form-item label="描述">
+        <n-input></n-input>
+      </n-form-item>
+    </n-form>
   </n-modal>
 </template>
 

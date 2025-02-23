@@ -140,6 +140,12 @@ export class Api {
     return providers
   }
 
+  async deleteProvider(id: number) {
+    await this.request('deleteProvider', {
+      providerId: id,
+    })
+  }
+
   async getPresets() {
     let data: {
       presets: any[]

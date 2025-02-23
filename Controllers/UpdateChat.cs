@@ -6,12 +6,12 @@ namespace LLMRolePlay.Controllers
 {
   public class UpdateChatRequest
   {
-    public required uint chatId;
-    public string? name = null;
-    public string? settings = null;
-    public required uint modelId;
-    public required uint characterId;
-    public required uint presetId;
+    public required uint chatId { get; set; }
+    public string? name { get; set; } = null;
+    public string? settings { get; set; } = null;
+    public uint? modelId { get; set; } = null;
+    public uint? characterId { get; set; } = null;
+    public uint? presetId { get; set; } = null;
   }
   public partial class API : ControllerBase
   {
@@ -28,22 +28,32 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Model? model = await Model.GetModelById(_dBContext, data.modelId);
-      if (model == null) return ApiResponse.MessageOnly(500, "model not found");
+      if (data.modelId != null)
+      {
+        Model? model = await Model.GetModelById(_dBContext, (uint)data.modelId);
+        if (model == null) return ApiResponse.MessageOnly(500, "model not found");
+        if (model.Provider.UserId != user.Id) return ApiResponse.MessageOnly(505, "model not belongs to current user");
+        chat.ModelId = (uint)data.modelId;
+      }
 
-      Character? character = await Character.GetCharacterById(_dBContext, data.characterId);
-      if (character == null) return ApiResponse.MessageOnly(500, "character not found");
+      if (data.characterId != null)
+      {
+        Character? character = await Character.GetCharacterById(_dBContext, (uint)data.characterId);
+        if (character == null) return ApiResponse.MessageOnly(500, "character not found");
+        if (character.UserId != user.Id) return ApiResponse.MessageOnly(505, "character not belongs to current user");
+        chat.CharacterId = (uint)data.characterId;
+      }
 
-      Preset? preset = await Preset.GetPresetById(_dBContext, data.presetId);
-      if (preset == null) return ApiResponse.MessageOnly(500, "preset not found");
-
-      if (preset.UserId != user.Id) return ApiResponse.MessageOnly(505, "chat not belongs to current user");
+      if (data.presetId != null)
+      {
+        Preset? preset = await Preset.GetPresetById(_dBContext, (uint)data.presetId);
+        if (preset == null) return ApiResponse.MessageOnly(500, "preset not found");
+        if (preset.UserId != user.Id) return ApiResponse.MessageOnly(505, "preset not belongs to current user");
+        chat.PresetId = (uint)data.presetId;
+      }
 
       if (data.name != null) chat.Name = data.name;
       if (data.settings != null) chat.Settings = data.settings;
-      chat.Model = model;
-      chat.Character = character;
-      chat.Preset = preset;
 
       chat.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();

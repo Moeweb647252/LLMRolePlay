@@ -8,10 +8,10 @@ namespace LLMRolePlay.Controllers
   {
     public class UpdateModelRequest
     {
-      public required uint modelId;
-      public string? name = null;
-      public string? settings = null;
-      public string? description = null;
+      public required uint modelId { get; set; }
+      public string? name { get; set; } = null;
+      public string? settings { get; set; } = null;
+      public string? description { get; set; } = null;
     }
     [HttpPost("updateModel")]
     [AllowAnonymous]
@@ -24,7 +24,7 @@ namespace LLMRolePlay.Controllers
       if (user == null) return ApiResponse.TokenError();
 
       Model? model = await Model.GetModelById(_dBContext, data.modelId);
-      if(model==null) return ApiResponse.MessageOnly(500, "model not found");
+      if (model == null) return ApiResponse.MessageOnly(500, "model not found");
 
       if (data.name != null) model.Name = data.name;
       if (data.settings != null) model.Settings = data.settings;

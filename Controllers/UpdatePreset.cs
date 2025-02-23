@@ -6,10 +6,10 @@ namespace LLMRolePlay.Controllers
 {
   public class UpdatePresetRequest
   {
-    public required uint presetId;
-    public string? name = null;
-    public string? settings = null;
-    public string? description = null;
+    public required uint presetId { get; set; }
+    public string? name { get; set; } = null;
+    public string? settings { get; set; } = null;
+    public string? description { get; set; } = null;
   }
 
   public partial class API : ControllerBase

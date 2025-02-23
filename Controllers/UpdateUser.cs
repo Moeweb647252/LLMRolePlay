@@ -8,10 +8,10 @@ namespace LLMRolePlay.Controllers
   {
     public class UpdateUserRequest
     {
-      public string? username = null;
-      public string? password = null;
-      public string? email = null;
-      public Group? group = null;
+      public string? username { get; set; } = null;
+      public string? password { get; set; } = null;
+      public string? email { get; set; } = null;
+      public Group? group { get; set; } = null;
     }
 
     [HttpPost("updateUser")]
