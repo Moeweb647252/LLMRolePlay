@@ -18,10 +18,10 @@ namespace LLMRolePlay.Models
     public Model Model { get; set; } = null!;
     [ForeignKey("Model")]
     public uint ModelId { get; set; }
-    public Character Character { get; set; }
+    public Character Character { get; set; } = null!;
     [ForeignKey("Character")]
     public uint CharacterId { get; set; }
-    public Preset Preset { get; set; }
+    public Preset Preset { get; set; } = null!;
     [ForeignKey("Preset")]
     public uint PresetId { get; set; }
     public ICollection<Message> Messages { get; private set; } = new List<Message>();

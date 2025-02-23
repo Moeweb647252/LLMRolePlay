@@ -29,9 +29,7 @@ namespace LLMRolePlay.Controllers
 
       if (provider.UserId != user.Id) return ApiResponse.MessageOnly(502, "provider not belongs to this user");
 
-      Model model = await Model.CreateModel(_dBContext, data.name, data.modelName, data.settings, data.description);
-      provider.Models.Add(model);
-      provider.MarkAsModified(_dBContext);
+      Model model = await Model.CreateModel(_dBContext, data.name, data.modelName, data.settings, data.description, provider.Id);
       await _dBContext.SaveChangesAsync();
       return ApiResponse.Success(new
       {

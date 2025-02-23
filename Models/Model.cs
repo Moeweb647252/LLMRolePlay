@@ -20,16 +20,17 @@ namespace LLMRolePlay.Models
     public Provider Provider { get; set; } = null!;
     [ForeignKey("Provider")]
     public uint ProviderId { get; set; }
-    public Model(string name, string modelName, string settings, string description = "")
+    public Model(string name, string modelName, string settings, uint providerId, string description = "")
     {
       Name = name;
       Settings = settings;
       Description = description;
       ModelName = modelName;
+      ProviderId = providerId;
     }
-    public static async Task<Model> CreateModel(DBContext db, string name, string settings, string description, string modelName)
+    public static async Task<Model> CreateModel(DBContext db, string name, string settings, string description, string modelName, uint providerId)
     {
-      Model model = new Model(name, modelName, settings, description);
+      Model model = new Model(name, modelName, settings, providerId, description);
       await db.Models.AddAsync(model);
       await db.SaveChangesAsync();
       return model;

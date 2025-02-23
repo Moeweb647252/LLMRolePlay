@@ -117,21 +117,21 @@ export class Api {
     } = await this.request('getProviders', {})
     let providers = data.providers.map((provider) => {
       let ret = {
-        id: provider.Id,
-        name: provider.Name,
-        url: provider.Url,
-        apiKey: provider.ApiKey,
-        description: provider.Description,
-        settings: provider.Settings,
-        type: provider.Type,
+        id: provider.id,
+        name: provider.name,
+        url: provider.url,
+        apiKey: provider.apiKey,
+        description: provider.description,
+        settings: provider.settings,
+        type: provider.type,
         models: [],
       }
-      ret.models = provider.Models.map((model: any) => {
+      ret.models = provider.models.map((model: any) => {
         return {
-          id: model.Id,
-          name: model.Name,
-          modelName: model.ModelName,
-          description: model.Description,
+          id: model.id,
+          name: model.name,
+          modelName: model.modelName,
+          description: model.description,
           provider: ret,
         }
       })
@@ -147,10 +147,10 @@ export class Api {
     console.log(data)
     return data.presets.map((preset) => {
       return {
-        id: preset.Id,
-        name: preset.Name,
-        description: preset.Description,
-        settings: preset.Settings,
+        id: preset.id,
+        name: preset.name,
+        description: preset.description,
+        settings: preset.settings,
       }
     })
   }
