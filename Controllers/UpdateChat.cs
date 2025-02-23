@@ -37,7 +37,7 @@ namespace LLMRolePlay.Controllers
       Preset? preset = await Preset.GetPresetById(_dBContext, data.presetId);
       if (preset == null) return ApiResponse.MessageOnly(500, "preset not found");
 
-      if (!user.Chats.Contains(chat)) return ApiResponse.MessageOnly(505, "chat not belongs to current user");
+      if (preset.UserId != user.Id) return ApiResponse.MessageOnly(505, "chat not belongs to current user");
 
       if (data.name != null) chat.Name = data.name;
       if (data.settings != null) chat.Settings = data.settings;

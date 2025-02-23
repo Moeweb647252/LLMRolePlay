@@ -26,7 +26,7 @@ namespace LLMRolePlay.Controllers
       Character? character = await Character.GetCharacterById(_dBContext, data.characterId);
       if (character == null) return ApiResponse.MessageOnly(500, "character not found");
 
-      if (!user.Characters.Contains(character)) return ApiResponse.MessageOnly(505, "character not belongs to current user");
+      if (character.UserId != user.Id) return ApiResponse.MessageOnly(505, "character not belongs to current user");
 
       if (data.name != null) character.Name = data.name;
       if (data.settings != null) character.Settings = data.settings;

@@ -27,7 +27,7 @@ namespace LLMRolePlay.Controllers
       Preset? preset = await Preset.GetPresetById(_dBContext, data.presetId);
       if (preset == null) return ApiResponse.MessageOnly(500, "preset not found");
 
-      if (!user.Presets.Contains(preset)) return ApiResponse.MessageOnly(505, "preset not belongs to current user");
+      if (preset.UserId != user.Id) return ApiResponse.MessageOnly(505, "preset not belongs to current user");
 
       if (data.name != null) preset.Name = data.name;
       if (data.settings != null) preset.Settings = data.settings;

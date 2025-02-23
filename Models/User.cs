@@ -19,10 +19,6 @@ namespace LLMRolePlay.Models
     public string Password { get; set; }
     public string? Token { get; private set; }
     public Group Group { get; set; }
-    public List<Chat> Chats { get; private set; } = new List<Chat>();
-    public List<Character> Characters { get; private set; } = new List<Character>();
-    public List<Preset> Presets { get; private set; } = new List<Preset>();
-    public List<Provider> Providers { get; private set; } = new List<Provider>();
 
     public User(string userName, string email, string password, Group group)
     {

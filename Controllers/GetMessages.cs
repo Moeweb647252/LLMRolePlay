@@ -19,7 +19,7 @@ namespace LLMRolePlay.Controllers
       Chat? chat = await Chat.GetChatById(_dBContext, chatId);
       if (chat == null) return ApiResponse.TokenError();
 
-      if (!user.Chats.Contains(chat)) return ApiResponse.MessageOnly(500, "chat not belongs to this user");
+      if (chat.UserId != user.Id) return ApiResponse.MessageOnly(500, "chat not belongs to this user");
       return ApiResponse.Success(chat.Messages);
     }
   }

@@ -1,6 +1,7 @@
 using LLMRolePlay.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LLMRolePlay.Controllers
 {
@@ -18,7 +19,7 @@ namespace LLMRolePlay.Controllers
 
       return ApiResponse.Success(new
       {
-        chats = user.Chats.Select(chat => new GetChatResult(
+        chats = (await _dBContext.Chats.Where(c => c.UserId == user.Id).ToListAsync()).Select(chat => new GetChatResult(
           chat.Id,
           chat.Name,
           chat.Settings,

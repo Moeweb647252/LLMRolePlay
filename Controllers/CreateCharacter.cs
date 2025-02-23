@@ -22,8 +22,7 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Character character = await Character.CreateCharacter(_dBContext, data.name, data.settings, data.description);
-      user.Characters.Add(character);
+      Character character = await Character.CreateCharacter(_dBContext, data.name, data.settings, data.description, user.Id);
       user.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();
       return ApiResponse.Success(new

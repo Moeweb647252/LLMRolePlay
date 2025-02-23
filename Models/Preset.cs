@@ -16,11 +16,13 @@ namespace LLMRolePlay.Models
     public string Name { get; set; }
     public string Settings { get; set; }
     public string Description { get; set; }
-    public Preset(string name,string settings,string description="")
+    public uint UserId { get; set; }
+    public Preset(string name, string settings, uint userId, string description = "")
     {
       Name = name;
       Settings = settings;
       Description = description;
+      UserId = userId;
     }
     /// <summary>
     /// 不会自动绑定到用户。Do not bind to user automically.
@@ -30,14 +32,14 @@ namespace LLMRolePlay.Models
     /// <param name="settings"></param>
     /// <param name="description"></param>
     /// <returns></returns>
-    public static async Task<Preset> CreatePreset(DBContext db,string name,string settings,string description)
+    public static async Task<Preset> CreatePreset(DBContext db, string name, string settings, string description, uint userId)
     {
-      Preset preset = new Preset(name, settings, description);
+      Preset preset = new Preset(name, settings, userId, description);
       await db.Presets.AddAsync(preset);
       await db.SaveChangesAsync();
       return preset;
     }
-    public static async Task<Preset?> GetPresetById(DBContext db,uint id)
+    public static async Task<Preset?> GetPresetById(DBContext db, uint id)
     {
       return await db.Presets.FindAsync(id);
     }

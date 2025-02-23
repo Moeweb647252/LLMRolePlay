@@ -27,7 +27,7 @@ namespace LLMRolePlay.Controllers
       Provider? provider = await Provider.GetProviderById(_dBContext, data.providerId);
       if (provider == null) return ApiResponse.TokenError();
 
-      if (!user.Providers.Contains(provider)) return ApiResponse.MessageOnly(502, "provider not belongs to this user");
+      if (provider.UserId != user.Id) return ApiResponse.MessageOnly(502, "provider not belongs to this user");
 
       Model model = await Model.CreateModel(_dBContext, data.name, data.modelName, data.settings, data.description);
       provider.Models.Add(model);

@@ -23,9 +23,7 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Preset preset = await Preset.CreatePreset(_dBContext, data.name, data.settings, data.description);
-      user.Presets.Add(preset);
-      user.MarkAsModified(_dBContext);
+      Preset preset = await Preset.CreatePreset(_dBContext, data.name, data.settings, data.description, user.Id);
       await _dBContext.SaveChangesAsync();
       return ApiResponse.Success(new
       {

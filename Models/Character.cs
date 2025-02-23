@@ -16,11 +16,13 @@ namespace LLMRolePlay.Models
     public string Name { get; set; }
     public string Settings { get; set; }
     public string Description { get; set; }
-    public Character(string name, string settings, string description = "")
+    public uint UserId { get; set; }
+    public Character(string name, string settings, uint userId, string description = "")
     {
       Name = name;
       Description = description;
       Settings = settings;
+      UserId = userId;
     }
     /// <summary>
     /// 不会自动绑定到用户。Do not bind to user automically.
@@ -29,15 +31,16 @@ namespace LLMRolePlay.Models
     /// <param name="name"></param>
     /// <param name="settings"></param>
     /// <param name="description"></param>
+    /// <param name="userId"></param>
     /// <returns></returns>
-    public static async Task<Character> CreateCharacter(DBContext db, string name, string settings, string description)
+    public static async Task<Character> CreateCharacter(DBContext db, string name, string settings, string description, uint userId)
     {
-      Character character = new Character(name, settings, description);
+      Character character = new Character(name, settings, userId, description);
       await db.Characters.AddAsync(character);
       await db.SaveChangesAsync();
       return character;
     }
-    public static async Task<Character?> GetCharacterById(DBContext db,uint id)
+    public static async Task<Character?> GetCharacterById(DBContext db, uint id)
     {
       return await db.Characters.FindAsync(id);
     }

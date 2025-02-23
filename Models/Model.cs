@@ -17,6 +17,9 @@ namespace LLMRolePlay.Models
     public string ModelName { get; set; }
     public string Settings { get; set; }
     public string Description { get; set; }
+    public Provider Provider { get; set; } = null!;
+    [ForeignKey("Provider")]
+    public uint ProviderId { get; set; }
     public Model(string name, string modelName, string settings, string description = "")
     {
       Name = name;

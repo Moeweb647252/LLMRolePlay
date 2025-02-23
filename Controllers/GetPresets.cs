@@ -1,6 +1,7 @@
 using LLMRolePlay.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LLMRolePlay.Controllers
 {
@@ -18,7 +19,7 @@ namespace LLMRolePlay.Controllers
 
       return ApiResponse.Success(new
       {
-        presets = user.Presets
+        presets = await _dBContext.Presets.Where(preset => preset.UserId == user.Id).ToListAsync()
       });
     }
   }

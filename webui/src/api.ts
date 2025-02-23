@@ -3,7 +3,7 @@ import { useSettingsStore } from './stores/settings'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
-class NoTokenError extends Error {
+export class NoTokenError extends Error {
   constructor() {
     super('No token found')
   }
@@ -33,8 +33,7 @@ export class Api {
     }
     let data = response.data
     if (data.code == 501) {
-      router.push('/login')
-      return {}
+      throw new NoTokenError()
     } else if (data.code != 200) {
       throw new Error(data.msg)
     }
@@ -57,6 +56,15 @@ export class Api {
 
   async logout() {
     this.store!.user = null
+  }
+
+  async addCharacter(name: string, description: string, settings: object) {
+    let data = await this.request('createCharacter', {
+      name: name,
+      description: description,
+      settings: JSON.stringify(settings),
+    })
+    return data.id
   }
 
   async addPreset(name: string, description: string, settings: object) {

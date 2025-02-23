@@ -26,9 +26,7 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Provider provider = await Provider.CreateProvider(_dBContext, data.name, data.type, data.settings, data.baseUrl, data.apiKey, data.description);
-      user.Providers.Add(provider);
-      user.MarkAsModified(_dBContext);
+      Provider provider = await Provider.CreateProvider(_dBContext, data.name, data.type, data.settings, data.baseUrl, data.apiKey, data.description, user.Id);
       await _dBContext.SaveChangesAsync();
       return ApiResponse.Success(new
       {

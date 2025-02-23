@@ -16,14 +16,17 @@ namespace LLMRolePlay.Models
     public string Role { get; set; }
     public string Content { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public Message(string role,string content)
+    public Chat Chat { get; set; } = null!;
+    [ForeignKey("Chat")]
+    public uint ChatId { get; set; }
+    public Message(string role, string content, uint chatId)
     {
       Role = role;
       Content = content;
     }
-    public static async Task<Message> CreateMessage(DBContext db, string role, string content)
+    public static async Task<Message> CreateMessage(DBContext db, string role, string content, uint chatId)
     {
-      Message message = new Message(role, content);
+      Message message = new Message(role, content, chatId);
       await db.Messages.AddAsync(message);
       await db.SaveChangesAsync();
       return message;

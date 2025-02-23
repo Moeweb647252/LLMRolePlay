@@ -15,10 +15,10 @@ namespace LLMRolePlay.Controllers
 
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
-
+      var providers = _dBContext.Providers.Where(provider => provider.UserId == user.Id).ToList();
       return ApiResponse.Success(new
       {
-        providers = user.Providers
+        providers = providers
       });
     }
   }

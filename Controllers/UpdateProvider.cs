@@ -27,9 +27,9 @@ namespace LLMRolePlay.Controllers
 
 
       Provider? provider = await Provider.GetProviderById(_dBContext, data.providerId);
-      if(provider==null) return ApiResponse.MessageOnly(500, "provider not found");
+      if (provider == null) return ApiResponse.MessageOnly(500, "provider not found");
 
-      if (!user.Providers.Contains(provider)) return ApiResponse.MessageOnly(505, "provider not belongs to current user");
+      if (provider.UserId != user.Id) return ApiResponse.MessageOnly(505, "provider not belongs to current user");
 
       if (data.name != null) provider.Name = data.name;
       if (data.type != null) provider.Type = data.type;

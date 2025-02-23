@@ -19,8 +19,9 @@ namespace LLMRolePlay.Models
     public string ApiKey { get; set; }
     public string Settings { get; set; }
     public string Description { get; set; }
-    public List<Model> Models { get; private set; } = new List<Model>();
-    public Provider(string name, string type, string settings, string baseUrl, string apiKey, string description = "")
+    public ICollection<Model> Models { get; } = new List<Model>();
+    public uint UserId { get; set; }
+    public Provider(string name, string type, string settings, string baseUrl, string apiKey, uint userId, string description = "")
     {
       Name = name;
       Type = type;
@@ -28,6 +29,7 @@ namespace LLMRolePlay.Models
       Description = description;
       BaseUrl = baseUrl;
       ApiKey = apiKey;
+      UserId = userId;
     }
     /// <summary>
     /// 不会自动绑定到用户。Do not bind to user automically.
@@ -36,11 +38,14 @@ namespace LLMRolePlay.Models
     /// <param name="name"></param>
     /// <param name="type"></param>
     /// <param name="settings"></param>
+    /// <param name="baseUrl"></param>
+    /// <param name="apiKey"></param>
     /// <param name="description"></param>
+    /// <param name="userId"></param>
     /// <returns></returns>
-    public static async Task<Provider> CreateProvider(DBContext db, string name, string type, string settings, string baseUrl, string apiKey, string description)
+    public static async Task<Provider> CreateProvider(DBContext db, string name, string type, string settings, string baseUrl, string apiKey, string description, uint userId)
     {
-      Provider provider = new Provider(name, type, settings, baseUrl, apiKey, description);
+      Provider provider = new Provider(name, type, settings, baseUrl, apiKey, userId, description);
       await db.Providers.AddAsync(provider);
       await db.SaveChangesAsync();
       return provider;
