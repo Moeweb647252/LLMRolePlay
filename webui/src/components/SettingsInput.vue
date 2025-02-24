@@ -48,7 +48,7 @@ const cancel = () => {
   </div>
   <div v-else>
     <n-space :wrap="false" align="center">
-      {{ value }}
+      {{ options?.find((o) => o.value == value)?.label || value }}
       <n-button quaternary circle @click="startEditing">
         <template #icon>
           <n-icon>

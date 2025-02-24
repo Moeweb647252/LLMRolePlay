@@ -49,7 +49,7 @@ export class Api {
       email: resp.email,
       username: resp.username,
       id: resp.id,
-      group: resp.group,
+      group: resp.group.toString(),
       token: resp.token,
     }
   }
@@ -65,6 +65,40 @@ export class Api {
       settings: JSON.stringify(settings),
     })
     return data.id
+  }
+
+  async getCharacters() {
+    let data: {
+      characters: any[]
+    } = await this.request('getCharacters', {})
+    return data.characters.map((character) => {
+      return {
+        id: character.id,
+        name: character.name,
+        description: character.description,
+        settings: JSON.parse(character.settings),
+      }
+    })
+  }
+
+  async deleteCharacter(id: number) {
+    await this.request('deleteCharacter', {
+      characterId: id,
+    })
+  }
+
+  async updateCharacter(
+    id: number,
+    name: string | null = null,
+    description: string | null = null,
+    settings: object | null = null,
+  ) {
+    await this.request('updateCharacter', {
+      characterId: id,
+      name: name,
+      description: description,
+      settings: settings != null ? JSON.stringify(settings) : null,
+    })
   }
 
   async addPreset(name: string, description: string, settings: object) {
@@ -109,23 +143,6 @@ export class Api {
       description: description,
       settings: settings != null ? JSON.stringify(settings) : null,
     })
-  }
-
-  async addModel(
-    name: string,
-    modelName: string,
-    description: string,
-    providerId: number,
-    settings: object,
-  ) {
-    let data = await this.request('createModel', {
-      name: name,
-      modelName: modelName,
-      description: description,
-      providerId: providerId,
-      settings: JSON.stringify(settings),
-    })
-    return data.id
   }
 
   async addProvider(
@@ -200,6 +217,69 @@ export class Api {
       type: type,
       settings: settings != null ? JSON.stringify(settings) : null,
     })
+  }
+
+  async addModel(
+    name: string,
+    modelName: string,
+    description: string,
+    providerId: number,
+    settings: object,
+  ) {
+    let data = await this.request('createModel', {
+      name: name,
+      modelName: modelName,
+      description: description,
+      providerId: providerId,
+      settings: JSON.stringify(settings),
+    })
+    return data.id
+  }
+
+  async deleteModel(id: number) {
+    await this.request('deleteModel', {
+      modelId: id,
+    })
+  }
+
+  async getUsers() {
+    let data: {
+      users: any[]
+    } = await this.request('getUsers', {})
+    data.users.forEach((user) => {
+      user.group = user.group.toString()
+    })
+    return data.users
+  }
+
+  async deleteUser(id: number) {
+    await this.request('deleteUser', {
+      userId: id,
+    })
+  }
+
+  async updateUser(
+    id: number,
+    username: string | null = null,
+    email: string | null = null,
+    group: number | null,
+  ) {
+    await this.request('updateUser', {
+      userId: id,
+      username: username,
+      email: email,
+      group: group,
+    })
+  }
+
+  async addUser(username: string, email: string, password: string, group: string) {
+    let data = await this.request('createUser', {
+      username: username,
+      email: email,
+      password: sha256(password),
+      group: parseInt(group),
+    })
+    return data.id
   }
 }
 

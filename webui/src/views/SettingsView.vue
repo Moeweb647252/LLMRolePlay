@@ -1,11 +1,17 @@
 <script setup lang="ts">
+import { useSettingsStore } from '@/stores/settings'
+
+const settings = useSettingsStore()
+
 const links = [
-  { name: '返回', path: '/' },
-  { name: '通用', path: '/main/settings/general' },
-  { name: '用户', path: '/main/settings/user' },
-  { name: '角色', path: '/main/settings/character' },
-  { name: '预设', path: '/main/settings/preset' },
-  { name: 'Provider', path: '/main/settings/provider' },
+  ...[
+    { name: '返回', path: '/' },
+    { name: '通用', path: '/main/settings/general' },
+    { name: '角色', path: '/main/settings/character' },
+    { name: '预设', path: '/main/settings/preset' },
+    { name: 'Provider', path: '/main/settings/provider' },
+  ],
+  ...(settings.user?.group == '2' ? [{ name: '用户', path: '/main/settings/user' }] : []),
 ]
 </script>
 

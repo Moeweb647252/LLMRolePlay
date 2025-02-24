@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { api } from '@/api'
-import { useCharacterStore } from '@/stores/characters'
-import { useMessage } from 'naive-ui'
+import { useCharacterStore, type Character } from '@/stores/characters'
+import { useMessage, useModal } from 'naive-ui'
 import { ref } from 'vue'
 import SettingsInput from '../SettingsInput.vue'
 
 const characters = useCharacterStore().characters
 const message = useMessage()
+const model = useModal()
 
 const addCharacterForm = ref({
   visible: false,
@@ -44,38 +45,52 @@ const cancelAddCharacter = () => {
 
 const editCharacterForm = ref({
   visible: false,
-  name: '',
-  description: '',
-  settings: [],
+  character: null as Character | null,
 })
 
-const editCharacter = async () => {}
-
-const cancelEditCharacter = () => {
+const editCharacter = (character: Character) => {
   editCharacterForm.value = {
-    name: '',
-    description: '',
-    settings: [],
-    visible: false,
+    visible: true,
+    character,
   }
+}
+
+const deleteCharacter = async (character: Character) => {
+  await api.deleteCharacter(character.id)
+  characters.splice(characters.indexOf(character), 1)
+  message.success('删除成功')
+  model.create({
+    title: '删除角色',
+    content: `确定删除角色 ${character.name} ?`,
+    preset: 'dialog',
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      try {
+        await api.deleteCharacter(character.id)
+        characters.splice(characters.indexOf(character), 1)
+        message.success('删除成功')
+      } catch (e) {
+        message.error('删除失败')
+      }
+    },
+  })
 }
 </script>
 <template>
   <div style="padding: 2em">
     <div class="header">
       <h3>角色</h3>
-      <n-space>
-        <n-button type="primary" @click="addCharacterForm.visible = true">添加</n-button>
-      </n-space>
+      <n-button type="primary" @click="addCharacterForm.visible = true">添加</n-button>
     </div>
     <div>
       <n-list>
         <n-list-item v-for="character in characters" :key="character.id">
-          <n-thing :title="character.name" :description="character.description"></n-thing>
+          {{ character.name }}
           <template #suffix>
             <n-space :wrap="false">
-              <n-button type="primary">编辑</n-button>
-              <n-button type="error">删除</n-button>
+              <n-button type="primary" @click="editCharacter(character)">编辑</n-button>
+              <n-button type="error" @click="deleteCharacter(character)">删除</n-button>
             </n-space>
           </template>
         </n-list-item>
@@ -84,9 +99,10 @@ const cancelEditCharacter = () => {
   </div>
   <n-modal
     title="添加角色"
-    v-modal:show="addCharacterForm.visible"
+    size="medium"
+    v-model:show="addCharacterForm.visible"
     preset="card"
-    style="height: fit-content; min-height: 25em"
+    style="width: fit-content; min-width: 25em"
   >
     <n-form label-placement="left">
       <n-form-item label="名称">
@@ -98,7 +114,7 @@ const cancelEditCharacter = () => {
       <n-form-item label="设置">
         <n-dynamic-input
           v-model:value="addCharacterForm.settings"
-          preset="pair"
+          character="pair"
           key-placeholder="设置名"
           value-placeholder="值"
         />
@@ -106,34 +122,61 @@ const cancelEditCharacter = () => {
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button type="primary" @click="addCharacter">添加</n-button>
         <n-button @click="cancelAddCharacter">取消</n-button>
+        <n-button type="primary" @click="addCharacter">保存</n-button>
       </n-space>
     </template>
   </n-modal>
-  <n-modal v-model:show="editCharacterForm.visible" title="编辑角色" preset="card">
+  <n-modal
+    title="编辑角色"
+    size="medium"
+    v-model:show="editCharacterForm.visible"
+    preset="card"
+    style="width: fit-content; min-width: 25em"
+  >
     <n-form label-placement="left">
       <n-form-item label="名称">
-        <SettingsInput v-model:value="editCharacterForm.name" />
+        <SettingsInput
+          :value="editCharacterForm.character!.name"
+          @confirm="
+            async () =>
+              await api.updateCharacter(
+                editCharacterForm.character!.id,
+                editCharacterForm.character!.name,
+              )
+          "
+        ></SettingsInput>
       </n-form-item>
       <n-form-item label="描述">
-        <SettingsInput v-model:value="editCharacterForm.description" />
+        <SettingsInput
+          :value="editCharacterForm.character!.description"
+          @confirm="
+            async () =>
+              await api.updateCharacter(
+                editCharacterForm.character!.id,
+                undefined,
+                editCharacterForm.character!.description,
+              )
+          "
+        ></SettingsInput>
       </n-form-item>
       <n-form-item label="设置">
-        <n-dynamic-input
-          v-model:value="editCharacterForm.settings"
-          preset="pair"
-          key-placeholder="设置名"
-          value-placeholder="值"
-        />
-        <n-button type="primary">确定</n-button>
+        <SettingsDynamicInput
+          :value="editCharacterForm.character!.settings"
+          @confirm="
+            async (settings: any) => {
+              await api.updateCharacter(
+                editCharacterForm.character!.id,
+                undefined,
+                undefined,
+                settings,
+              )
+              editCharacterForm.character!.settings = settings
+            }
+          "
+        ></SettingsDynamicInput>
       </n-form-item>
     </n-form>
-    <template #footer>
-      <n-space justify="end">
-        <n-button type="primary" @click="editCharacter">确定</n-button>
-      </n-space>
-    </template>
   </n-modal>
 </template>
 
@@ -142,5 +185,6 @@ const cancelEditCharacter = () => {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1em;
 }
 </style>
