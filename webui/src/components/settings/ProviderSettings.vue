@@ -395,13 +395,13 @@ const editProviderAddModel = () => {
   <n-modal title="编辑Modal">
     <n-form label-placement="left">
       <n-form-item label="名称">
-        <n-input></n-input>
+        <SettingsInput v-model:value="addModelForm.name" />
       </n-form-item>
       <n-form-item label="模型名">
-        <n-input></n-input>
+        <SettingsInput v-model:value="addModelForm.modelName" />
       </n-form-item>
       <n-form-item label="描述">
-        <n-input></n-input>
+        <SettingsInput v-model:value="addModelForm.description" />
       </n-form-item>
     </n-form>
   </n-modal>

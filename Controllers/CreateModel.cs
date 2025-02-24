@@ -13,6 +13,7 @@ namespace LLMRolePlay.Controllers
       public required string modelName { get; set; }
       public required string settings { get; set; }
       public required string description { get; set; }
+      public required bool isPublic { get; set; }
     }
     [HttpPost("createModel")]
     [AllowAnonymous]
@@ -29,7 +30,7 @@ namespace LLMRolePlay.Controllers
 
       if (provider.UserId != user.Id) return ApiResponse.MessageOnly(502, "provider not belongs to this user");
 
-      Model model = await Model.CreateModel(_dBContext, data.name, data.modelName, data.settings, data.description, provider.Id);
+      Model model = await Model.CreateModel(_dBContext, data.name, data.modelName, data.settings, data.description, provider.Id, data.isPublic);
       await _dBContext.SaveChangesAsync();
       return ApiResponse.Success(new
       {

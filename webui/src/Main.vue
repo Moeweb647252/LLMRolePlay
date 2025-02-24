@@ -18,6 +18,8 @@ const characters = useCharacterStore()
 try {
   presets.set(await api.getPresets())
   providers.set(await api.getProviders())
+  chats.set(await api.getChats())
+  characters.set(await api.getCharacters())
 } catch (e) {
   if (e instanceof NoTokenError) {
     router.push('/login')

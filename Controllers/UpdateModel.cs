@@ -12,6 +12,7 @@ namespace LLMRolePlay.Controllers
       public string? name { get; set; } = null;
       public string? settings { get; set; } = null;
       public string? description { get; set; } = null;
+      public bool? isPublic { get; set; } = null;
     }
     [HttpPost("updateModel")]
     [AllowAnonymous]
@@ -29,6 +30,7 @@ namespace LLMRolePlay.Controllers
       if (data.name != null) model.Name = data.name;
       if (data.settings != null) model.Settings = data.settings;
       if (data.description != null) model.Description = data.description;
+      if (data.isPublic != null) model.IsPublic = data.isPublic.Value;
 
       model.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();

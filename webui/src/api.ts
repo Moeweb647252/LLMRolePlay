@@ -232,6 +232,7 @@ export class Api {
       description: description,
       providerId: providerId,
       settings: JSON.stringify(settings),
+      isPrivate: false,
     })
     return data.id
   }
@@ -239,6 +240,24 @@ export class Api {
   async deleteModel(id: number) {
     await this.request('deleteModel', {
       modelId: id,
+    })
+  }
+
+  async updateModel(
+    id: number,
+    name: string | null = null,
+    modelName: string | null = null,
+    description: string | null = null,
+    settings: object | null = null,
+    isPrivate: boolean | null = null,
+  ) {
+    await this.request('updateModel', {
+      modelId: id,
+      name: name,
+      modelName: modelName,
+      description: description,
+      settings: settings != null ? JSON.stringify(settings) : null,
+      isPrivate: isPrivate,
     })
   }
 
@@ -280,6 +299,13 @@ export class Api {
       group: parseInt(group),
     })
     return data.id
+  }
+
+  async getChats() {
+    let data: {
+      chats: any[]
+    } = await this.request('getChats', {})
+    return data.chats
   }
 }
 

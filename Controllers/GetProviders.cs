@@ -34,7 +34,8 @@ namespace LLMRolePlay.Controllers
             name = model.Name,
             modelName = model.ModelName,
             settings = model.Settings,
-            description = model.Description
+            description = model.Description,
+            isPublic = model.IsPublic
           })
         })
       });
