@@ -19,26 +19,20 @@ namespace LLMRolePlay.Controllers
 
       return ApiResponse.Success(new
       {
-        chats = (await _dBContext.Chats.Where(c => c.UserId == user.Id).ToListAsync()).Select(chat => new GetChatResult(
-          chat.Id,
-          chat.Name,
-          chat.Settings,
-          chat.Model,
-          chat.Character,
-          chat.Preset,
-          chat.Messages.Count
-        ))
+        chats = (await _dBContext.Chats.Include(c => c.Participants).Where(c => c.UserId == user.Id).ToListAsync()).Select(chat => new
+        {
+          id = chat.Id,
+          name = chat.Name,
+          settings = chat.Settings,
+          participants = chat.Participants.Select(participant => new
+          {
+            id = participant.Id,
+            model = participant.Model,
+            preset = participant.Preset,
+            character = participant.Character
+          })
+        })
       });
-    }
-    public class GetChatResult(uint id, string name, string settings, Model model, Character character, Preset preset, int messageCount)
-    {
-      public uint Id { get; set; } = id;
-      public string Name { get; set; } = name;
-      public string Settings { get; set; } = settings;
-      public Model Model { get; set; } = model;
-      public Character Character { get; set; } = character;
-      public Preset Preset { get; set; } = preset;
-      public int MessageCount { get; set; } = messageCount;
     }
   }
 }

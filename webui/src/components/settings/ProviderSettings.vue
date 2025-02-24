@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { useProviderStore, type Model } from '@/stores/providers'
+import { useProviderStore, type Model, type Provider } from '@/stores/providers'
 import { h, ref } from 'vue'
 import { MdAdd } from '@vicons/ionicons4'
 import { NTag, useMessage, useModal } from 'naive-ui'
 import { api } from '@/api'
+import SettingsInput from '../SettingsInput.vue'
 
 const providers = useProviderStore().providers
 const messgae = useMessage()
@@ -32,7 +33,7 @@ const addProviderForm = ref({
   type: 'openai' as 'openai' | 'google' | 'azure',
 })
 
-const renderProviderTag = (model: Model, index: number) => {
+const renderProviderModelsTag = (model: Model, index: number) => {
   return h(
     NTag,
     {
@@ -94,6 +95,7 @@ const addModelConfirm = () => {
     settings: addModelForm.value.settings,
   }
   addModelForm.value.onAdd!(data)
+  addModelForm.value.visible = false
 }
 
 const addModelForm = ref({
@@ -136,6 +138,7 @@ const addProvider = async () => {
         providerId,
         model.settings,
       )
+      console.log(id)
       model.id = id
       models.push(model)
     }
@@ -164,9 +167,36 @@ const addProvider = async () => {
 
 const editProviderForm = ref({
   visible: false,
-  name: '',
-  description: '',
+  provider: null as Provider | null,
 })
+
+const startEditProvider = (provider: any) => {
+  editProviderForm.value = {
+    visible: true,
+    provider: provider,
+  }
+}
+
+const editProviderAddModel = () => {
+  addModelForm.value = {
+    visible: true,
+    name: '',
+    modelName: '',
+    description: '',
+    settings: [],
+    onAdd: async (model: any) => {
+      let id = await api.addModel(
+        model.name,
+        model.modelName,
+        model.description,
+        editProviderForm.value.provider!.id,
+        model.settings,
+      )
+      model.id = id
+      editProviderForm.value.provider!.models.push(model)
+    },
+  }
+}
 </script>
 <template>
   <div style="padding: 2em">
@@ -186,7 +216,7 @@ const editProviderForm = ref({
 
           <template #suffix>
             <n-space :wrap="false">
-              <n-button type="primary">编辑</n-button>
+              <n-button type="primary" @click="startEditProvider(provider)">编辑</n-button>
               <n-button type="error" @click="deleteProvider(provider)">删除</n-button>
             </n-space>
           </template>
@@ -217,7 +247,7 @@ const editProviderForm = ref({
       <n-form-item label="API Key">
         <n-input v-model:value="addProviderForm.apiKey"></n-input>
       </n-form-item>
-      <n-dynamic-tags v-model:value="addProviderForm.models" :render-tag="renderProviderTag">
+      <n-dynamic-tags v-model:value="addProviderForm.models" :render-tag="renderProviderModelsTag">
         <template #trigger>
           <n-button size="small" type="primary" dashed @click="addProviderAddModel">
             <template #icon>
@@ -262,7 +292,106 @@ const editProviderForm = ref({
       </n-space>
     </template>
   </n-modal>
-  <n-modal title="编辑Provider"> </n-modal>
+  <n-modal
+    title="编辑Provider"
+    v-model:show="editProviderForm.visible"
+    preset="card"
+    size="medium"
+    style="width: fit-content; min-width: 25em"
+  >
+    <n-form label-placement="left">
+      <n-form-item label="类型">
+        <SettingsInput
+          v-model:value="editProviderForm.provider!.type"
+          @confirm="
+            async () =>
+              await api.updateProvider(
+                editProviderForm.provider!.id,
+                null,
+                null,
+                null,
+                null,
+                editProviderForm.provider!.type,
+              )
+          "
+          type="select"
+          :options="providerTypeOptions"
+        >
+        </SettingsInput>
+      </n-form-item>
+      <n-form-item label="名称">
+        <SettingsInput
+          v-model:value="editProviderForm.provider!.name"
+          @confirm="
+            async () =>
+              await api.updateProvider(
+                editProviderForm.provider!.id,
+                editProviderForm.provider!.name,
+              )
+          "
+        />
+      </n-form-item>
+      <n-form-item label="描述">
+        <SettingsInput
+          v-model:value="editProviderForm.provider!.description"
+          @confirm="
+            async () =>
+              await api.updateProvider(
+                editProviderForm.provider!.id,
+                null,
+                null,
+                null,
+                editProviderForm.provider!.description,
+              )
+          "
+        />
+      </n-form-item>
+      <n-form-item label="Base URL">
+        <SettingsInput
+          v-model:value="editProviderForm.provider!.url"
+          @confirm="
+            async () =>
+              await api.updateProvider(
+                editProviderForm.provider!.id,
+                null,
+                editProviderForm.provider!.url,
+              )
+          "
+        />
+      </n-form-item>
+      <n-form-item label="API Key">
+        <SettingsInput
+          v-model:value="editProviderForm.provider!.apiKey"
+          @confirm="
+            async () =>
+              await api.updateProvider(
+                editProviderForm.provider!.id,
+                null,
+                null,
+                editProviderForm.provider!.apiKey,
+              )
+          "
+        />
+      </n-form-item>
+      <n-form-item label="模型">
+        <n-dynamic-tags
+          v-model:value="editProviderForm.provider!.models"
+          :render-tag="renderProviderModelsTag"
+        >
+          <template #trigger>
+            <n-button size="small" type="primary" dashed @click="editProviderAddModel">
+              <template #icon>
+                <n-icon>
+                  <MdAdd />
+                </n-icon>
+              </template>
+              添加模型
+            </n-button>
+          </template>
+        </n-dynamic-tags>
+      </n-form-item>
+    </n-form>
+  </n-modal>
   <n-modal title="编辑Modal">
     <n-form label-placement="left">
       <n-form-item label="名称">

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { api } from '@/api'
-import { usePresetStore } from '@/stores/presets'
-import { useMessage } from 'naive-ui'
+import { usePresetStore, type Preset } from '@/stores/presets'
+import { useMessage, useModal } from 'naive-ui'
 import { ref } from 'vue'
+import SettingsInput from '../SettingsInput.vue'
 
 const presets = usePresetStore().presets
 const message = useMessage()
+const model = useModal()
 
 const addPresetForm = ref({
   visible: false,
@@ -40,6 +42,40 @@ const cancelAddPreset = () => {
     visible: false,
   }
 }
+
+const editPresetForm = ref({
+  visible: false,
+  preset: null as Preset | null,
+})
+
+const editPreset = (preset: Preset) => {
+  editPresetForm.value = {
+    visible: true,
+    preset,
+  }
+}
+
+const deletePreset = async (preset: Preset) => {
+  await api.deletePreset(preset.id)
+  presets.splice(presets.indexOf(preset), 1)
+  message.success('删除成功')
+  model.create({
+    title: '删除预设',
+    content: `确定删除预设 ${preset.name} ?`,
+    preset: 'dialog',
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      try {
+        await api.deletePreset(preset.id)
+        presets.splice(presets.indexOf(preset), 1)
+        message.success('删除成功')
+      } catch (e) {
+        message.error('删除失败')
+      }
+    },
+  })
+}
 </script>
 <template>
   <div style="padding: 2em">
@@ -53,8 +89,8 @@ const cancelAddPreset = () => {
           {{ preset.name }}
           <template #suffix>
             <n-space :wrap="false">
-              <n-button type="primary">编辑</n-button>
-              <n-button type="error">删除</n-button>
+              <n-button type="primary" @click="editPreset(preset)">编辑</n-button>
+              <n-button type="error" @click="deletePreset(preset)">删除</n-button>
             </n-space>
           </template>
         </n-list-item>
@@ -90,6 +126,49 @@ const cancelAddPreset = () => {
         <n-button type="primary" @click="addPreset">保存</n-button>
       </n-space>
     </template>
+  </n-modal>
+  <n-modal
+    title="编辑预设"
+    size="medium"
+    v-model:show="editPresetForm.visible"
+    preset="card"
+    style="width: fit-content; min-width: 25em"
+  >
+    <n-form label-placement="left">
+      <n-form-item label="名称">
+        <SettingsInput
+          :value="editPresetForm.preset!.name"
+          @confirm="
+            async () =>
+              await api.updatePreset(editPresetForm.preset!.id, editPresetForm.preset!.name)
+          "
+        ></SettingsInput>
+      </n-form-item>
+      <n-form-item label="描述">
+        <SettingsInput
+          :value="editPresetForm.preset!.description"
+          @confirm="
+            async () =>
+              await api.updatePreset(
+                editPresetForm.preset!.id,
+                undefined,
+                editPresetForm.preset!.description,
+              )
+          "
+        ></SettingsInput>
+      </n-form-item>
+      <n-form-item label="设置">
+        <SettingsDynamicInput
+          :value="editPresetForm.preset!.settings"
+          @confirm="
+            async (settings: any) => {
+              await api.updatePreset(editPresetForm.preset!.id, undefined, undefined, settings)
+              editPresetForm.preset!.settings = settings
+            }
+          "
+        ></SettingsDynamicInput>
+      </n-form-item>
+    </n-form>
   </n-modal>
 </template>
 

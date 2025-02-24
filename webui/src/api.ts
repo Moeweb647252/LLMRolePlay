@@ -76,6 +76,41 @@ export class Api {
     return data.id
   }
 
+  async getPresets() {
+    let data: {
+      presets: any[]
+    } = await this.request('getPresets', {})
+    console.log(data)
+    return data.presets.map((preset) => {
+      return {
+        id: preset.id,
+        name: preset.name,
+        description: preset.description,
+        settings: JSON.parse(preset.settings),
+      }
+    })
+  }
+
+  async deletePreset(id: number) {
+    await this.request('deletePreset', {
+      presetId: id,
+    })
+  }
+
+  async updatePreset(
+    id: number,
+    name: string | null = null,
+    description: string | null = null,
+    settings: object | null = null,
+  ) {
+    await this.request('updatePreset', {
+      presetId: id,
+      name: name,
+      description: description,
+      settings: settings != null ? JSON.stringify(settings) : null,
+    })
+  }
+
   async addModel(
     name: string,
     modelName: string,
@@ -83,13 +118,14 @@ export class Api {
     providerId: number,
     settings: object,
   ) {
-    await this.request('createModel', {
+    let data = await this.request('createModel', {
       name: name,
       modelName: modelName,
       description: description,
       providerId: providerId,
       settings: JSON.stringify(settings),
     })
+    return data.id
   }
 
   async addProvider(
@@ -146,18 +182,23 @@ export class Api {
     })
   }
 
-  async getPresets() {
-    let data: {
-      presets: any[]
-    } = await this.request('getPresets', {})
-    console.log(data)
-    return data.presets.map((preset) => {
-      return {
-        id: preset.id,
-        name: preset.name,
-        description: preset.description,
-        settings: preset.settings,
-      }
+  async updateProvider(
+    id: number,
+    name: string | null = null,
+    url: string | null = null,
+    apiKey: string | null = null,
+    description: string | null = null,
+    type: string | null = null,
+    settings: object | null = null,
+  ) {
+    await this.request('updateProvider', {
+      providerId: id,
+      name: name,
+      baseUrl: url,
+      apiKey: apiKey,
+      description: description,
+      type: type,
+      settings: settings != null ? JSON.stringify(settings) : null,
     })
   }
 }

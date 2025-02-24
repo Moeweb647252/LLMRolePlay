@@ -15,24 +15,14 @@ namespace LLMRolePlay.Models
     public uint Id { get; set; }
     public string Name { get; set; }
     public string Settings { get; set; }
-    public Model Model { get; set; } = null!;
-    [ForeignKey("Model")]
-    public uint ModelId { get; set; }
-    public Character Character { get; set; } = null!;
-    [ForeignKey("Character")]
-    public uint CharacterId { get; set; }
-    public Preset Preset { get; set; } = null!;
-    [ForeignKey("Preset")]
-    public uint PresetId { get; set; }
-    public ICollection<Message> Messages { get; private set; } = new List<Message>();
+
+    public ICollection<Message> Messages { get; } = new List<Message>();
+    public ICollection<Participant> Participants { get; } = new List<Participant>();
     public uint UserId { get; set; }
-    public Chat(string name, string settings, uint modelId, uint characterId, uint presetId, uint userId)
+    public Chat(string name, string settings, uint userId)
     {
       Name = name;
       Settings = settings;
-      ModelId = modelId;
-      CharacterId = characterId;
-      PresetId = presetId;
       UserId = userId;
     }
     /// <summary>
@@ -41,18 +31,11 @@ namespace LLMRolePlay.Models
     /// <param name="db"></param>
     /// <param name="name"></param>
     /// <param name="settings"></param>
-    /// <param name="modelId"></param>
-    /// <param name="characterId"></param>
-    /// <param name="presetId"></param>
     /// <param name="userId"></param>
     /// <returns></returns>
-    public static async Task<Chat?> CreateChat(DBContext db, string name, string settings, uint modelId, uint characterId, uint presetId, uint userId)
+    public static async Task<Chat?> CreateChat(DBContext db, string name, string settings, uint userId)
     {
-      Model? model = await Model.GetModelById(db, modelId);
-      Character? character = await Character.GetCharacterById(db, characterId);
-      Preset? preset = await Preset.GetPresetById(db, presetId);
-      if (model == null || character == null || preset == null) return null;
-      Chat chat = new Chat(name, settings, model.Id, character.Id, preset.Id, userId);
+      Chat chat = new Chat(name, settings, userId);
       await db.Chats.AddAsync(chat);
       await db.SaveChangesAsync();
       return chat;

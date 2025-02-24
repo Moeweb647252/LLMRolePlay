@@ -2,19 +2,13 @@
 import { MdCreate } from '@vicons/ionicons4'
 import { ref } from 'vue'
 
-let editingValue = ref('')
-let editing = ref(false)
-const props = defineProps<{
-  type?: 'text' | 'select'
-  options?: {
-    label: string
-    value: string
-  }[]
-}>()
+type Value = { key: string; value: string }[]
 
-const value = defineModel('value', {
-  type: String,
-  default: '',
+let editingValue = ref<Value>([])
+let editing = ref(false)
+
+const value = defineModel<Value>('value', {
+  default: [],
 })
 
 const emit = defineEmits(['confirm'])
@@ -26,29 +20,34 @@ const startEditing = () => {
 
 const confirm = () => {
   value.value = editingValue.value
-  emit('confirm')
+  emit('confirm', editingValue.value)
   editing.value = false
 }
 
 const cancel = () => {
   editing.value = false
-  editingValue.value = ''
+  editingValue.value = []
 }
 </script>
 
 <template>
   <div v-if="editing">
-    <n-input-group>
-      <n-input v-if="props.type == 'text' || props.type == null" v-model:value="editingValue" />
-      <n-select v-if="props.type == 'select'" v-model:value="editingValue" :options="props.options">
-      </n-select>
-      <n-button @click="confirm">确定</n-button>
-      <n-button @click="cancel">取消</n-button>
-    </n-input-group>
+    <n-dynamic-input
+      v-model:value="editingValue"
+      preset="pair"
+      key-placeholder="设置名"
+      value-placeholder="值"
+    />
+    <n-button @click="confirm">确定</n-button>
+    <n-button @click="cancel">取消</n-button>
   </div>
   <div v-else>
     <n-space :wrap="false" align="center">
-      {{ value }}
+      <n-list>
+        <n-list-item v-for="(item, index) in value" :key="index">
+          {{ item.key }}: {{ item.value }}
+        </n-list-item>
+      </n-list>
       <n-button quaternary circle @click="startEditing">
         <template #icon>
           <n-icon>

@@ -8,9 +8,6 @@ namespace LLMRolePlay.Controllers
   {
     public required string name { get; set; }
     public required string settings { get; set; }
-    public required uint modelId { get; set; }
-    public required uint characterId { get; set; }
-    public required uint presetId { get; set; }
   }
   public partial class API : ControllerBase
   {
@@ -24,7 +21,7 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Chat? chat = await Chat.CreateChat(_dBContext, data.name, data.settings, data.modelId, data.characterId, data.presetId, user.Id);
+      Chat? chat = await Chat.CreateChat(_dBContext, data.name, data.settings, user.Id);
       if (chat == null) return ApiResponse.MessageOnly(502, "Chat creation failed");
       await _dBContext.SaveChangesAsync();
       return ApiResponse.Success(new

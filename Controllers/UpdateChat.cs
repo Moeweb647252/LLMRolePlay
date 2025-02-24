@@ -28,30 +28,6 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      if (data.modelId != null)
-      {
-        Model? model = await Model.GetModelById(_dBContext, (uint)data.modelId);
-        if (model == null) return ApiResponse.MessageOnly(500, "model not found");
-        if (model.Provider.UserId != user.Id) return ApiResponse.MessageOnly(505, "model not belongs to current user");
-        chat.ModelId = (uint)data.modelId;
-      }
-
-      if (data.characterId != null)
-      {
-        Character? character = await Character.GetCharacterById(_dBContext, (uint)data.characterId);
-        if (character == null) return ApiResponse.MessageOnly(500, "character not found");
-        if (character.UserId != user.Id) return ApiResponse.MessageOnly(505, "character not belongs to current user");
-        chat.CharacterId = (uint)data.characterId;
-      }
-
-      if (data.presetId != null)
-      {
-        Preset? preset = await Preset.GetPresetById(_dBContext, (uint)data.presetId);
-        if (preset == null) return ApiResponse.MessageOnly(500, "preset not found");
-        if (preset.UserId != user.Id) return ApiResponse.MessageOnly(505, "preset not belongs to current user");
-        chat.PresetId = (uint)data.presetId;
-      }
-
       if (data.name != null) chat.Name = data.name;
       if (data.settings != null) chat.Settings = data.settings;
 

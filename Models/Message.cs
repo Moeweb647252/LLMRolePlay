@@ -16,6 +16,7 @@ namespace LLMRolePlay.Models
     public string Role { get; set; }
     public string Content { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public uint ParticipantId { get; set; }
     public Chat Chat { get; set; } = null!;
     [ForeignKey("Chat")]
     public uint ChatId { get; set; }
@@ -23,6 +24,7 @@ namespace LLMRolePlay.Models
     {
       Role = role;
       Content = content;
+      ChatId = chatId;
     }
     public static async Task<Message> CreateMessage(DBContext db, string role, string content, uint chatId)
     {

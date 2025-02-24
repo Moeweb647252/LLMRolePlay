@@ -32,6 +32,7 @@ declare module 'vue' {
     NMessageProvider: typeof import('naive-ui')['NMessageProvider']
     NModal: typeof import('naive-ui')['NModal']
     NModalProvider: typeof import('naive-ui')['NModalProvider']
+    NOption: typeof import('naive-ui')['NOption']
     NScrollbar: typeof import('naive-ui')['NScrollbar']
     NSelect: typeof import('naive-ui')['NSelect']
     NSpace: typeof import('naive-ui')['NSpace']
@@ -41,6 +42,7 @@ declare module 'vue' {
     ProviderSettings: typeof import('./src/components/settings/ProviderSettings.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SettingsDynamicInput: typeof import('./src/components/SettingsDynamicInput.vue')['default']
     SettingsInput: typeof import('./src/components/SettingsInput.vue')['default']
     UserSettings: typeof import('./src/components/settings/UserSettings.vue')['default']
   }
