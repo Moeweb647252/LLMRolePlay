@@ -160,7 +160,7 @@ onMounted(async () => {
           type="select"
           v-model:value="editUserForm.user!.group"
           :options="userTypeOptions"
-          @confirm="async ()=> "
+          @confirm="async () => {}"
         >
         </SettingsInput>
       </n-form-item>

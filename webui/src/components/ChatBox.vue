@@ -1,6 +1,25 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import { IosSend } from '@vicons/ionicons4'
+import type { Chat } from '@/stores/chats'
+import { api } from '@/api'
+
+type Message = {
+  id: number
+  content: string
+  role: string
+  createdAt: string
+}
+
+const props = defineProps<{
+  chat: Chat
+}>()
+
+const messages = ref<Message[]>([])
+
+onMounted(async () => {
+  messages.value = await api.getMessages(props.chat.id)
+})
 </script>
 
 <template>
@@ -14,29 +33,39 @@ import { IosSend } from '@vicons/ionicons4'
       <div class="chat-box">
         <div class="messages">
           <n-scrollbar style="height: 100%; width: calc(100% - 2em)">
-            <Message v-for="i in 20" class="message"></Message>
+            <Message v-for="i in messages" class="message" :key="i.id"></Message>
           </n-scrollbar>
         </div>
         <div class="input">
-          <n-input
-            type="textarea"
-            placeholder="Input Message"
-            round
-            :autosize="{
-              minRows: 1,
-              maxRows: 5,
-            }"
-          >
-            <template #suffix>
-              <n-button type="primary" size="small" strong secondary>
-                <template #icon>
-                  <n-icon>
-                    <IosSend />
-                  </n-icon>
+          <n-grid style="width: 100%" x-gap="12" :cols="2">
+            <n-gi>
+              <n-input
+                type="textarea"
+                placeholder="Input Message"
+                round
+                :autosize="{
+                  minRows: 1,
+                  maxRows: 5,
+                }"
+              >
+                <template #suffix>
+                  <n-button type="primary" size="small" strong secondary>
+                    <template #icon>
+                      <n-icon>
+                        <IosSend />
+                      </n-icon>
+                    </template>
+                  </n-button>
                 </template>
-              </n-button>
-            </template>
-          </n-input>
+              </n-input>
+            </n-gi>
+            <n-gi>
+              <n-input-group>
+                <n-select></n-select>
+                <n-button type="primary" strong secondary> 生成 </n-button>
+              </n-input-group>
+            </n-gi>
+          </n-grid>
         </div>
       </div>
     </div>

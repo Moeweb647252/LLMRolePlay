@@ -307,6 +307,15 @@ export class Api {
     } = await this.request('getChats', {})
     return data.chats
   }
+
+  async getMessages(chatId: number) {
+    let data: {
+      messages: any[]
+    } = await this.request('getMessages', {
+      chatId: chatId,
+    })
+    return data.messages
+  }
 }
 
 export const api = new Api()

@@ -149,7 +149,7 @@ const modelOptions = computed(() => {
         </n-dropdown>
       </n-layout-header>
       <n-layout-content class="bfc" style="height: calc(100% - 3.5em)">
-        <ChatBox chat-id="1"></ChatBox>
+        <ChatBox></ChatBox>
       </n-layout-content>
     </n-layout>
   </n-layout>

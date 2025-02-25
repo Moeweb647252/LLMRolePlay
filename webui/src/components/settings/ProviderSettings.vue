@@ -78,7 +78,11 @@ const addProviderAddModel = () => {
     name: '',
     modelName: '',
     description: '',
-    settings: [],
+    settings: {
+      temperture: null,
+      top_p: null,
+      max_tokens: null,
+    },
     onAdd: (data: any) => {
       addProviderForm.value.models.push(data)
     },
@@ -103,7 +107,11 @@ const addModelForm = ref({
   name: '',
   modelName: '',
   description: '',
-  settings: [] as { key: string; value: string }[],
+  settings: {
+    temperture: null,
+    top_p: null,
+    max_tokens: null,
+  },
   onAdd: null as ((data: any) => void) | null,
 })
 
@@ -183,7 +191,11 @@ const editProviderAddModel = () => {
     name: '',
     modelName: '',
     description: '',
-    settings: [],
+    settings: {
+      temperture: null,
+      top_p: null,
+      max_tokens: null,
+    },
     onAdd: async (model: any) => {
       let id = await api.addModel(
         model.name,
@@ -195,6 +207,32 @@ const editProviderAddModel = () => {
       model.id = id
       editProviderForm.value.provider!.models.push(model)
     },
+  }
+}
+
+const editModelForm = ref({
+  visible: false,
+  id: null as number | null,
+  name: '',
+  modelName: '',
+  description: '',
+  settings: {
+    temperture: null,
+    top_p: null,
+    max_tokens: null,
+  },
+})
+
+const editProviderEditModel = () => {}
+
+const startEditModel = (model: any) => {
+  editModelForm.value = {
+    id: model.id,
+    visible: true,
+    name: model.name,
+    modelName: model.modelName,
+    description: model.description,
+    settings: model.settings,
   }
 }
 </script>
@@ -283,6 +321,15 @@ const editProviderAddModel = () => {
       </n-form-item>
       <n-form-item label="描述">
         <n-input v-model:value="addModelForm.description"></n-input>
+      </n-form-item>
+      <n-form-item label="Temperture">
+        <n-input v-model:value="addModelForm.settings.temperture" type="number"></n-input>
+      </n-form-item>
+      <n-form-item label="Top P">
+        <n-input v-model:value="addModelForm.settings.top_p" type="number"></n-input>
+      </n-form-item>
+      <n-form-item label="Max Tokens">
+        <n-input v-model:value="addModelForm.settings.max_tokens" type="number"></n-input>
       </n-form-item>
     </n-form>
     <template #footer>
@@ -395,13 +442,29 @@ const editProviderAddModel = () => {
   <n-modal title="编辑Modal">
     <n-form label-placement="left">
       <n-form-item label="名称">
-        <SettingsInput v-model:value="addModelForm.name" />
+        <SettingsInput
+          v-model:value="addModelForm.name"
+          @confirm="
+            async () => {
+              await api.updateModel(addModelForm.id, addModelForm.name)
+            }
+          "
+        />
       </n-form-item>
       <n-form-item label="模型名">
         <SettingsInput v-model:value="addModelForm.modelName" />
       </n-form-item>
       <n-form-item label="描述">
         <SettingsInput v-model:value="addModelForm.description" />
+      </n-form-item>
+      <n-form-item label="Temperture">
+        <SettingsInput v-model:value="addModelForm.settings.temperture" />
+      </n-form-item>
+      <n-form-item label="Top P">
+        <SettingsInput v-model:value="addModelForm.settings.top_p" />
+      </n-form-item>
+      <n-form-item label="Max Tokens">
+        <SettingsInput v-model:value="addModelForm.settings.max_tokens" />
       </n-form-item>
     </n-form>
   </n-modal>

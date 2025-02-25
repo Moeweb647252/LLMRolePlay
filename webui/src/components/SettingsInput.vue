@@ -2,7 +2,7 @@
 import { MdCreate } from '@vicons/ionicons4'
 import { ref } from 'vue'
 
-let editingValue = ref('')
+let editingValue = ref(null as string | null)
 let editing = ref(false)
 const props = defineProps<{
   type?: 'text' | 'select'
@@ -12,9 +12,8 @@ const props = defineProps<{
   }[]
 }>()
 
-const value = defineModel('value', {
-  type: String,
-  default: '',
+const value = defineModel<string | null>('value', {
+  default: null,
 })
 
 const emit = defineEmits(['confirm'])
@@ -32,7 +31,7 @@ const confirm = () => {
 
 const cancel = () => {
   editing.value = false
-  editingValue.value = ''
+  editingValue.value = null
 }
 </script>
 

@@ -6,7 +6,12 @@ export interface Model {
   name: string
   modelName: string
   description: string
-  settings: { key: string; value: string }[]
+  settings: {
+    temperture: number | null
+    top_p: number | null
+    max_tokne: number | null
+    [key: string]: any | null
+  }
   provider: Provider | null
 }
 
