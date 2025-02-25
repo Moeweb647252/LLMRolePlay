@@ -20,6 +20,10 @@ const messages = ref<Message[]>([])
 onMounted(async () => {
   messages.value = await api.getMessages(props.chat.id)
 })
+
+const generate = async () => {
+  
+}
 </script>
 
 <template>
