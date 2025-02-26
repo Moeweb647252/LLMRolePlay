@@ -78,6 +78,7 @@ const addProviderAddModel = () => {
     name: '',
     modelName: '',
     description: '',
+    isPublic: false,
     settings: {
       temperture: null,
       top_p: null,
@@ -188,6 +189,7 @@ const startEditProvider = (provider: any) => {
 
 const editProviderAddModel = () => {
   addModelForm.value = {
+    isPublic: false,
     visible: true,
     name: '',
     modelName: '',
@@ -322,6 +324,9 @@ const startEditModel = (model: any) => {
       </n-form-item>
       <n-form-item label="描述">
         <n-input v-model:value="addModelForm.description"></n-input>
+      </n-form-item>
+      <n-form-item label="公开">
+        <n-switch v-model:value="addModelForm.isPublic"></n-switch>
       </n-form-item>
       <n-form-item label="Temperture">
         <n-input v-model:value="addModelForm.settings.temperture" type="number"></n-input>

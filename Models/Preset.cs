@@ -17,12 +17,15 @@ namespace LLMRolePlay.Models
     public string Settings { get; set; }
     public string Description { get; set; }
     public uint UserId { get; set; }
-    public Preset(string name, string settings, uint userId, string description = "")
+    public bool IsPublic { get; set; }
+
+    public Preset(string name, string settings, uint userId, string description = "", bool isPublic = false)
     {
       Name = name;
       Settings = settings;
       Description = description;
       UserId = userId;
+      IsPublic = isPublic;
     }
     /// <summary>
     /// 不会自动绑定到用户。Do not bind to user automically.
@@ -31,10 +34,12 @@ namespace LLMRolePlay.Models
     /// <param name="name"></param>
     /// <param name="settings"></param>
     /// <param name="description"></param>
+    /// <param name="userId"></param>
+    /// <param name="isPublic"></param>
     /// <returns></returns>
-    public static async Task<Preset> CreatePreset(DBContext db, string name, string settings, string description, uint userId)
+    public static async Task<Preset> CreatePreset(DBContext db, string name, string settings, string description, uint userId, bool isPublic = false)
     {
-      Preset preset = new Preset(name, settings, userId, description);
+      Preset preset = new Preset(name, settings, userId, description, isPublic);
       await db.Presets.AddAsync(preset);
       await db.SaveChangesAsync();
       return preset;

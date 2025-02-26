@@ -58,11 +58,17 @@ export class Api {
     this.store!.user = null
   }
 
-  async addCharacter(name: string, description: string, settings: object) {
+  async addCharacter(
+    name: string,
+    description: string,
+    settings: object,
+    isPublic: boolean = false,
+  ) {
     let data = await this.request('createCharacter', {
       name: name,
       description: description,
       settings: JSON.stringify(settings),
+      isPublic: isPublic,
     })
     return data.id
   }
@@ -92,20 +98,23 @@ export class Api {
     name: string | null = null,
     description: string | null = null,
     settings: object | null = null,
+    isPublic: boolean | null = null,
   ) {
     await this.request('updateCharacter', {
       characterId: id,
       name: name,
       description: description,
       settings: settings != null ? JSON.stringify(settings) : null,
+      isPublic: isPublic,
     })
   }
 
-  async addPreset(name: string, description: string, settings: object) {
+  async addPreset(name: string, description: string, settings: object, isPublic: boolean = false) {
     let data = await this.request('createPreset', {
       name: name,
       description: description,
       settings: JSON.stringify(settings),
+      isPublic: isPublic,
     })
     return data.id
   }
@@ -136,12 +145,14 @@ export class Api {
     name: string | null = null,
     description: string | null = null,
     settings: object | null = null,
+    isPublic: boolean | null = null,
   ) {
     await this.request('updatePreset', {
       presetId: id,
       name: name,
       description: description,
       settings: settings != null ? JSON.stringify(settings) : null,
+      isPublic: isPublic,
     })
   }
 
@@ -232,7 +243,7 @@ export class Api {
       description: description,
       providerId: providerId,
       settings: JSON.stringify(settings),
-      isPrivate: false,
+      isPublic: false,
     })
     return data.id
   }
@@ -249,7 +260,7 @@ export class Api {
     modelName: string | null = null,
     description: string | null = null,
     settings: object | null = null,
-    isPrivate: boolean | null = null,
+    isPublic: boolean | null = null,
   ) {
     await this.request('updateModel', {
       modelId: id,
@@ -257,7 +268,7 @@ export class Api {
       modelName: modelName,
       description: description,
       settings: settings != null ? JSON.stringify(settings) : null,
-      isPrivate: isPrivate,
+      isPublic: isPublic,
     })
   }
 
@@ -333,22 +344,81 @@ export class Api {
     name: string | null = null,
     content: string | null = null,
     description: string | null = null,
+    isPublic: boolean | null = null,
   ) {
     await this.request('updateTemplate', {
       templateId: id,
       name: name,
       content: content,
       description: description,
+      isPublic: isPublic,
     })
   }
-  async addTemplate(name: string, content: string, description: string) {
+  async addTemplate(name: string, content: string, description: string, isPublic: boolean = false) {
     let data = await this.request('createTemplate', {
       name: name,
       content: content,
       description: description,
+      isPublic: isPublic,
     })
     return data.id
   }
 }
 
 export const api = new Api()
+
+export const generate = async (
+  chatId: number,
+  participantId: number,
+  callback: (data: string) => void,
+) => {
+  const token = api.store!.user?.token
+  if (!token) {
+    throw new NoTokenError()
+  }
+  const headers = {
+    Token: token,
+  }
+  const resp = await fetch('/api/completion', {
+    method: 'POST',
+    headers: headers,
+    body: JSON.stringify({
+      chatId: chatId,
+      participantId: participantId,
+    }),
+  })
+  let reader = resp.body?.getReader()
+  let buffer = ''
+  if (reader) {
+    let decoder = new TextDecoder('utf-8')
+    while (true) {
+      // Read the next chunk of data
+      const { done, value } = await reader.read()
+
+      // If the stream is done, break the loop
+      if (done) {
+        break
+      }
+
+      // Decode the chunk and add it to the buffer
+      buffer += decoder.decode(value, { stream: true })
+
+      // Process lines in the buffer
+      let lineEndIndex
+      while ((lineEndIndex = buffer.indexOf('\n')) >= 0) {
+        // Extract the line
+        const line = buffer.slice(0, lineEndIndex - 1)
+        buffer = buffer.slice(lineEndIndex + 1)
+
+        // Process the line (e.g., log it or do something else)
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6)
+          if (data === '[DONE]') {
+            break
+          }
+          callback(data)
+        }
+      }
+    }
+  }
+}

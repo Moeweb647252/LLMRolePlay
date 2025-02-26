@@ -13,6 +13,8 @@ namespace LLMRolePlay.Controllers
       public uint? characterId { get; set; } = null;
       public uint? presetId { get; set; } = null;
       public uint? templateId { get; set; } = null;
+      public string? name { get; set; } = null;
+      public string? settings { get; set; } = null;
     }
 
     [HttpPost("updateParticipant")]
@@ -38,6 +40,8 @@ namespace LLMRolePlay.Controllers
       if (data.characterId != null) participant.CharacterId = data.characterId.Value;
       if (data.presetId != null) participant.PresetId = data.presetId.Value;
       if (data.templateId != null) participant.TemplateId = data.templateId.Value;
+      if (data.name != null) participant.Name = data.name;
+      if (data.settings != null) participant.Settings = data.settings;
 
       participant.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();

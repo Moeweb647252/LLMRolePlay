@@ -10,6 +10,7 @@ namespace LLMRolePlay.Controllers
     public string? name = null;
     public string? settings = null;
     public string? description = null;
+    public bool? isPublic = null;
   }
   public partial class API : ControllerBase
   {
@@ -31,6 +32,7 @@ namespace LLMRolePlay.Controllers
       if (data.name != null) character.Name = data.name;
       if (data.settings != null) character.Settings = data.settings;
       if (data.description != null) character.Description = data.description;
+      if (data.isPublic != null) character.IsPublic = data.isPublic.Value;
 
       character.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();

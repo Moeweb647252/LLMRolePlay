@@ -10,6 +10,7 @@ namespace LLMRolePlay.Controllers
     public string? name { get; set; } = null;
     public string? settings { get; set; } = null;
     public string? description { get; set; } = null;
+    public bool? isPublic { get; set; } = null;
   }
 
   public partial class API : ControllerBase
@@ -32,6 +33,7 @@ namespace LLMRolePlay.Controllers
       if (data.name != null) preset.Name = data.name;
       if (data.settings != null) preset.Settings = data.settings;
       if (data.description != null) preset.Description = data.description;
+      if (data.isPublic != null) preset.IsPublic = data.isPublic.Value;
 
       preset.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();

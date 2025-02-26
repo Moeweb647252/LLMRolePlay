@@ -14,6 +14,9 @@ namespace LLMRolePlay.Models
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public uint Id { get; set; }
+    public string Name { get; set; }
+    public string Settings { get; set; }
+    public uint? Avatar { get; set; }
     public Model Model { get; set; } = null!;
     [ForeignKey("Model")]
     public uint ModelId { get; set; }
@@ -31,13 +34,16 @@ namespace LLMRolePlay.Models
     [ForeignKey("Template")]
     public uint TemplateId { get; set; }
 
-    public Participant(uint modelId, uint characterId, uint presetId, uint chatId, uint templateId)
+    public Participant(uint modelId, uint characterId, uint presetId, uint chatId, uint templateId, string name, string settings, uint? avatar = null)
     {
       ModelId = modelId;
       CharacterId = characterId;
       PresetId = presetId;
       ChatId = chatId;
       TemplateId = templateId;
+      Name = name;
+      Settings = settings;
+      Avatar = avatar;
     }
     public void MarkAsModified(DBContext db)
     {

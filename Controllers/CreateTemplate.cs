@@ -9,6 +9,7 @@ namespace LLMRolePlay.Controllers
     public required string name { get; set; }
     public required string content { get; set; }
     public string? description { get; set; } = null;
+    public bool isPublic { get; set; } = false;
   }
 
   public partial class API : ControllerBase
@@ -27,7 +28,8 @@ namespace LLMRolePlay.Controllers
         name: data.name,
         content: data.content,
         description: data.description ?? "",
-        userId: user.Id
+        userId: user.Id,
+        isPublic: data.isPublic
       );
 
       _dBContext.Templates.Add(template);

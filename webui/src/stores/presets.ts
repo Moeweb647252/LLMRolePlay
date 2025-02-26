@@ -6,6 +6,7 @@ export interface Preset {
   name: string
   description: string
   settings: { key: string; value: string }[]
+  isPublic: boolean
 }
 
 export const usePresetStore = defineStore('presets', () => {

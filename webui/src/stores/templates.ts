@@ -6,6 +6,7 @@ export interface Template {
   name: string
   content: string
   description: string
+  isPublic: boolean
 }
 
 export const useTemplateStore = defineStore('templates', () => {

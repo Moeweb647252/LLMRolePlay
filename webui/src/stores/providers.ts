@@ -7,6 +7,7 @@ export interface Model {
   name: string
   modelName: string
   description: string
+  isPublic: boolean
   settings: {
     temperture: number | null
     top_p: number | null

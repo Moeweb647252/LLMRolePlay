@@ -31,10 +31,15 @@ namespace LLMRolePlay.Controllers
         .FirstOrDefaultAsync();
 
       if (participant == null) return ApiResponse.MessageOnly(404, "Participant not found");
-
       // Check if the user owns the chat that contains this participant
       if (participant.Chat.UserId != user.Id) return ApiResponse.MessageOnly(403, "Participant not belongs to current user's chat");
 
+      Models.File? file = await _dBContext.Files.Where(f => f.Id == participant.Avatar).FirstOrDefaultAsync();
+      if (file != null)
+      {
+        _dBContext.Files.Remove(file);
+        await _dBContext.SaveChangesAsync();
+      }
       _dBContext.Participants.Remove(participant);
       await _dBContext.SaveChangesAsync();
       return ApiResponse.Success();

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 import { IosSend } from '@vicons/ionicons4'
 import type { Chat } from '@/stores/chats'
-import { api } from '@/api'
+import { api, generate } from '@/api'
 
 type Message = {
   id: number
@@ -10,6 +10,8 @@ type Message = {
   role: string
   createdAt: string
 }
+
+const participantIndex = ref(0)
 
 const props = defineProps<{
   chat: Chat
@@ -21,7 +23,18 @@ onMounted(async () => {
   messages.value = await api.getMessages(props.chat.id)
 })
 
-const generate = async () => {}
+const generateMessage = async () => {
+  const msg = reactive({
+    id: 0,
+    content: '',
+    role: 'assistant',
+    createdAt: new Date().toISOString(),
+  })
+  messages.value.push(msg)
+  await generate(props.chat.id, props.chat.participants[participantIndex.value].id, (delta) => {
+    msg.content += delta
+  })
+}
 </script>
 
 <template>

@@ -6,6 +6,7 @@ export interface Character {
   name: string
   settings: { key: string; value: string }[]
   description: string
+  isPublic: boolean
 }
 
 export const useCharacterStore = defineStore('characters', () => {

@@ -11,6 +11,8 @@ namespace LLMRolePlay.Controllers
     public required uint characterId { get; set; }
     public required uint presetId { get; set; }
     public required uint templateId { get; set; }
+    public required string name { get; set; }
+    public required string settings { get; set; }
   }
 
   public partial class API : ControllerBase
@@ -41,7 +43,7 @@ namespace LLMRolePlay.Controllers
       if (chat == null) return ApiResponse.MessageOnly(500, "chat not found");
       if (chat.UserId != user.Id) return ApiResponse.MessageOnly(500, "chat does not belong to user");
 
-      Participant participant = new Participant(data.modelId, data.characterId, data.presetId, chat.Id, data.templateId);
+      Participant participant = new Participant(data.modelId, data.characterId, data.presetId, chat.Id, data.templateId, data.name, data.settings);
       _dBContext.Participants.Add(participant);
       await _dBContext.SaveChangesAsync();
 

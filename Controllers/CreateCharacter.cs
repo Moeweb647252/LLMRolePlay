@@ -9,6 +9,7 @@ namespace LLMRolePlay.Controllers
     public required string name { get; set; }
     public required string settings { get; set; }
     public required string description { get; set; }
+    public bool isPublic { get; set; } = false;
   }
   public partial class API : ControllerBase
   {
@@ -22,7 +23,7 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Character character = await Character.CreateCharacter(_dBContext, data.name, data.settings, data.description, user.Id);
+      Character character = await Character.CreateCharacter(_dBContext, data.name, data.settings, data.description, user.Id, data.isPublic);
       user.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();
       return ApiResponse.Success(new

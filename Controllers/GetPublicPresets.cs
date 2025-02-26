@@ -1,3 +1,4 @@
+// filepath: /home/misaka/Code/LLMRolePlay/Controllers/GetPublicPresets.cs
 using LLMRolePlay.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -7,9 +8,9 @@ namespace LLMRolePlay.Controllers
 {
   public partial class API : ControllerBase
   {
-    [HttpPost("getPublicModels")]
+    [HttpPost("getPublicPresets")]
     [AllowAnonymous]
-    public async Task<ApiResponse> GetPublicModels()
+    public async Task<ApiResponse> GetPublicPresets()
     {
       string? token = Request.Headers["token"];
       if (token == null) return ApiResponse.TokenError();
@@ -19,14 +20,7 @@ namespace LLMRolePlay.Controllers
 
       return ApiResponse.Success(new
       {
-        models = (await _dBContext.Models.Where(model => model.IsPublic).ToListAsync()).Select(model => new
-        {
-          name = model.Name,
-          description = model.Description,
-          isPublic = model.IsPublic,
-          modelName = model.ModelName,
-          id = model.Id
-        })
+        presets = await _dBContext.Presets.Where(preset => preset.IsPublic).ToListAsync()
       });
     }
   }

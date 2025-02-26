@@ -2,6 +2,15 @@ import { defineStore } from 'pinia'
 import type { Character } from './characters'
 import type { Preset } from './presets'
 import { ref } from 'vue'
+import type { Model } from './providers'
+export interface Participant {
+  id: number
+  model: Model
+  preset: Preset
+  character: Character
+  name: string
+  settings: {}
+}
 
 export interface Message {
   id: number
@@ -13,8 +22,7 @@ export interface Message {
 export interface Chat {
   id: number
   name: string
-  character: Character
-  preset: Preset
+  participants: Participant[]
   messages: Message[]
 }
 

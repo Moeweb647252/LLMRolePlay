@@ -11,6 +11,7 @@ namespace LLMRolePlay.Controllers
     public string? name { get; set; } = null;
     public string? content { get; set; } = null;
     public string? description { get; set; } = null;
+    public bool? isPublic { get; set; } = null;
   }
 
   public partial class API : ControllerBase
@@ -35,6 +36,7 @@ namespace LLMRolePlay.Controllers
       if (data.name != null) template.Name = data.name;
       if (data.content != null) template.Content = data.content;
       if (data.description != null) template.Description = data.description;
+      if (data.isPublic != null) template.IsPublic = data.isPublic.Value;
 
       _dBContext.Templates.Update(template);
       await _dBContext.SaveChangesAsync();

@@ -14,6 +14,7 @@ const addCharacterForm = ref({
   name: '',
   description: '',
   settings: [],
+  isPublic: false,
 })
 
 const addCharacter = async () => {
@@ -23,13 +24,15 @@ const addCharacter = async () => {
     description: '',
     settings: [],
     visible: false,
+    isPublic: false,
   }
-  let id = await api.addCharacter(data.name, data.description, data.settings)
+  let id = await api.addCharacter(data.name, data.description, data.settings, data.isPublic)
   characters.push({
     id,
     name: data.name,
     description: data.description,
     settings: data.settings,
+    isPublic: data.isPublic,
   })
   message.success('添加成功')
 }
@@ -40,6 +43,7 @@ const cancelAddCharacter = () => {
     description: '',
     settings: [],
     visible: false,
+    isPublic: false,
   }
 }
 
@@ -111,6 +115,9 @@ const deleteCharacter = async (character: Character) => {
       <n-form-item label="描述">
         <n-input v-model:value="addCharacterForm.description" />
       </n-form-item>
+      <n-form-item label="公开">
+        <n-switch v-model:value="addCharacterForm.isPublic" />
+      </n-form-item>
       <n-form-item label="设置">
         <n-dynamic-input
           v-model:value="addCharacterForm.settings"
@@ -159,6 +166,21 @@ const deleteCharacter = async (character: Character) => {
               )
           "
         ></SettingsInput>
+      </n-form-item>
+      <n-form-item label="公开">
+        <SettingsSwitch
+          :value="editCharacterForm.character!.isPublic"
+          @confirm="
+            async () =>
+              await api.updateCharacter(
+                editCharacterForm.character!.id,
+                undefined,
+                undefined,
+                undefined,
+                editCharacterForm.character!.isPublic,
+              )
+          "
+        ></SettingsSwitch>
       </n-form-item>
       <n-form-item label="设置">
         <SettingsDynamicInput

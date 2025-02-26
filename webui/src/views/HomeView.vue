@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ChatBox from '@/components/ChatBox.vue'
 import { useCharacterStore } from '@/stores/characters'
-import type { Participant } from '@/stores/participants'
+import type { Chat, Participant } from '@/stores/chats'
 import { usePresetStore } from '@/stores/presets'
 import { useProviderStore } from '@/stores/providers'
 import { useSettingsStore } from '@/stores/settings'
@@ -17,6 +17,8 @@ const showSider = ref(true)
 const providers = useProviderStore().providers
 const presets = usePresetStore().presets
 const characters = useCharacterStore().characters
+
+const currentChat = ref(null as Chat | null)
 
 const renderAddChatParticipant = (paticipant: Participant, index: number) => {
   return h(
@@ -62,11 +64,11 @@ const startAddChat = () => {
 const addParticipantForm = ref({
   visible: false,
   name: '',
-  description: '',
-  settings: [],
+  settings: {},
   modelId: null as null | number,
   presetId: null as null | number,
   characterId: null as null | number,
+  avatar: null as null | number,
   onConfirm: () => {},
 })
 
@@ -74,11 +76,11 @@ const addChatAddParticipant = () => {
   addParticipantForm.value = {
     visible: true,
     name: '',
-    description: '',
-    settings: [],
+    settings: {},
     modelId: null,
     presetId: null,
     characterId: null,
+    avatar: null,
     onConfirm: () => {},
   }
 }
@@ -149,7 +151,7 @@ const modelOptions = computed(() => {
         </n-dropdown>
       </n-layout-header>
       <n-layout-content class="bfc" style="height: calc(100% - 3.5em)">
-        <ChatBox></ChatBox>
+        <ChatBox v-if="currentChat" :chat="currentChat"></ChatBox>
       </n-layout-content>
     </n-layout>
   </n-layout>

@@ -14,6 +14,7 @@ const addTemplateForm = ref({
   name: '',
   description: '',
   content: '',
+  isPublic: false,
 })
 
 const addTemplate = async () => {
@@ -23,6 +24,7 @@ const addTemplate = async () => {
     description: '',
     content: '',
     visible: false,
+    isPublic: false,
   }
   let id = await api.addTemplate(data.name, data.description, data.content)
   templates.push({
@@ -30,6 +32,7 @@ const addTemplate = async () => {
     name: data.name,
     description: data.description,
     content: data.content,
+    isPublic: data.isPublic,
   })
   message.success('添加成功')
 }
@@ -40,6 +43,7 @@ const cancelAddTemplate = () => {
     description: '',
     content: '',
     visible: false,
+    isPublic: false,
   }
 }
 
@@ -111,11 +115,14 @@ const deleteTemplate = async (template: Template) => {
       <n-form-item label="描述">
         <n-input v-model:value="addTemplateForm.description" />
       </n-form-item>
-      <n-form-item label="设置">
+      <n-form-item label="公开">
+        <n-switch v-model:value="addTemplateForm.isPublic" />
+      </n-form-item>
+      <n-form-item label="内容">
         <n-dynamic-input
           v-model:value="addTemplateForm.content"
           template="pair"
-          key-placeholder="设置名"
+          key-placeholder="内容名"
           value-placeholder="值"
         />
       </n-form-item>
@@ -154,18 +161,34 @@ const deleteTemplate = async (template: Template) => {
             async () =>
               await api.updateTemplate(
                 editTemplateForm.template!.id,
-                undefined,
+                null,
+                null,
                 editTemplateForm.template!.description,
               )
           "
         ></SettingsInput>
       </n-form-item>
-      <n-form-item label="设置">
+      <n-form-item label="公开">
+        <SettingsSwitch
+          :value="editTemplateForm.template!.isPublic"
+          @confirm="
+            async () =>
+              await api.updateTemplate(
+                editTemplateForm.template!.id,
+                null,
+                null,
+                null,
+                editTemplateForm.template!.isPublic,
+              )
+          "
+        ></SettingsSwitch>
+      </n-form-item>
+      <n-form-item label="内容">
         <SettingsDynamicInput
           :value="editTemplateForm.template!.content"
           @confirm="
             async (content: any) => {
-              await api.updateTemplate(editTemplateForm.template!.id, undefined, undefined, content)
+              await api.updateTemplate(editTemplateForm.template!.id, null, content)
               editTemplateForm.template!.content = content
             }
           "

@@ -7,9 +7,9 @@ namespace LLMRolePlay.Controllers
 {
   public partial class API : ControllerBase
   {
-    [HttpPost("getPublicModels")]
+    [HttpPost("getPublicTemplates")]
     [AllowAnonymous]
-    public async Task<ApiResponse> GetPublicModels()
+    public async Task<ApiResponse> GetPublicTemplates()
     {
       string? token = Request.Headers["token"];
       if (token == null) return ApiResponse.TokenError();
@@ -19,14 +19,7 @@ namespace LLMRolePlay.Controllers
 
       return ApiResponse.Success(new
       {
-        models = (await _dBContext.Models.Where(model => model.IsPublic).ToListAsync()).Select(model => new
-        {
-          name = model.Name,
-          description = model.Description,
-          isPublic = model.IsPublic,
-          modelName = model.ModelName,
-          id = model.Id
-        })
+        templates = await _dBContext.Templates.Where(template => template.IsPublic).ToListAsync()
       });
     }
   }

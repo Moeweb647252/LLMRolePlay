@@ -4,31 +4,33 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LLMRolePlay.Controllers
 {
-  public class CreatePresetRequest
-  {
-    public required string name { get; set; }
-    public required string settings { get; set; }
-    public required string description { get; set; }
-    public bool isPublic { get; set; } = false;
-  }
 
   public partial class API : ControllerBase
   {
-    [HttpPost("createPreset")]
+    [HttpPost("createFile")]
     [AllowAnonymous]
-    public async Task<ApiResponse> CreatePreset([FromBody] CreatePresetRequest data)
+    public async Task<ApiResponse> CreateFile()
     {
       string? token = Request.Headers["token"];
       if (token == null) return ApiResponse.TokenError();
 
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
+      if (Request.ContentLength == null) return ApiResponse.MessageOnly(400, "no file uploaded");
+      byte[] data = new byte[(long)Request.ContentLength];
+      await Request.Body.ReadExactlyAsync(data.AsMemory(0, (int)Request.ContentLength));
 
-      Preset preset = await Preset.CreatePreset(_dBContext, data.name, data.settings, data.description, user.Id, data.isPublic);
+      Models.File file = new Models.File(
+        data: data,
+        userId: user.Id
+      );
+
+      _dBContext.Files.Add(file);
       await _dBContext.SaveChangesAsync();
+
       return ApiResponse.Success(new
       {
-        id = preset.Id
+        id = file.Id
       });
     }
   }

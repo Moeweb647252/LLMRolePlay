@@ -4,6 +4,8 @@ import { usePresetStore, type Preset } from '@/stores/presets'
 import { useMessage, useModal } from 'naive-ui'
 import { ref } from 'vue'
 import SettingsInput from '../SettingsInput.vue'
+import SettingsSwitch from '../SettingsSwitch.vue'
+import SettingsDynamicInput from '../SettingsDynamicInput.vue'
 
 const presets = usePresetStore().presets
 const message = useMessage()
@@ -14,6 +16,7 @@ const addPresetForm = ref({
   name: '',
   description: '',
   settings: [],
+  isPublic: false,
 })
 
 const addPreset = async () => {
@@ -23,13 +26,15 @@ const addPreset = async () => {
     description: '',
     settings: [],
     visible: false,
+    isPublic: false,
   }
-  let id = await api.addPreset(data.name, data.description, data.settings)
+  let id = await api.addPreset(data.name, data.description, data.settings, data.isPublic)
   presets.push({
     id,
     name: data.name,
     description: data.description,
     settings: data.settings,
+    isPublic: data.isPublic,
   })
   message.success('添加成功')
 }
@@ -40,6 +45,7 @@ const cancelAddPreset = () => {
     description: '',
     settings: [],
     visible: false,
+    isPublic: false,
   }
 }
 
@@ -111,6 +117,9 @@ const deletePreset = async (preset: Preset) => {
       <n-form-item label="描述">
         <n-input v-model:value="addPresetForm.description" />
       </n-form-item>
+      <n-form-item label="公开">
+        <n-switch v-model:value="addPresetForm.isPublic" />
+      </n-form-item>
       <n-form-item label="设置">
         <n-dynamic-input
           v-model:value="addPresetForm.settings"
@@ -156,6 +165,21 @@ const deletePreset = async (preset: Preset) => {
               )
           "
         ></SettingsInput>
+      </n-form-item>
+      <n-form-item label="公开">
+        <SettingsSwitch
+          :value="editPresetForm.preset!.isPublic"
+          @confirm="
+            async () =>
+              await api.updatePreset(
+                editPresetForm.preset!.id,
+                undefined,
+                undefined,
+                undefined,
+                editPresetForm.preset!.isPublic,
+              )
+          "
+        ></SettingsSwitch>
       </n-form-item>
       <n-form-item label="设置">
         <SettingsDynamicInput
