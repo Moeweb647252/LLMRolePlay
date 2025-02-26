@@ -1,12 +1,14 @@
 <script setup lang="ts">
+import { api } from '@/api'
 import ChatBox from '@/components/ChatBox.vue'
 import { useCharacterStore } from '@/stores/characters'
 import type { Chat, Participant } from '@/stores/chats'
 import { usePresetStore } from '@/stores/presets'
 import { useProviderStore } from '@/stores/providers'
 import { useSettingsStore } from '@/stores/settings'
+import { useTemplateStore } from '@/stores/templates'
 import { IosMenu, MdAdd, MdContact } from '@vicons/ionicons4'
-import { NTag } from 'naive-ui'
+import { NTag, type UploadFileInfo } from 'naive-ui'
 import { computed, h, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -17,6 +19,7 @@ const showSider = ref(true)
 const providers = useProviderStore().providers
 const presets = usePresetStore().presets
 const characters = useCharacterStore().characters
+const templates = useTemplateStore().templates
 
 const currentChat = ref(null as Chat | null)
 
@@ -94,6 +97,21 @@ const modelOptions = computed(() => {
       value: model.id,
     }))
 })
+
+const uploadAvatar = async (
+  file: {
+    file: UploadFileInfo
+    fileList: UploadFileInfo[]
+  },
+  value: any,
+) => {
+  let data = await file.file.file?.arrayBuffer()
+  if (data) {
+    let id = await api.uploadFile(data)
+    value.avatar = id
+  }
+  return false
+}
 </script>
 <template>
   <n-layout :has-sider="showSider" class="full bfc">
@@ -196,12 +214,19 @@ const modelOptions = computed(() => {
     style="width: fit-content; min-width: 25em"
   >
     <n-form label-placement="left">
+      <n-form-item label="姓名">
+        <n-input v-model:value="addParticipantForm.name" />
+      </n-form-item>
+      <n-form-item label="头像">
+        <n-upload @before-upload="uploadAvatar($event, addParticipantForm)" />
+      </n-form-item>
       <n-form-item label="模型">
-        <n-select v-model:value="addParticipantForm.modelId" :options="modelOptions" />
+        <n-select v-model:value="addParticipantForm.modelId" filterable :options="modelOptions" />
       </n-form-item>
       <n-form-item label="预设">
         <n-select
           v-model:value="addParticipantForm.presetId"
+          filterable
           :options="
             presets.map((p) => {
               return {
@@ -215,11 +240,26 @@ const modelOptions = computed(() => {
       <n-form-item label="角色">
         <n-select
           v-model:value="addParticipantForm.characterId"
+          filterable
           :options="
             characters.map((c) => {
               return {
                 label: c.name,
                 value: c.id,
+              }
+            })
+          "
+        />
+      </n-form-item>
+      <n-form-item label="模板">
+        <n-select
+          v-model:value="addParticipantForm.avatar"
+          filterable
+          :options="
+            templates.map((t) => {
+              return {
+                label: t.name,
+                value: t.id,
               }
             })
           "

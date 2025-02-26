@@ -363,6 +363,56 @@ export class Api {
     })
     return data.id
   }
+
+  async addParticipant(
+    chatId: number,
+    characterId: number,
+    presetId: number,
+    templateId: number,
+    name: string,
+    avatar: number,
+    settings: object,
+  ) {
+    let data = await this.request('addParticipant', {
+      chatId: chatId,
+      characterId: characterId,
+      presetId: presetId,
+      templateId: templateId,
+      name: name,
+      avatar: avatar,
+      settings: JSON.stringify(settings),
+    })
+    return data.id
+  }
+
+  async deleteParticipant(id: number) {
+    await this.request('deleteParticipant', {
+      participantId: id,
+    })
+  }
+  async updateParticipant(
+    id: number,
+    characterId: number | null = null,
+    presetId: number | null = null,
+    templateId: number | null = null,
+    name: string | null = null,
+    avatar: number | null = null,
+    settings: object | null = null,
+  ) {
+    await this.request('updateParticipant', {
+      participantId: id,
+      characterId: characterId,
+      presetId: presetId,
+      templateId: templateId,
+      name: name,
+      avatar: avatar,
+      settings: settings != null ? JSON.stringify(settings) : null,
+    })
+  }
+  async uploadFile(data: ArrayBuffer) {
+    let resp = await this.request('createFile', data)
+    return resp.id
+  }
 }
 
 export const api = new Api()

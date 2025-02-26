@@ -8,6 +8,7 @@ import PresetSettings from '@/components/settings/PresetSettings.vue'
 import CharacterSettings from '@/components/settings/CharacterSettings.vue'
 import GeneralSettings from '@/components/settings/GeneralSettings.vue'
 import ProviderSettings from '@/components/settings/ProviderSettings.vue'
+import TemplateSettings from '@/components/settings/TemplateSettings.vue'
 import { useSettingsStore } from '@/stores/settings'
 
 const router = createRouter({
@@ -54,6 +55,10 @@ const router = createRouter({
             {
               path: 'provider',
               component: ProviderSettings,
+            },
+            {
+              path: 'template',
+              component: TemplateSettings,
             },
           ],
         },

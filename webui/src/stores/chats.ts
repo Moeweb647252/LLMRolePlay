@@ -10,6 +10,7 @@ export interface Participant {
   character: Character
   name: string
   settings: {}
+  avatar: number | null
 }
 
 export interface Message {

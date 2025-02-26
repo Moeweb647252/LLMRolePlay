@@ -9,6 +9,7 @@ const links = [
     { name: '通用', path: '/main/settings/general' },
     { name: '角色', path: '/main/settings/character' },
     { name: '预设', path: '/main/settings/preset' },
+    { name: '模板', path: '/main/settings/template' },
     { name: 'Provider', path: '/main/settings/provider' },
   ],
   ...(settings.user?.group == '2' ? [{ name: '用户', path: '/main/settings/user' }] : []),
