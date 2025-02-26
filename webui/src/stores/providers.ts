@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { OpenAI } from 'openai'
 
 export interface Model {
   id: number | null

@@ -21,9 +21,7 @@ onMounted(async () => {
   messages.value = await api.getMessages(props.chat.id)
 })
 
-const generate = async () => {
-  
-}
+const generate = async () => {}
 </script>
 
 <template>
