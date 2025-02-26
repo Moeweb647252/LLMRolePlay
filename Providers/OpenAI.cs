@@ -13,11 +13,6 @@ namespace LLMRolePlay.Providers
     public double? top_p;
   }
 
-  public class OpenAIUpdate
-  {
-    public string? delta { get; set; }
-  }
-
   public class OpenAICompletionRequest
   {
     public required string model { get; set; }
@@ -26,7 +21,6 @@ namespace LLMRolePlay.Providers
     public double? temperature { get; set; }
     public ulong? max_tokens { get; set; }
     public double? top_p { get; set; }
-
   }
   public class OpenAIStreamingResponseChunkChoiceDelta
   {
@@ -47,19 +41,21 @@ namespace LLMRolePlay.Providers
   public class OpenAIStreamingResponseChunk
   {
     public string? id { get; set; }
-
+    public OpenAIStreamingResponseChunkChoice[]? choices { get; set; }
+    public string? created { get; set; }
+    public string? model { get; set; }
   }
 
   public class OpenAI
   {
-    public required Model model { get; set; }
+    public Model model { get; set; }
 
     public OpenAI(Model model)
     {
       this.model = model;
     }
 
-    public async IAsyncEnumerable<OpenAIUpdate> Compeletion(IEnumerable<ChatMessage> messages)
+    public async IAsyncEnumerable<OpenAIStreamingResponseChunk> Compeletion(IEnumerable<ChatMessage> messages)
     {
       var client = new HttpClient();
       client.DefaultRequestHeaders.Add("Authorization", $"Bearer {model.Provider.ApiKey}");
@@ -84,7 +80,11 @@ namespace LLMRolePlay.Providers
           string? line = await reader.ReadLineAsync();
           if (line != null)
           {
-
+            var chunk = JsonConvert.DeserializeObject<OpenAIStreamingResponseChunk>(line);
+            if (chunk != null)
+            {
+              yield return chunk;
+            }
           }
         }
       }
