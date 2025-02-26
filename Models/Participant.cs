@@ -24,14 +24,20 @@ namespace LLMRolePlay.Models
     [ForeignKey("Preset")]
     public uint PresetId { get; set; }
     public Chat Chat { get; set; } = null!;
+    [ForeignKey("Chat")]
     public uint ChatId { get; set; }
 
-    public Participant(uint modelId, uint characterId, uint presetId, uint chatId)
+    public Template Template { get; set; } = null!;
+    [ForeignKey("Template")]
+    public uint TemplateId { get; set; }
+
+    public Participant(uint modelId, uint characterId, uint presetId, uint chatId, uint templateId)
     {
       ModelId = modelId;
       CharacterId = characterId;
       PresetId = presetId;
       ChatId = chatId;
+      TemplateId = templateId;
     }
     public void MarkAsModified(DBContext db)
     {

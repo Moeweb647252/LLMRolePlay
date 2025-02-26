@@ -107,6 +107,7 @@ const addModelForm = ref({
   name: '',
   modelName: '',
   description: '',
+  isPublic: false,
   settings: {
     temperture: null,
     top_p: null,
@@ -443,28 +444,28 @@ const startEditModel = (model: any) => {
     <n-form label-placement="left">
       <n-form-item label="名称">
         <SettingsInput
-          v-model:value="addModelForm.name"
+          v-model:value="editModelForm.name"
           @confirm="
             async () => {
-              await api.updateModel(addModelForm.id, addModelForm.name)
+              await api.updateModel(editModelForm.id!, editModelForm.name)
             }
           "
         />
       </n-form-item>
       <n-form-item label="模型名">
-        <SettingsInput v-model:value="addModelForm.modelName" />
+        <SettingsInput v-model:value="editModelForm.modelName" />
       </n-form-item>
       <n-form-item label="描述">
-        <SettingsInput v-model:value="addModelForm.description" />
+        <SettingsInput v-model:value="editModelForm.description" />
       </n-form-item>
       <n-form-item label="Temperture">
-        <SettingsInput v-model:value="addModelForm.settings.temperture" />
+        <SettingsInput v-model:value="editModelForm.settings.temperture" />
       </n-form-item>
       <n-form-item label="Top P">
-        <SettingsInput v-model:value="addModelForm.settings.top_p" />
+        <SettingsInput v-model:value="editModelForm.settings.top_p" />
       </n-form-item>
       <n-form-item label="Max Tokens">
-        <SettingsInput v-model:value="addModelForm.settings.max_tokens" />
+        <SettingsInput v-model:value="editModelForm.settings.max_tokens" />
       </n-form-item>
     </n-form>
   </n-modal>

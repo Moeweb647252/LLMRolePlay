@@ -316,6 +316,39 @@ export class Api {
     })
     return data.messages
   }
+
+  async getTemplates() {
+    let data: {
+      templates: any[]
+    } = await this.request('getTemplates', {})
+    return data.templates
+  }
+  async deleteTemplate(id: number) {
+    await this.request('deleteTemplate', {
+      templateId: id,
+    })
+  }
+  async updateTemplate(
+    id: number,
+    name: string | null = null,
+    content: string | null = null,
+    description: string | null = null,
+  ) {
+    await this.request('updateTemplate', {
+      templateId: id,
+      name: name,
+      content: content,
+      description: description,
+    })
+  }
+  async addTemplate(name: string, content: string, description: string) {
+    let data = await this.request('createTemplate', {
+      name: name,
+      content: content,
+      description: description,
+    })
+    return data.id
+  }
 }
 
 export const api = new Api()
