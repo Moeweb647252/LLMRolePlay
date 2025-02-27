@@ -72,6 +72,7 @@ const addParticipantForm = ref({
   presetId: null as null | number,
   characterId: null as null | number,
   avatar: null as null | number,
+  avatarFileList: [] as UploadFileInfo[],
   onConfirm: () => {},
 })
 
@@ -84,6 +85,8 @@ const addChatAddParticipant = () => {
     presetId: null,
     characterId: null,
     avatar: null,
+
+    avatarFileList: [] as UploadFileInfo[],
     onConfirm: () => {},
   }
 }
@@ -105,6 +108,7 @@ const uploadAvatar = async (
   },
   value: any,
 ) => {
+  return true
   let data = await file.file.file?.arrayBuffer()
   if (data) {
     let id = await api.uploadFile(data)
@@ -112,6 +116,8 @@ const uploadAvatar = async (
   }
   return false
 }
+
+const addChat = async () => {}
 </script>
 <template>
   <n-layout :has-sider="showSider" class="full bfc">
@@ -218,7 +224,12 @@ const uploadAvatar = async (
         <n-input v-model:value="addParticipantForm.name" />
       </n-form-item>
       <n-form-item label="头像">
-        <n-upload @before-upload="uploadAvatar($event, addParticipantForm)" />
+        <n-upload
+          v-model:file-list="addParticipantForm.avatarFileList"
+          @before-upload="uploadAvatar($event, addParticipantForm)"
+          :multiple="false"
+          list-type="image-card"
+        />
       </n-form-item>
       <n-form-item label="模型">
         <n-select v-model:value="addParticipantForm.modelId" filterable :options="modelOptions" />

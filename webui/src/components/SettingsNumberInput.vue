@@ -2,10 +2,10 @@
 import { MdCreate } from '@vicons/ionicons4'
 import { ref } from 'vue'
 
-let editingValue = ref(null as boolean | null)
+let editingValue = ref(null as number | null)
 let editing = ref(false)
 
-const value = defineModel<boolean | null>('value', {
+const value = defineModel<number | null>('value', {
   default: null,
 })
 
@@ -30,13 +30,15 @@ const cancel = () => {
 
 <template>
   <div v-if="editing">
-    <n-switch v-model:value="editingValue" />
-    <n-button @click="confirm">确定</n-button>
-    <n-button @click="cancel">取消</n-button>
+    <n-input-group>
+      <n-input v-model:value="editingValue" type="number" />
+      <n-button @click="confirm">确定</n-button>
+      <n-button @click="cancel">取消</n-button>
+    </n-input-group>
   </div>
   <div v-else>
     <n-space :wrap="false" align="center">
-      {{ value ? '是' : '否' }}
+      {{ value }}
       <n-button quaternary circle @click="startEditing">
         <template #icon>
           <n-icon>

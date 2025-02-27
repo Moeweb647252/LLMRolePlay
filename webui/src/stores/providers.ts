@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { OpenAI } from 'openai'
 
 export interface Model {
   id: number | null
@@ -11,7 +10,7 @@ export interface Model {
   settings: {
     temperture: number | null
     top_p: number | null
-    max_tokne: number | null
+    max_tokens: number | null
     [key: string]: any | null
   }
   provider: Provider | null

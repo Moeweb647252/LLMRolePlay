@@ -2,6 +2,8 @@ import { sha256 } from 'js-sha256'
 import { useSettingsStore } from './stores/settings'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import type { Preset } from './stores/presets'
+import type { Character } from './stores/characters'
 
 export class NoTokenError extends Error {
   constructor() {
@@ -16,7 +18,7 @@ export class Api {
   async request(path: string, body: object, method: string = 'POST') {
     const router = useRouter()
     const token = this.store!.user?.token
-    if (!token) {
+    if (!token && path !== 'login') {
       throw new NoTokenError()
     }
     const headers = {
@@ -73,7 +75,7 @@ export class Api {
     return data.id
   }
 
-  async getCharacters() {
+  async getCharacters(): Promise<Character[]> {
     let data: {
       characters: any[]
     } = await this.request('getCharacters', {})
@@ -83,6 +85,7 @@ export class Api {
         name: character.name,
         description: character.description,
         settings: JSON.parse(character.settings),
+        isPublic: character.isPublic,
       }
     })
   }
@@ -95,17 +98,19 @@ export class Api {
 
   async updateCharacter(
     id: number,
-    name: string | null = null,
-    description: string | null = null,
-    settings: object | null = null,
-    isPublic: boolean | null = null,
+    options: {
+      name?: string,
+      description?: string,
+      settings?: object,
+      isPublic?: boolean
+    } = {}
   ) {
     await this.request('updateCharacter', {
       characterId: id,
-      name: name,
-      description: description,
-      settings: settings != null ? JSON.stringify(settings) : null,
-      isPublic: isPublic,
+      name: options.name ?? null,
+      description: options.description ?? null,
+      settings: options.settings != null ? JSON.stringify(options.settings) : null,
+      isPublic: options.isPublic ?? null,
     })
   }
 
@@ -119,7 +124,7 @@ export class Api {
     return data.id
   }
 
-  async getPresets() {
+  async getPresets(): Promise<Preset[]> {
     let data: {
       presets: any[]
     } = await this.request('getPresets', {})
@@ -130,6 +135,7 @@ export class Api {
         name: preset.name,
         description: preset.description,
         settings: JSON.parse(preset.settings),
+        isPublic: preset.isPublic,
       }
     })
   }
@@ -142,17 +148,19 @@ export class Api {
 
   async updatePreset(
     id: number,
-    name: string | null = null,
-    description: string | null = null,
-    settings: object | null = null,
-    isPublic: boolean | null = null,
+    options: {
+      name?: string,
+      description?: string,
+      settings?: object,
+      isPublic?: boolean
+    } = {}
   ) {
     await this.request('updatePreset', {
       presetId: id,
-      name: name,
-      description: description,
-      settings: settings != null ? JSON.stringify(settings) : null,
-      isPublic: isPublic,
+      name: options.name ?? null,
+      description: options.description ?? null,
+      settings: options.settings != null ? JSON.stringify(options.settings) : null,
+      isPublic: options.isPublic ?? null,
     })
   }
 
@@ -212,21 +220,23 @@ export class Api {
 
   async updateProvider(
     id: number,
-    name: string | null = null,
-    url: string | null = null,
-    apiKey: string | null = null,
-    description: string | null = null,
-    type: string | null = null,
-    settings: object | null = null,
+    options: {
+      name?: string,
+      url?: string,
+      apiKey?: string,
+      description?: string,
+      type?: string,
+      settings?: object
+    } = {}
   ) {
     await this.request('updateProvider', {
       providerId: id,
-      name: name,
-      baseUrl: url,
-      apiKey: apiKey,
-      description: description,
-      type: type,
-      settings: settings != null ? JSON.stringify(settings) : null,
+      name: options.name ?? null,
+      baseUrl: options.url ?? null,
+      apiKey: options.apiKey ?? null,
+      description: options.description ?? null,
+      type: options.type ?? null,
+      settings: options.settings != null ? JSON.stringify(options.settings) : null,
     })
   }
 
@@ -256,19 +266,21 @@ export class Api {
 
   async updateModel(
     id: number,
-    name: string | null = null,
-    modelName: string | null = null,
-    description: string | null = null,
-    settings: object | null = null,
-    isPublic: boolean | null = null,
+    options: {
+      name?: string,
+      modelName?: string,
+      description?: string,
+      settings?: object,
+      isPublic?: boolean
+    } = {}
   ) {
     await this.request('updateModel', {
       modelId: id,
-      name: name,
-      modelName: modelName,
-      description: description,
-      settings: settings != null ? JSON.stringify(settings) : null,
-      isPublic: isPublic,
+      name: options.name ?? null,
+      modelName: options.modelName ?? null,
+      description: options.description ?? null,
+      settings: options.settings != null ? JSON.stringify(options.settings) : null,
+      isPublic: options.isPublic ?? null,
     })
   }
 
@@ -290,15 +302,17 @@ export class Api {
 
   async updateUser(
     id: number,
-    username: string | null = null,
-    email: string | null = null,
-    group: number | null,
+    options: {
+      username?: string,
+      email?: string,
+      group?: number
+    } = {}
   ) {
     await this.request('updateUser', {
       userId: id,
-      username: username,
-      email: email,
-      group: group,
+      username: options.username ?? null,
+      email: options.email ?? null,
+      group: options.group ?? null,
     })
   }
 
@@ -341,17 +355,19 @@ export class Api {
   }
   async updateTemplate(
     id: number,
-    name: string | null = null,
-    content: string | null = null,
-    description: string | null = null,
-    isPublic: boolean | null = null,
+    options: {
+      name?: string,
+      content?: string,
+      description?: string,
+      isPublic?: boolean
+    } = {}
   ) {
     await this.request('updateTemplate', {
       templateId: id,
-      name: name,
-      content: content,
-      description: description,
-      isPublic: isPublic,
+      name: options.name ?? null,
+      content: options.content ?? null,
+      description: options.description ?? null,
+      isPublic: options.isPublic ?? null,
     })
   }
   async addTemplate(name: string, content: string, description: string, isPublic: boolean = false) {
@@ -392,21 +408,23 @@ export class Api {
   }
   async updateParticipant(
     id: number,
-    characterId: number | null = null,
-    presetId: number | null = null,
-    templateId: number | null = null,
-    name: string | null = null,
-    avatar: number | null = null,
-    settings: object | null = null,
+    options: {
+      characterId?: number,
+      presetId?: number,
+      templateId?: number,
+      name?: string,
+      avatar?: number,
+      settings?: object,
+    } = {}
   ) {
     await this.request('updateParticipant', {
       participantId: id,
-      characterId: characterId,
-      presetId: presetId,
-      templateId: templateId,
-      name: name,
-      avatar: avatar,
-      settings: settings != null ? JSON.stringify(settings) : null,
+      characterId: options.characterId ?? null,
+      presetId: options.presetId ?? null,
+      templateId: options.templateId ?? null,
+      name: options.name ?? null,
+      avatar: options.avatar ?? null,
+      settings: options.settings != null ? JSON.stringify(options.settings) : null,
     })
   }
   async uploadFile(data: ArrayBuffer) {

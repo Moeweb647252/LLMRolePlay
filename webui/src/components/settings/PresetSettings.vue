@@ -62,9 +62,6 @@ const editPreset = (preset: Preset) => {
 }
 
 const deletePreset = async (preset: Preset) => {
-  await api.deletePreset(preset.id)
-  presets.splice(presets.indexOf(preset), 1)
-  message.success('删除成功')
   model.create({
     title: '删除预设',
     content: `确定删除预设 ${preset.name} ?`,
@@ -149,7 +146,9 @@ const deletePreset = async (preset: Preset) => {
           :value="editPresetForm.preset!.name"
           @confirm="
             async () =>
-              await api.updatePreset(editPresetForm.preset!.id, editPresetForm.preset!.name)
+              await api.updatePreset(editPresetForm.preset!.id, {
+                name: editPresetForm.preset!.name,
+              })
           "
         ></SettingsInput>
       </n-form-item>
@@ -158,11 +157,9 @@ const deletePreset = async (preset: Preset) => {
           :value="editPresetForm.preset!.description"
           @confirm="
             async () =>
-              await api.updatePreset(
-                editPresetForm.preset!.id,
-                undefined,
-                editPresetForm.preset!.description,
-              )
+              await api.updatePreset(editPresetForm.preset!.id, {
+                description: editPresetForm.preset!.description,
+              })
           "
         ></SettingsInput>
       </n-form-item>
@@ -170,14 +167,12 @@ const deletePreset = async (preset: Preset) => {
         <SettingsSwitch
           :value="editPresetForm.preset!.isPublic"
           @confirm="
-            async () =>
-              await api.updatePreset(
-                editPresetForm.preset!.id,
-                undefined,
-                undefined,
-                undefined,
-                editPresetForm.preset!.isPublic,
-              )
+            async (isPublic) => {
+              await api.updatePreset(editPresetForm.preset!.id, {
+                isPublic: isPublic,
+              })
+              editPresetForm.preset!.isPublic = isPublic
+            }
           "
         ></SettingsSwitch>
       </n-form-item>
@@ -186,7 +181,9 @@ const deletePreset = async (preset: Preset) => {
           :value="editPresetForm.preset!.settings"
           @confirm="
             async (settings: any) => {
-              await api.updatePreset(editPresetForm.preset!.id, undefined, undefined, settings)
+              await api.updatePreset(editPresetForm.preset!.id, {
+                settings: settings,
+              })
               editPresetForm.preset!.settings = settings
             }
           "

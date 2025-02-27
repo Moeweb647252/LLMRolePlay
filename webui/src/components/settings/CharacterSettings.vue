@@ -4,7 +4,7 @@ import { useCharacterStore, type Character } from '@/stores/characters'
 import { useMessage, useModal } from 'naive-ui'
 import { ref } from 'vue'
 import SettingsInput from '../SettingsInput.vue'
-
+import SettingsSwitch from '../SettingsSwitch.vue'
 const characters = useCharacterStore().characters
 const message = useMessage()
 const model = useModal()
@@ -60,9 +60,6 @@ const editCharacter = (character: Character) => {
 }
 
 const deleteCharacter = async (character: Character) => {
-  await api.deleteCharacter(character.id)
-  characters.splice(characters.indexOf(character), 1)
-  message.success('删除成功')
   model.create({
     title: '删除角色',
     content: `确定删除角色 ${character.name} ?`,
@@ -121,7 +118,7 @@ const deleteCharacter = async (character: Character) => {
       <n-form-item label="设置">
         <n-dynamic-input
           v-model:value="addCharacterForm.settings"
-          character="pair"
+          preset="pair"
           key-placeholder="设置名"
           value-placeholder="值"
         />
@@ -147,10 +144,9 @@ const deleteCharacter = async (character: Character) => {
           :value="editCharacterForm.character!.name"
           @confirm="
             async () =>
-              await api.updateCharacter(
-                editCharacterForm.character!.id,
-                editCharacterForm.character!.name,
-              )
+              await api.updateCharacter(editCharacterForm.character!.id, {
+                name: editCharacterForm.character!.name,
+              })
           "
         ></SettingsInput>
       </n-form-item>
@@ -159,11 +155,9 @@ const deleteCharacter = async (character: Character) => {
           :value="editCharacterForm.character!.description"
           @confirm="
             async () =>
-              await api.updateCharacter(
-                editCharacterForm.character!.id,
-                undefined,
-                editCharacterForm.character!.description,
-              )
+              await api.updateCharacter(editCharacterForm.character!.id, {
+                description: editCharacterForm.character!.description,
+              })
           "
         ></SettingsInput>
       </n-form-item>
@@ -171,14 +165,12 @@ const deleteCharacter = async (character: Character) => {
         <SettingsSwitch
           :value="editCharacterForm.character!.isPublic"
           @confirm="
-            async () =>
-              await api.updateCharacter(
-                editCharacterForm.character!.id,
-                undefined,
-                undefined,
-                undefined,
-                editCharacterForm.character!.isPublic,
-              )
+            async (isPublic: boolean) => {
+              await api.updatePreset(editCharacterForm.character!.id, {
+                isPublic: isPublic,
+              })
+              editCharacterForm.character!.isPublic = isPublic
+            }
           "
         ></SettingsSwitch>
       </n-form-item>
@@ -187,12 +179,9 @@ const deleteCharacter = async (character: Character) => {
           :value="editCharacterForm.character!.settings"
           @confirm="
             async (settings: any) => {
-              await api.updateCharacter(
-                editCharacterForm.character!.id,
-                undefined,
-                undefined,
-                settings,
-              )
+              await api.updateCharacter(editCharacterForm.character!.id, {
+                settings: settings,
+              })
               editCharacterForm.character!.settings = settings
             }
           "

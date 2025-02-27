@@ -26,7 +26,7 @@ const addTemplate = async () => {
     visible: false,
     isPublic: false,
   }
-  let id = await api.addTemplate(data.name, data.description, data.content)
+  let id = await api.addTemplate(data.name, data.content, data.description)
   templates.push({
     id,
     name: data.name,
@@ -60,12 +60,9 @@ const editTemplate = (template: Template) => {
 }
 
 const deleteTemplate = async (template: Template) => {
-  await api.deleteTemplate(template.id)
-  templates.splice(templates.indexOf(template), 1)
-  message.success('删除成功')
   model.create({
-    title: '删除角色',
-    content: `确定删除角色 ${template.name} ?`,
+    title: '删除模板',
+    content: `确定删除模板 ${template.name} ?`,
     preset: 'dialog',
     positiveText: '确定',
     negativeText: '取消',
@@ -84,7 +81,7 @@ const deleteTemplate = async (template: Template) => {
 <template>
   <div style="padding: 2em">
     <div class="header">
-      <h3>角色</h3>
+      <h3>模板</h3>
       <n-button type="primary" @click="addTemplateForm.visible = true">添加</n-button>
     </div>
     <div>
@@ -102,7 +99,7 @@ const deleteTemplate = async (template: Template) => {
     </div>
   </div>
   <n-modal
-    title="添加角色"
+    title="添加模板"
     size="medium"
     v-model:show="addTemplateForm.visible"
     preset="card"
@@ -119,12 +116,7 @@ const deleteTemplate = async (template: Template) => {
         <n-switch v-model:value="addTemplateForm.isPublic" />
       </n-form-item>
       <n-form-item label="内容">
-        <n-dynamic-input
-          v-model:value="addTemplateForm.content"
-          template="pair"
-          key-placeholder="内容名"
-          value-placeholder="值"
-        />
+        <n-input type="textarea" v-model:value="addTemplateForm.content" />
       </n-form-item>
     </n-form>
     <template #footer>
@@ -135,7 +127,7 @@ const deleteTemplate = async (template: Template) => {
     </template>
   </n-modal>
   <n-modal
-    title="编辑角色"
+    title="编辑模板"
     size="medium"
     v-model:show="editTemplateForm.visible"
     preset="card"
@@ -147,10 +139,9 @@ const deleteTemplate = async (template: Template) => {
           :value="editTemplateForm.template!.name"
           @confirm="
             async () =>
-              await api.updateTemplate(
-                editTemplateForm.template!.id,
-                editTemplateForm.template!.name,
-              )
+              await api.updateTemplate(editTemplateForm.template!.id, {
+                name: editTemplateForm.template!.name,
+              })
           "
         ></SettingsInput>
       </n-form-item>
@@ -159,12 +150,9 @@ const deleteTemplate = async (template: Template) => {
           :value="editTemplateForm.template!.description"
           @confirm="
             async () =>
-              await api.updateTemplate(
-                editTemplateForm.template!.id,
-                null,
-                null,
-                editTemplateForm.template!.description,
-              )
+              await api.updateTemplate(editTemplateForm.template!.id, {
+                description: editTemplateForm.template!.description,
+              })
           "
         ></SettingsInput>
       </n-form-item>
@@ -172,27 +160,28 @@ const deleteTemplate = async (template: Template) => {
         <SettingsSwitch
           :value="editTemplateForm.template!.isPublic"
           @confirm="
-            async () =>
-              await api.updateTemplate(
-                editTemplateForm.template!.id,
-                null,
-                null,
-                null,
-                editTemplateForm.template!.isPublic,
-              )
+            async (isPublic: boolean) => {
+              await api.updateTemplate(editTemplateForm.template!.id, {
+                isPublic: isPublic,
+              })
+              editTemplateForm.template!.isPublic = isPublic
+            }
           "
         ></SettingsSwitch>
       </n-form-item>
       <n-form-item label="内容">
-        <SettingsDynamicInput
+        <SettingsInput
           :value="editTemplateForm.template!.content"
+          type="textarea"
           @confirm="
             async (content: any) => {
-              await api.updateTemplate(editTemplateForm.template!.id, null, content)
+              await api.updateTemplate(editTemplateForm.template!.id, {
+                content,
+              })
               editTemplateForm.template!.content = content
             }
           "
-        ></SettingsDynamicInput>
+        ></SettingsInput>
       </n-form-item>
     </n-form>
   </n-modal>

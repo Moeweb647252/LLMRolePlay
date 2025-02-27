@@ -5,7 +5,7 @@ import { ref } from 'vue'
 let editingValue = ref(null as string | null)
 let editing = ref(false)
 const props = defineProps<{
-  type?: 'text' | 'select'
+  type?: 'text' | 'select' | 'textarea'
   options?: {
     label: string
     value: string
@@ -25,7 +25,7 @@ const startEditing = () => {
 
 const confirm = () => {
   value.value = editingValue.value
-  emit('confirm')
+  emit('confirm', editingValue.value)
   editing.value = false
 }
 
@@ -41,6 +41,7 @@ const cancel = () => {
       <n-input v-if="props.type == 'text' || props.type == null" v-model:value="editingValue" />
       <n-select v-if="props.type == 'select'" v-model:value="editingValue" :options="props.options">
       </n-select>
+      <n-input v-if="props.type == 'textarea'" v-model:value="editingValue" type="textarea" />
       <n-button @click="confirm">确定</n-button>
       <n-button @click="cancel">取消</n-button>
     </n-input-group>

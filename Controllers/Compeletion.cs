@@ -37,6 +37,7 @@ namespace LLMRolePlay.Controllers {
                             string? delta = chunk.choices?.FirstOrDefault()?.delta?.content;
                             if (delta != null) {
                                 content += delta;
+                                await Response.WriteAsync("data: "+delta+"\n");
                             }
                         } else {
                             break;
@@ -48,7 +49,7 @@ namespace LLMRolePlay.Controllers {
                 var newMessage = new Message("assistant", content, 0, chat.Id, participant.Id);
                 _dBContext.Messages.Add(newMessage);
                 await _dBContext.SaveChangesAsync();
-                await Response.WriteAsync("[DONE]");
+                await Response.WriteAsync("data: [DONE]");
             }
         }
     }
