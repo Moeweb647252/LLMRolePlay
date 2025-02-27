@@ -18,7 +18,9 @@ namespace LLMRolePlay.Models
     public uint Tokens { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public uint ParticipantId { get; set; }
+    public uint FileId { get; set; }
     public Chat Chat { get; set; } = null!;
+
     [ForeignKey("Chat")]
     public uint ChatId { get; set; }
     public Message(string role, string content, uint tokens, uint chatId, uint participantId)
