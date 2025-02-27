@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { useProviderStore, type Model, type Provider } from '@/stores/providers'
 import { h, ref } from 'vue'
-import { MdAdd } from '@vicons/ionicons4'
-import { NTag, useMessage, useModal } from 'naive-ui'
+import { MdAdd, MdCreate } from '@vicons/ionicons4'
+import { NButton, NIcon, NTag, NDynamicTags, useMessage, useModal } from 'naive-ui'
 import { api } from '@/api'
 import SettingsInput from '../SettingsInput.vue'
 import SettingsNumberInput from '../SettingsNumberInput.vue'
+import SettingsSwitch from '../SettingsSwitch.vue'
 
 const providers = useProviderStore().providers
-const messgae = useMessage()
+const message = useMessage()
 const model = useModal()
 
 const providerTypeOptions = [
@@ -34,20 +35,70 @@ const addProviderForm = ref({
   type: 'openai' as 'openai' | 'google' | 'azure',
 })
 
-const renderProviderModelsTag = (model: Model, index: number) => {
+const renderProviderModelsTag = (_model: Model, index: number, onEdit: (model: Model) => void) => {
   return h(
     NTag,
     {
       closable: true,
       onClose: () => {
-        addProviderForm.value.models.splice(index, 1)
-      },
-      onClick: () => {
-        console.log(model)
+        model.create({
+          title: '删除Model',
+          content: `确定删除Model ${_model.name} ?`,
+          preset: 'dialog',
+          positiveText: '确定',
+          negativeText: '取消',
+          onPositiveClick: async () => {
+            try {
+              await api.deleteModel(_model.id!)
+              editProviderForm.value.provider!.models.splice(index, 1)
+            } catch (error) {
+              console.error(error)
+              message.error('Model删除失败.')
+              return
+            }
+            message.success('Model删除成功.')
+          },
+        })
       },
     },
     {
-      default: () => model.name,
+      default: () =>
+        h(
+          'div',
+          {
+            style: {
+              display: 'flex',
+              'align-items': 'center',
+            },
+          },
+          [
+            _model.name,
+            h(
+              NButton,
+              {
+                type: 'default',
+                text: true,
+                style: {
+                  'text-size': '1em',
+                  'margin-left': '0.5em',
+                  width: '1em',
+                  height: '1em',
+                },
+                class: 'edit-icon',
+                onClick: () => {
+                  onEdit(_model)
+                },
+              },
+              {
+                icon: () =>
+                  h(NIcon, {
+                    component: MdCreate,
+                    class: 'n-base-icon n-base-close',
+                  }),
+              },
+            ),
+          ],
+        ),
     },
   )
 }
@@ -65,10 +116,10 @@ const deleteProvider = async (provider: any) => {
         providers.splice(providers.indexOf(provider), 1)
       } catch (error) {
         console.error(error)
-        messgae.error('Provider删除失败.')
+        message.error('Provider删除失败.')
         return
       }
-      messgae.success('Provider删除成功.')
+      message.success('Provider删除成功.')
     },
   })
 }
@@ -169,11 +220,11 @@ const addProvider = async () => {
     providers.push(provider)
   } catch (error) {
     console.error(error)
-    messgae.error('Provider添加失败.')
+    message.error('Provider添加失败.')
     return
   }
 
-  messgae.success('Provider添加成功.')
+  message.success('Provider添加成功.')
 }
 
 const editProviderForm = ref({
@@ -219,7 +270,12 @@ const editModelForm = ref({
   model: null as Model | null,
 })
 
-const editProviderEditModel = () => {}
+const editProviderEditModel = (model: Model) => {
+  editModelForm.value = {
+    visible: true,
+    model: model,
+  }
+}
 
 const startEditModel = (model: Model) => {
   editModelForm.value = {
@@ -277,7 +333,17 @@ const startEditModel = (model: Model) => {
       <n-form-item label="API Key">
         <n-input v-model:value="addProviderForm.apiKey"></n-input>
       </n-form-item>
-      <n-dynamic-tags v-model:value="addProviderForm.models" :render-tag="renderProviderModelsTag">
+      <n-dynamic-tags
+        v-model:value="addProviderForm.models as any"
+        :render-tag="
+          (a: any, b: any) =>
+            h(
+              NTag,
+              { closable: true, onClose: () => addProviderForm.models.splice(b, 1) },
+              { default: () => a.name },
+            )
+        "
+      >
         <template #trigger>
           <n-button size="small" type="primary" dashed @click="addProviderAddModel">
             <template #icon>
@@ -341,10 +407,10 @@ const startEditModel = (model: Model) => {
     size="medium"
     style="width: fit-content; min-width: 25em"
   >
-    <n-form label-placement="left">
+    <n-form label-placement="left" v-if="editProviderForm.provider">
       <n-form-item label="类型">
         <SettingsInput
-          v-model:value="editProviderForm.provider!.type"
+          v-model:value="editProviderForm.provider.type"
           @confirm="
             async () =>
               await api.updateProvider(editProviderForm.provider!.id, {
@@ -402,8 +468,9 @@ const startEditModel = (model: Model) => {
       </n-form-item>
       <n-form-item label="模型">
         <n-dynamic-tags
-          v-model:value="editProviderForm.provider!.models"
-          :render-tag="renderProviderModelsTag"
+          v-model:value="editProviderForm.provider!.models as any"
+          tag-class="model-tag"
+          :render-tag="(a: any, b: any) => renderProviderModelsTag(a, b, editProviderEditModel)"
         >
           <template #trigger>
             <n-button size="small" type="primary" dashed @click="editProviderAddModel">
@@ -419,11 +486,17 @@ const startEditModel = (model: Model) => {
       </n-form-item>
     </n-form>
   </n-modal>
-  <n-modal title="编辑Modal">
-    <n-form label-placement="left">
+  <n-modal
+    title="编辑Modal"
+    preset="card"
+    v-model:show="editModelForm.visible"
+    size="medium"
+    style="width: fit-content; min-width: 25em"
+  >
+    <n-form label-placement="left" v-if="editModelForm.model">
       <n-form-item label="名称">
         <SettingsInput
-          v-model:value="editModelForm.model!.name"
+          v-model:value="editModelForm.model.name"
           @confirm="
             async () => {
               await api.updateModel(editModelForm.model!.id!, {
@@ -435,7 +508,7 @@ const startEditModel = (model: Model) => {
       </n-form-item>
       <n-form-item label="模型名">
         <SettingsInput
-          v-model:value="editModelForm.model!.modelName"
+          v-model:value="editModelForm.model.modelName"
           @confirm="
             async () => {
               await api.updateModel(editModelForm.model!.id!, {
@@ -447,7 +520,7 @@ const startEditModel = (model: Model) => {
       </n-form-item>
       <n-form-item label="描述">
         <SettingsInput
-          v-model:value="editModelForm.model!.description"
+          v-model:value="editModelForm.model.description"
           @confirm="
             async () => {
               await api.updateModel(editModelForm.model!.id!, {
@@ -516,10 +589,18 @@ const startEditModel = (model: Model) => {
   </n-modal>
 </template>
 
-<style scoped>
+<style>
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.n-tag .edit-icon {
+  display: none;
+}
+
+.n-tag:hover .edit-icon {
+  display: flex;
 }
 </style>

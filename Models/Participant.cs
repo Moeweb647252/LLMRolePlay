@@ -33,6 +33,7 @@ namespace LLMRolePlay.Models
     public Template Template { get; set; } = null!;
     [ForeignKey("Template")]
     public uint TemplateId { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public Participant(uint modelId, uint characterId, uint presetId, uint chatId, uint templateId, string name, string settings, uint? avatar = null)
     {

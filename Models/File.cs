@@ -14,8 +14,10 @@ namespace LLMRolePlay.Models
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public uint Id { get; set; }
+    public string? FileName { get; set; }
     public byte[] Data { get; set; }
     public uint UserId { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public File(byte[] data, uint userId)
     {

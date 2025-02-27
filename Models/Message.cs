@@ -18,7 +18,8 @@ namespace LLMRolePlay.Models
     public uint Tokens { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public uint ParticipantId { get; set; }
-    public uint FileId { get; set; }
+    public uint? FileId { get; set; }
+    public string? FileType { get; set; }
     public Chat Chat { get; set; } = null!;
 
     [ForeignKey("Chat")]

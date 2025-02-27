@@ -99,11 +99,11 @@ export class Api {
   async updateCharacter(
     id: number,
     options: {
-      name?: string,
-      description?: string,
-      settings?: object,
+      name?: string
+      description?: string
+      settings?: object
       isPublic?: boolean
-    } = {}
+    } = {},
   ) {
     await this.request('updateCharacter', {
       characterId: id,
@@ -149,11 +149,11 @@ export class Api {
   async updatePreset(
     id: number,
     options: {
-      name?: string,
-      description?: string,
-      settings?: object,
+      name?: string
+      description?: string
+      settings?: object
       isPublic?: boolean
-    } = {}
+    } = {},
   ) {
     await this.request('updatePreset', {
       presetId: id,
@@ -194,7 +194,7 @@ export class Api {
         url: provider.url,
         apiKey: provider.apiKey,
         description: provider.description,
-        settings: provider.settings,
+        settings: JSON.parse(provider.settings),
         type: provider.type,
         models: [],
       }
@@ -204,6 +204,7 @@ export class Api {
           name: model.name,
           modelName: model.modelName,
           description: model.description,
+          settings: JSON.parse(model.settings),
           provider: ret,
         }
       })
@@ -221,13 +222,13 @@ export class Api {
   async updateProvider(
     id: number,
     options: {
-      name?: string,
-      url?: string,
-      apiKey?: string,
-      description?: string,
-      type?: string,
+      name?: string
+      url?: string
+      apiKey?: string
+      description?: string
+      type?: string
       settings?: object
-    } = {}
+    } = {},
   ) {
     await this.request('updateProvider', {
       providerId: id,
@@ -267,12 +268,12 @@ export class Api {
   async updateModel(
     id: number,
     options: {
-      name?: string,
-      modelName?: string,
-      description?: string,
-      settings?: object,
+      name?: string
+      modelName?: string
+      description?: string
+      settings?: object
       isPublic?: boolean
-    } = {}
+    } = {},
   ) {
     await this.request('updateModel', {
       modelId: id,
@@ -303,10 +304,10 @@ export class Api {
   async updateUser(
     id: number,
     options: {
-      username?: string,
-      email?: string,
+      username?: string
+      email?: string
       group?: number
-    } = {}
+    } = {},
   ) {
     await this.request('updateUser', {
       userId: id,
@@ -356,11 +357,11 @@ export class Api {
   async updateTemplate(
     id: number,
     options: {
-      name?: string,
-      content?: string,
-      description?: string,
+      name?: string
+      content?: string
+      description?: string
       isPublic?: boolean
-    } = {}
+    } = {},
   ) {
     await this.request('updateTemplate', {
       templateId: id,
@@ -409,13 +410,13 @@ export class Api {
   async updateParticipant(
     id: number,
     options: {
-      characterId?: number,
-      presetId?: number,
-      templateId?: number,
-      name?: string,
-      avatar?: number,
-      settings?: object,
-    } = {}
+      characterId?: number
+      presetId?: number
+      templateId?: number
+      name?: string
+      avatar?: number
+      settings?: object
+    } = {},
   ) {
     await this.request('updateParticipant', {
       participantId: id,

@@ -21,6 +21,7 @@ namespace LLMRolePlay.Models
     public string Password { get; set; }
     public string? Token { get; private set; }
     public Group Group { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public User(string userName, string email, string password, Group group)
     {

@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { api } from '@/api'
 import ChatBox from '@/components/ChatBox.vue'
-import { useCharacterStore } from '@/stores/characters'
+import { useCharacterStore, type Character } from '@/stores/characters'
 import type { Chat, Participant } from '@/stores/chats'
-import { usePresetStore } from '@/stores/presets'
+import { usePresetStore, type Preset } from '@/stores/presets'
 import { useProviderStore } from '@/stores/providers'
 import { useSettingsStore } from '@/stores/settings'
-import { useTemplateStore } from '@/stores/templates'
+import { useTemplateStore, type Template } from '@/stores/templates'
 import { IosMenu, MdAdd, MdContact } from '@vicons/ionicons4'
 import { NTag, type UploadFileInfo } from 'naive-ui'
 import { computed, h, ref } from 'vue'
@@ -57,7 +57,7 @@ const addChatForm = ref({
   name: '',
   description: '',
   settings: [],
-  participants: [],
+  participants: [] as any[],
 })
 
 const startAddChat = () => {
@@ -71,7 +71,7 @@ const addParticipantForm = ref({
   modelId: null as null | number,
   presetId: null as null | number,
   characterId: null as null | number,
-  avatar: null as null | number,
+  templateId: null as null | number,
   avatarFileList: [] as UploadFileInfo[],
   onConfirm: () => {},
 })
@@ -84,10 +84,18 @@ const addChatAddParticipant = () => {
     modelId: null,
     presetId: null,
     characterId: null,
-    avatar: null,
-
+    templateId: null,
     avatarFileList: [] as UploadFileInfo[],
-    onConfirm: () => {},
+    onConfirm: () => {
+      addChatForm.value.participants.push({
+        name: addParticipantForm.value.name,
+        settings: addParticipantForm.value.settings,
+        modelId: addParticipantForm.value.modelId,
+        presetId: addParticipantForm.value.presetId,
+        characterId: addParticipantForm.value.characterId,
+      })
+      addParticipantForm.value.visible = false
+    },
   }
 }
 
@@ -109,12 +117,6 @@ const uploadAvatar = async (
   value: any,
 ) => {
   return true
-  let data = await file.file.file?.arrayBuffer()
-  if (data) {
-    let id = await api.uploadFile(data)
-    value.avatar = id
-  }
-  return false
 }
 
 const addChat = async () => {}
@@ -229,6 +231,7 @@ const addChat = async () => {}
           @before-upload="uploadAvatar($event, addParticipantForm)"
           :multiple="false"
           list-type="image-card"
+          :trigger-style="{ display: addParticipantForm.avatarFileList.length ? 'none' : 'block' }"
         />
       </n-form-item>
       <n-form-item label="模型">
@@ -239,7 +242,7 @@ const addChat = async () => {}
           v-model:value="addParticipantForm.presetId"
           filterable
           :options="
-            presets.map((p) => {
+            presets.map((p: Preset) => {
               return {
                 label: p.name,
                 value: p.id,
@@ -253,7 +256,7 @@ const addChat = async () => {}
           v-model:value="addParticipantForm.characterId"
           filterable
           :options="
-            characters.map((c) => {
+            characters.map((c: Character) => {
               return {
                 label: c.name,
                 value: c.id,
@@ -267,7 +270,7 @@ const addChat = async () => {}
           v-model:value="addParticipantForm.avatar"
           filterable
           :options="
-            templates.map((t) => {
+            templates.map((t: Template) => {
               return {
                 label: t.name,
                 value: t.id,

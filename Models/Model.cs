@@ -21,6 +21,7 @@ namespace LLMRolePlay.Models
     public Provider Provider { get; set; } = null!;
     [ForeignKey("Provider")]
     public uint ProviderId { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public Model(string name, string modelName, string settings, uint providerId, bool isPublic, string description = "")
     {
       Name = name;

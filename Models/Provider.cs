@@ -21,6 +21,7 @@ namespace LLMRolePlay.Models
     public string Description { get; set; }
     public ICollection<Model> Models { get; } = new List<Model>();
     public uint UserId { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public Provider(string name, string type, string settings, string baseUrl, string apiKey, uint userId, string description = "")
     {
       Name = name;

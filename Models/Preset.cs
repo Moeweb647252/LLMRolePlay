@@ -18,6 +18,7 @@ namespace LLMRolePlay.Models
     public string Description { get; set; }
     public uint UserId { get; set; }
     public bool IsPublic { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public Preset(string name, string settings, uint userId, string description = "", bool isPublic = false)
     {

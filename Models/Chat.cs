@@ -19,6 +19,7 @@ namespace LLMRolePlay.Models
     public ICollection<Message> Messages { get; } = new List<Message>();
     public ICollection<Participant> Participants { get; } = new List<Participant>();
     public uint UserId { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public Chat(string name, string settings, uint userId)
     {
       Name = name;
