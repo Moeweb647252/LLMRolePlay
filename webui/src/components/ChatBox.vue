@@ -1,15 +1,9 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
 import { IosSend } from '@vicons/ionicons4'
-import type { Chat } from '@/stores/chats'
+import { Chat } from '@/types/chat'
 import { api, generate } from '@/api'
-
-type Message = {
-  id: number
-  content: string
-  role: string
-  createdAt: string
-}
+import type { Message } from '@/types/chat'
 
 const participantIndex = ref(0)
 
@@ -17,23 +11,49 @@ const props = defineProps<{
   chat: Chat
 }>()
 
-const messages = ref<Message[]>([])
+const messages = ref<Message[]>(await api.getMessages(props.chat.id!))
+const input = ref('')
+const generating = ref(false)
 
-onMounted(async () => {
-  messages.value = await api.getMessages(props.chat.id)
-})
+const addMessage = async () => {
+  const msg = reactive({
+    id: 0,
+    content: input.value,
+    role: 'user',
+    participantId: props.chat.participants[0].id!,
+    createdAt: new Date().toISOString(),
+  })
+  input.value = ''
+  messages.value.push(msg)
+  let id = await api.addMessage(props.chat.id!, msg.content, msg.role)
+  msg.id = id
+  await generateMessage()
+}
 
 const generateMessage = async () => {
+  generating.value = true
   const msg = reactive({
     id: 0,
     content: '',
     role: 'assistant',
+    participantId: props.chat.participants[participantIndex.value].id!,
     createdAt: new Date().toISOString(),
   })
   messages.value.push(msg)
-  await generate(props.chat.id, props.chat.participants[participantIndex.value].id, (delta) => {
-    msg.content += delta
-  })
+  let id = await generate(
+    props.chat.id!,
+    props.chat.participants[participantIndex.value].id!,
+    (delta) => {
+      msg.content += delta
+    },
+  )
+  msg.id = id
+  generating.value = false
+}
+
+const deleteMessage = async (message: Message) => {
+  await api.deleteMessage(message.id!)
+  messages.value = messages.value.filter((i) => i.id !== message.id)
 }
 </script>
 
@@ -48,13 +68,25 @@ const generateMessage = async () => {
       <div class="chat-box">
         <div class="messages">
           <n-scrollbar style="height: 100%; width: calc(100% - 2em)">
-            <Message v-for="i in messages" class="message" :key="i.id"></Message>
+            <Message
+              v-for="i in messages"
+              class="message"
+              :key="i.id"
+              :content="i.content"
+              :name="
+                i.participantId
+                  ? chat.participants.find((c) => c.id === i.participantId)?.name
+                  : '你'
+              "
+              @delete="deleteMessage(i)"
+            ></Message>
           </n-scrollbar>
         </div>
         <div class="input">
           <n-grid style="width: 100%" x-gap="12" :cols="2">
             <n-gi>
               <n-input
+                v-model:value="input"
                 type="textarea"
                 placeholder="Input Message"
                 round
@@ -64,7 +96,14 @@ const generateMessage = async () => {
                 }"
               >
                 <template #suffix>
-                  <n-button type="primary" size="small" strong secondary>
+                  <n-button
+                    :disabled="generating"
+                    type="primary"
+                    size="small"
+                    strong
+                    secondary
+                    @click="addMessage"
+                  >
                     <template #icon>
                       <n-icon>
                         <IosSend />
@@ -76,8 +115,26 @@ const generateMessage = async () => {
             </n-gi>
             <n-gi>
               <n-input-group>
-                <n-select></n-select>
-                <n-button type="primary" strong secondary> 生成 </n-button>
+                <n-select
+                  v-model:value="participantIndex"
+                  :options="
+                    chat.participants.map((c, index) => {
+                      return {
+                        label: c.name,
+                        value: index,
+                      }
+                    })
+                  "
+                ></n-select>
+                <n-button
+                  :disabled="generating"
+                  type="primary"
+                  strong
+                  secondary
+                  @click="generateMessage"
+                >
+                  生成
+                </n-button>
               </n-input-group>
             </n-gi>
           </n-grid>

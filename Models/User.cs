@@ -20,6 +20,7 @@ namespace LLMRolePlay.Models
     public string Email { get; set; }
     public string Password { get; set; }
     public string? Token { get; private set; }
+    public string? Settings { get; set; }
     public Group Group { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 

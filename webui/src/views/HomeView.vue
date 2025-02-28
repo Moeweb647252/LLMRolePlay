@@ -3,18 +3,20 @@ import { api } from '@/api'
 import ChatBox from '@/components/ChatBox.vue'
 import { type Character } from '@/types/character'
 import { useSettingsStore } from '@/stores/settings'
-import { IosMenu, MdAdd, MdContact } from '@vicons/ionicons4'
-import { NTag, type UploadFileInfo } from 'naive-ui'
+import { IosMenu, MdAdd, MdContact, MdCreate, MdClose } from '@vicons/ionicons4'
+import { NTag, useMessage, type UploadFileInfo, useModal } from 'naive-ui'
 import { computed, h, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import type { Provider } from '@/types/provider'
-import type { Preset } from '@/types/preset'
-import type { Template } from '@/types/template'
-import type { Chat, Participant } from '@/types/chat'
+import { Model, Provider } from '@/types/provider'
+import { Preset } from '@/types/preset'
+import { Template } from '@/types/template'
+import { Chat, Participant } from '@/types/chat'
 
 const settings = useSettingsStore()
 const router = useRouter()
 const showSider = ref(true)
+const message = useMessage()
+const modal = useModal()
 
 const providers = ref([] as Provider[])
 const presets = ref([] as Preset[])
@@ -23,6 +25,7 @@ const templates = ref([] as Template[])
 const chats = ref(await api.getChats())
 
 const currentChat = ref(null as Chat | null)
+const chatBoxKey = ref(0)
 
 const renderAddChatParticipant = (paticipant: Participant, index: number) => {
   return h(
@@ -32,7 +35,9 @@ const renderAddChatParticipant = (paticipant: Participant, index: number) => {
       onClose: () => {},
       onClick: () => {},
     },
-    {},
+    {
+      default: () => paticipant.name,
+    },
   )
 }
 
@@ -61,18 +66,33 @@ const addChatForm = ref({
   participants: [] as any[],
 })
 
-const startAddChat = () => {
+const startAddChat = async () => {
+  addChatForm.value = {
+    visible: true,
+    name: '',
+    description: '',
+    settings: [],
+    participants: [],
+  }
   addChatForm.value.visible = true
+  providers.value = await api.getProviders()
+  presets.value = await api.getPresets()
+  characters.value = await api.getCharacters()
+  templates.value = await api.getTemplates()
 }
 
 const addParticipantForm = ref({
   visible: false,
   name: '',
   settings: {},
-  modelId: null as null | number,
-  presetIds: null as null | { id: number | null }[],
-  characterId: null as null | number,
-  templateId: null as null | number,
+  model: null as null | Model,
+  presets: null as
+    | null
+    | {
+        data: Preset | null
+      }[],
+  character: null as null | Character,
+  template: null as null | Template,
   avatarFileList: [] as UploadFileInfo[],
   onConfirm: () => {},
 })
@@ -82,19 +102,19 @@ const addChatAddParticipant = () => {
     visible: true,
     name: '',
     settings: {},
-    modelId: null,
-    presetIds: [],
-    characterId: null,
-    templateId: null,
+    model: null,
+    presets: [],
+    character: null,
+    template: null,
     avatarFileList: [] as UploadFileInfo[],
     onConfirm: () => {
       addChatForm.value.participants.push({
         name: addParticipantForm.value.name,
         settings: addParticipantForm.value.settings,
-        modelId: addParticipantForm.value.modelId,
-        presetIds: addParticipantForm.value.presetIds,
-        characterId: addParticipantForm.value.characterId,
-        templateId: addParticipantForm.value.templateId,
+        model: addParticipantForm.value.model,
+        presets: addParticipantForm.value.presets,
+        character: addParticipantForm.value.character,
+        template: addParticipantForm.value.template,
       })
       addParticipantForm.value.visible = false
     },
@@ -107,30 +127,75 @@ const modelOptions = computed(() => {
     .flat()
     .map((model) => ({
       label: model.name + `(${model.provider!.name})`,
-      value: model.id,
+      value: model,
     }))
 })
 
 const addChat = async () => {
-  const chatId = await api.addChat(addChatForm.value.name, addChatForm.value.description)
+  const chatId = await api.addChat(addChatForm.value.name, addChatForm.value.description, {})
   const participants = []
   for (const participant of addChatForm.value.participants) {
     const participantId = await api.addParticipant(
       chatId,
-      participant.characterId,
-      participant.presetIds,
-      participant.templateId,
-      participant.modelId,
+      participant.character.id,
+      participant.presets.map((p: any) => p.data!.id),
+      participant.template.id,
+      participant.model.id,
       participant.name,
-      settings,
+      {},
     )
     participants.push({
       id: participantId,
       name: participant.name,
       settings: participant.settings,
-      modelId: participant.modelId,
+      model: {
+        id: participant.model.id,
+        name: participant.model.name,
+      },
+      presets: participant.presets.map((p: any) => {
+        return {
+          id: p.data!.id,
+          name: p.data!.name,
+        }
+      }),
+      character: {
+        id: participant.character.id,
+        name: participant.character.name,
+      },
+      template: {
+        id: participant.template.id,
+        name: participant.template.name,
+      },
     })
   }
+  chats.value.push(new Chat(chatId, addChatForm.value.name, participants))
+  currentChat.value = chats.value[chats.value.length - 1]
+  addChatForm.value.visible = false
+  message.success('添加成功')
+}
+
+const deleteChat = async (chat: Chat) => {
+  modal.create({
+    title: '删除聊天',
+    content: `确定删除聊天 ${chat.name} ?`,
+    preset: 'dialog',
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      try {
+        await api.deleteChat(chat.id!)
+        chats.value.splice(chats.value.indexOf(chat), 1)
+        message.success('删除成功')
+      } catch (e) {
+        message.error('删除失败')
+      }
+    },
+  })
+}
+
+const setChat = (chat: Chat) => {
+  currentChat.value = chat
+  chatBoxKey.value++
 }
 </script>
 <template>
@@ -159,8 +224,31 @@ const addChat = async () => {
         </div>
         <n-scrollbar style="height: 100%" content-style="margin: 0 4px">
           <n-list :show-divider="false">
-            <n-list-item v-for="item in 10" :key="item" style="height: 2.5em; margin-left: 1em">
-              Chat {{ item }}
+            <n-list-item
+              v-for="(chat, index) in chats"
+              :key="index"
+              style="height: 2.5em; margin-left: 1em; margin-right: 1em"
+              class="chat-list-item"
+            >
+              <n-space style="width: 100%" align="center" justify="space-between">
+                <div @click="setChat(chat)">{{ chat.name }}</div>
+                <n-space>
+                  <n-button text size="small" class="chat-button">
+                    <template #icon>
+                      <n-icon>
+                        <MdCreate />
+                      </n-icon>
+                    </template>
+                  </n-button>
+                  <n-button text size="small" class="chat-button" @click="deleteChat(chat)">
+                    <template #icon>
+                      <n-icon>
+                        <MdClose />
+                      </n-icon>
+                    </template>
+                  </n-button>
+                </n-space>
+              </n-space>
             </n-list-item>
           </n-list>
         </n-scrollbar>
@@ -189,7 +277,22 @@ const addChat = async () => {
         </n-dropdown>
       </n-layout-header>
       <n-layout-content class="bfc" style="height: calc(100% - 3.5em)">
-        <ChatBox v-if="currentChat" :chat="currentChat"></ChatBox>
+        <Suspense>
+          <ChatBox v-if="currentChat" :chat="currentChat" :key="chatBoxKey"></ChatBox>
+          <template #fallback>
+            <div
+              style="
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              "
+            >
+              <n-spin tip="Loading..." />
+            </div>
+          </template>
+        </Suspense>
       </n-layout-content>
     </n-layout>
   </n-layout>
@@ -225,6 +328,12 @@ const addChat = async () => {
         </n-dynamic-tags>
       </n-form-item>
     </n-form>
+    <template #footer>
+      <n-space justify="end">
+        <n-button @click="addChatForm.visible = false">取消</n-button>
+        <n-button type="primary" @click="addChat">保存</n-button>
+      </n-space>
+    </template>
   </n-modal>
   <n-modal
     title="添加参与者"
@@ -238,28 +347,28 @@ const addChat = async () => {
         <n-input v-model:value="addParticipantForm.name" />
       </n-form-item>
       <n-form-item label="模型">
-        <n-select v-model:value="addParticipantForm.modelId" filterable :options="modelOptions" />
+        <n-select v-model:value="addParticipantForm.model" filterable :options="modelOptions" />
       </n-form-item>
       <n-form-item label="预设">
         <n-dynamic-input
-          v-model:value="addParticipantForm.presetIds"
+          v-model:value="addParticipantForm.presets"
           @create="
             () => {
-              let obj = { id: null }
-              addParticipantForm.presetIds!.push(obj)
+              let obj = { data: null }
+              addParticipantForm.presets!.push(obj)
               return obj
             }
           "
         >
           <template #default="obj">
             <n-select
-              @update:value="(v: any) => (obj.value.id = v)"
+              @update:value="(v: any) => (obj.value.data = v)"
               filterable
               :options="
                 presets.map((p: Preset) => {
                   return {
                     label: p.name,
-                    value: p.id,
+                    value: p,
                   }
                 })
               "
@@ -269,13 +378,13 @@ const addChat = async () => {
       </n-form-item>
       <n-form-item label="角色">
         <n-select
-          v-model:value="addParticipantForm.characterId"
+          v-model:value="addParticipantForm.character"
           filterable
           :options="
             characters.map((c: Character) => {
               return {
                 label: c.name,
-                value: c.id,
+                value: c,
               }
             })
           "
@@ -283,13 +392,13 @@ const addChat = async () => {
       </n-form-item>
       <n-form-item label="模板">
         <n-select
-          v-model:value="addParticipantForm.templateId"
+          v-model:value="addParticipantForm.template"
           filterable
           :options="
             templates.map((t: Template) => {
               return {
                 label: t.name,
-                value: t.id,
+                value: t,
               }
             })
           "
@@ -322,5 +431,17 @@ const addChat = async () => {
 
 .bfc {
   overflow: hidden;
+}
+
+.chat-list-item {
+  cursor: pointer;
+}
+
+.chat-list-item .chat-button {
+  display: none;
+}
+
+.chat-list-item:hover .chat-button {
+  display: flex;
 }
 </style>

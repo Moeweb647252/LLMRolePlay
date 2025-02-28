@@ -8,6 +8,12 @@ namespace LLMRolePlay.Models
   {
     public DbSet<Chat> Chats { get; set; }
   }
+
+  public class ChatSettings
+  {
+    public string? NameOfUser { get; set; }
+  }
+
   public class Chat
   {
     [Key]

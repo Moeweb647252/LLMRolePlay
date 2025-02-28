@@ -2,6 +2,7 @@ using LLMRolePlay.Models;
 using Newtonsoft.Json;
 using System.Collections;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Text.Json;
 
 namespace LLMRolePlay.Providers
@@ -57,26 +58,26 @@ namespace LLMRolePlay.Providers
       Participant = participant;
     }
 
-    public async IAsyncEnumerable<OpenAIStreamingResponseChunk> Compeletion(IEnumerable<ChatMessage> _messages)
+    public async IAsyncEnumerable<OpenAIStreamingResponseChunk> Compeletion(List<ChatMessage> _messages)
     {
       var client = new HttpClient();
       client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Participant.Model.Provider.ApiKey}");
-      var request = new HttpRequestMessage(HttpMethod.Post, Participant.Model.Provider.BaseUrl + "/v1/chat/completions");
       OpenAISettings? settings = JsonConvert.DeserializeObject<OpenAISettings>(Participant.Model.Settings);
       List<ChatMessage> messages = ([
-        new ChatMessage { Role = "system", Content = await Participant.MakeSystemPrompt(_dBContext) },
+        new ChatMessage { role = "system", content = await Participant.MakeSystemPrompt(_dBContext) },
       ]);
-      messages.Concat(_messages);
-      request.Content = new StringContent(JsonConvert.SerializeObject(new OpenAICompletionRequest
+      messages = messages.Concat(_messages.ToList()).ToList();
+      var content = new StringContent(JsonConvert.SerializeObject(new OpenAICompletionRequest
       {
         model = Participant.Model.ModelName,
         messages = messages,
         temperature = settings?.temperature,
         max_tokens = settings?.max_tokens,
         top_p = settings?.top_p
-      }));
-      request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-      var response = await client.SendAsync(request);
+      }), Encoding.UTF8, "application/json");
+      content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+      Console.WriteLine(await content.ReadAsStringAsync());
+      var response = await client.PostAsync(Participant.Model.Provider.BaseUrl + "/chat/completions", content);
       if (response.IsSuccessStatusCode)
       {
         var stream = await response.Content.ReadAsStreamAsync();
@@ -86,10 +87,16 @@ namespace LLMRolePlay.Providers
           string? line = await reader.ReadLineAsync();
           if (line != null)
           {
-            var chunk = JsonConvert.DeserializeObject<OpenAIStreamingResponseChunk>(line);
-            if (chunk != null)
+            Console.WriteLine(line);
+            if (line == "data: [DONE]") break;
+            if (line.StartsWith("data: "))
             {
-              yield return chunk;
+              line = line[6..];
+              var chunk = JsonConvert.DeserializeObject<OpenAIStreamingResponseChunk>(line);
+              if (chunk != null)
+              {
+                yield return chunk;
+              }
             }
           }
         }

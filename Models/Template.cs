@@ -19,6 +19,7 @@ namespace LLMRolePlay.Models
     public string Description { get; set; }
     public bool IsPublic { get; set; }
     public uint UserId { get; set; }
+    public string? Settings { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public Template(string name, string content, uint userId, string description = "", bool isPublic = false)

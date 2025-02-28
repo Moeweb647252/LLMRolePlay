@@ -15,16 +15,17 @@ namespace LLMRolePlay.Models
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]//自增id
     public uint Id { get; set; }
     public string Name { get; set; }
-    public string Settings { get; set; }
+    public string? Settings { get; set; }
+    public string Content { get; set; }
     public string Description { get; set; }
     public uint UserId { get; set; }
     public bool IsPublic { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public Preset(string name, string settings, uint userId, string description = "", bool isPublic = false)
+    public Preset(string name, string content, uint userId, string description = "", bool isPublic = false)
     {
       Name = name;
-      Settings = settings;
+      Content = content;
       Description = description;
       UserId = userId;
       IsPublic = isPublic;

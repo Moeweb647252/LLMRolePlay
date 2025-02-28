@@ -25,4 +25,9 @@ public class Utils
     }
   }
 
+  public async static Task<List<T>> AwaitAll<T>(IEnumerable<Task<T>> tasks)
+  {
+    return (await Task.WhenAll(tasks)).ToList();
+  }
+
 }

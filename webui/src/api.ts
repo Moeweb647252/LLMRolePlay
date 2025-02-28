@@ -5,7 +5,7 @@ import { useRouter } from 'vue-router'
 import { Preset } from './types/preset'
 import { Character } from './types/character'
 import { Model } from './types/provider'
-import { Message } from './types/chat'
+import { FullChat, type Message } from './types/chat'
 import { User } from './types/user'
 import { Chat } from './types/chat'
 import { Template } from './types/template'
@@ -68,7 +68,7 @@ export class Api {
   }
 
   async check(): Promise<void> {
-    await this.request('check', {})
+    await this.request('check', {}, 'GET')
   }
 
   async addCharacter(
@@ -347,8 +347,63 @@ export class Api {
       chats: any[]
     } = await this.request('getChats', {})
     return data.chats.map((chat) => {
-      return new Chat(chat.id, chat.name, chat.participants || [], chat.messages || [])
+      return new Chat(chat.id, chat.name, chat.participants)
     })
+  }
+
+  async getFullChat(chatId: number): Promise<FullChat> {
+    let data: {
+      chat: any
+      messages: any[]
+      participants: any[]
+      settings: any
+    } = await this.request('getFullChat', {
+      chatId: chatId,
+    })
+    return new FullChat(
+      data.chat.id,
+      data.chat.name,
+      data.participants.map((participant) => {
+        return new Participant(
+          participant.id,
+          participant.name,
+          new Model(
+            participant.model.id,
+            participant.model.name,
+            participant.model.modelName,
+            participant.model.description,
+            participant.model.isPublic,
+            JSON.parse(participant.model.settings),
+            null,
+          ),
+          participant.presets.map((preset: any) => {
+            return new Preset(
+              preset.id,
+              preset.name,
+              preset.description,
+              JSON.parse(preset.settings),
+              preset.isPublic,
+            )
+          }),
+          new Character(
+            participant.character.id,
+            participant.character.name,
+            JSON.parse(participant.character.settings),
+            participant.character.description,
+            participant.character.isPublic,
+            participant.character.avatar,
+          ),
+          new Template(
+            participant.template.id,
+            participant.template.name,
+            participant.template.content,
+            participant.template.description,
+            participant.template.isPublic,
+          ),
+        )
+      }),
+      data.settings,
+    )
   }
 
   async getMessages(chatId: number): Promise<Message[]> {
@@ -358,7 +413,13 @@ export class Api {
       chatId: chatId,
     })
     return data.messages.map((message) => {
-      return new Message(message.id, message.content, message.role, message.createdAt)
+      return {
+        id: message.id,
+        content: message.content,
+        role: message.role,
+        participantId: message.participantId,
+        createdAt: message.createdAt,
+      }
     })
   }
 
@@ -425,10 +486,10 @@ export class Api {
     name: string,
     settings: object,
   ): Promise<number> {
-    let data = await this.request('addParticipant', {
+    let data = await this.request('createParticipant', {
       chatId: chatId,
       characterId: characterId,
-      presetId: presetIds,
+      presetIds: presetIds,
       templateId: templateId,
       modelId: modelId,
       name: name,
@@ -470,10 +531,11 @@ export class Api {
     return resp.id
   }
 
-  async addChat(name: string, description: string): Promise<number> {
+  async addChat(name: string, description: string, settings: any): Promise<number> {
     let data = await this.request('createChat', {
       name: name,
       description: description,
+      settings: JSON.stringify(settings),
     })
     return data.id
   }
@@ -481,6 +543,28 @@ export class Api {
   async deleteChat(id: number): Promise<void> {
     await this.request('deleteChat', {
       chatId: id,
+    })
+  }
+
+  async addMessage(chatId: number, content: string, role: string): Promise<number> {
+    let data = await this.request('createMessage', {
+      chatId: chatId,
+      content: content,
+      role: role,
+    })
+    return data.id
+  }
+
+  async deleteMessage(id: number): Promise<void> {
+    await this.request('deleteMessage', {
+      messageId: id,
+    })
+  }
+
+  async updateMessage(id: number, content: string): Promise<void> {
+    await this.request('updateMessage', {
+      messageId: id,
+      content: content,
     })
   }
 }
@@ -491,13 +575,14 @@ export const generate = async (
   chatId: number,
   participantId: number,
   callback: (data: string) => void,
-): Promise<void> => {
+): Promise<number> => {
   const token = api.store!.user?.token
   if (!token) {
     throw new NoTokenError()
   }
   const headers = {
     Token: token,
+    'Content-Type': 'application/json',
   }
   const resp = await fetch('/api/completion', {
     method: 'POST',
@@ -509,6 +594,7 @@ export const generate = async (
   })
   let reader = resp.body?.getReader()
   let buffer = ''
+  let id
   if (reader) {
     let decoder = new TextDecoder('utf-8')
     while (true) {
@@ -529,7 +615,9 @@ export const generate = async (
         // Extract the line
         const line = buffer.slice(0, lineEndIndex - 1)
         buffer = buffer.slice(lineEndIndex + 1)
-
+        if (line.startsWith('id: ')) {
+          id = parseInt(line.slice(4))
+        }
         // Process the line (e.g., log it or do something else)
         if (line.startsWith('data: ')) {
           const data = line.slice(6)
@@ -541,4 +629,5 @@ export const generate = async (
       }
     }
   }
+  return id!
 }

@@ -14,17 +14,18 @@ namespace LLMRolePlay.Models
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public uint Id { get; set; }
     public string Name { get; set; }
-    public string Settings { get; set; }
+    public string? Settings { get; set; }
+    public string Content { get; set; }
     public string Description { get; set; }
     public bool IsPublic { get; set; }
     public uint UserId { get; set; }
 
     public uint? Avatar { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public Character(string name, string settings, uint userId, string description = "", bool isPublic = false, uint? avatar = null)
+    public Character(string name, string content, uint userId, string description = "", bool isPublic = false, uint? avatar = null)
     {
       Name = name;
-      Settings = settings;
+      Content = content;
       UserId = userId;
       Description = description;
       IsPublic = isPublic;

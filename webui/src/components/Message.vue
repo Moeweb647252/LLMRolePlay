@@ -1,5 +1,15 @@
 <script setup lang="ts">
-import { IosSend, MdContact, MdCreate, MdSync, MdClipboard } from '@vicons/ionicons4'
+import { MdContact, MdCreate, MdSync, MdClipboard } from '@vicons/ionicons4'
+import { DeleteFilled } from '@vicons/material'
+
+const props = defineProps<{
+  content: string
+  direction: 'left' | 'right'
+  name: string
+  avatar: string
+}>()
+
+const emit = defineEmits(['delete'])
 </script>
 <template>
   <div class="message">
@@ -11,9 +21,9 @@ import { IosSend, MdContact, MdCreate, MdSync, MdClipboard } from '@vicons/ionic
       </n-avatar>
     </div>
     <div class="main">
-      <div class="header">Character Name</div>
+      <div class="header">{{ props.name }}</div>
       <div class="content">
-        "1"是阿拉伯数字中最小的正整数，常用于计数、编号等场景。请问有具体的问题或需要进一步解释吗？
+        {{ props.content }}
       </div>
       <div class="action">
         <n-space size="small">
@@ -35,6 +45,13 @@ import { IosSend, MdContact, MdCreate, MdSync, MdClipboard } from '@vicons/ionic
             <template #icon>
               <n-icon>
                 <MdClipboard />
+              </n-icon>
+            </template>
+          </n-button>
+          <n-button size="small" strong secondary circle @click="emit('delete')">
+            <template #icon>
+              <n-icon>
+                <DeleteFilled />
               </n-icon>
             </template>
           </n-button>

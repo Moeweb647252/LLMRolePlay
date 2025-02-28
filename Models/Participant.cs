@@ -11,7 +11,7 @@ namespace LLMRolePlay.Models
     public DbSet<Participant> Participants { get; set; }
   }
 
-  public class SettingsItem
+  public class ContentItem
   {
     public string Key { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
@@ -111,21 +111,23 @@ namespace LLMRolePlay.Models
 
       string ret = Template.Content;
       string character = string.Join("\n",
-          JsonConvert.DeserializeObject<List<SettingsItem>>(Character.Settings)?
+          JsonConvert.DeserializeObject<List<ContentItem>>(Character.Content)?
           .Select(s => $"{s.Key}: {s.Value}") ?? []
         );
+      ret += "\nCharacter:\n";
+      ret += $"姓名: {Character.Name}\n";
       if (ret.Contains("{{ character }}"))
       {
         ret = ret.Replace("{{ character }}", character);
       }
       else
       {
-        ret = ret + "\nCharacter:\n" + character;
+        ret += character;
       }
       var tasks = GetPresetIdList().Select(async presetId =>
        string.Join("\n",
-          JsonConvert.DeserializeObject<List<SettingsItem>>(
-            (await Preset.GetPresetById(db, presetId))?.Settings ?? ""
+          JsonConvert.DeserializeObject<List<ContentItem>>(
+            (await Preset.GetPresetById(db, presetId))?.Content ?? ""
           )?
           .Select(s => $"{s.Key}: {s.Value}") ?? []
         )

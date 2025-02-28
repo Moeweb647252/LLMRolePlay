@@ -40,7 +40,7 @@ namespace LLMRolePlay.Models
     }
     public static async Task<Model?> GetModelById(DBContext db, uint id)
     {
-      return await db.Models.FindAsync(id);
+      return await db.Models.Include(m => m.Provider).FirstOrDefaultAsync(m => m.Id == id);
     }
     public async Task Delete(DBContext db)
     {

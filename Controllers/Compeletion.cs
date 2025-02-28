@@ -9,11 +9,11 @@ namespace LLMRolePlay.Controllers
 
   public class CompeletionRequest
   {
-    public required uint participantId;
+    public required uint participantId { get; set; }
   }
   public partial class API : ControllerBase
   {
-    [HttpPost("compeletion")]
+    [HttpPost("completion")]
     [AllowAnonymous]
     public async Task Compeletion([FromBody] CompeletionRequest data)
     {
@@ -21,7 +21,7 @@ namespace LLMRolePlay.Controllers
       if (token == null) return;
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return;
-      Participant? participant = await _dBContext.Participants.FirstOrDefaultAsync(p => p.Id == data.participantId);
+      Participant? participant = await _dBContext.Participants.Include(p => p.Template).Include(p => p.Character).Include(p => p.Model).ThenInclude(m => m.Provider).FirstOrDefaultAsync(p => p.Id == data.participantId);
       if (participant == null) return;
       Chat? chat = await _dBContext.Chats.Include(c => c.Messages).FirstOrDefaultAsync(c => c.Id == participant.ChatId);
       if (chat == null) return;
@@ -31,9 +31,9 @@ namespace LLMRolePlay.Controllers
         var content = "";
         var stream = openai.Compeletion(chat.Messages.Select(m => new ChatMessage
         {
-          Content = m.Content,
-          Role = m.Role,
-        })).GetAsyncEnumerator();
+          content = m.Content,
+          role = m.Role,
+        }).ToList()).GetAsyncEnumerator();
         while (true)
         {
           var task = stream.MoveNextAsync().AsTask();
@@ -62,6 +62,7 @@ namespace LLMRolePlay.Controllers
         var newMessage = new Message("assistant", content, 0, chat.Id, participant.Id);
         _dBContext.Messages.Add(newMessage);
         await _dBContext.SaveChangesAsync();
+        await Response.WriteAsync("id: " + newMessage.Id + "\n");
         await Response.WriteAsync("data: [DONE]");
       }
     }
