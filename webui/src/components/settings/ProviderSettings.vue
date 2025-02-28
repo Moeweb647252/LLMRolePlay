@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useProviderStore, type Model, type Provider } from '@/stores/providers'
+import { Model, Provider } from '@/types/provider'
 import { h, ref } from 'vue'
 import { MdAdd, MdCreate } from '@vicons/ionicons4'
 import { NButton, NIcon, NTag, NDynamicTags, useMessage, useModal } from 'naive-ui'
@@ -8,7 +8,7 @@ import SettingsInput from '../SettingsInput.vue'
 import SettingsNumberInput from '../SettingsNumberInput.vue'
 import SettingsSwitch from '../SettingsSwitch.vue'
 
-const providers = useProviderStore().providers
+const providers = ref(await api.getProviders())
 const message = useMessage()
 const model = useModal()
 
@@ -113,7 +113,7 @@ const deleteProvider = async (provider: any) => {
     onPositiveClick: async () => {
       try {
         await api.deleteProvider(provider.id)
-        providers.splice(providers.indexOf(provider), 1)
+        providers.value.splice(providers.value.indexOf(provider), 1)
       } catch (error) {
         console.error(error)
         message.error('Provider删除失败.')
@@ -217,7 +217,7 @@ const addProvider = async () => {
     provider.models.forEach((model) => {
       model.provider = provider
     })
-    providers.push(provider)
+    providers.value.push(provider)
   } catch (error) {
     console.error(error)
     message.error('Provider添加失败.')
@@ -256,7 +256,7 @@ const editProviderAddModel = () => {
         model.name,
         model.modelName,
         model.description,
-        editProviderForm.value.provider!.id,
+        editProviderForm.value.provider!.id!,
         model.settings,
       )
       model.id = id
@@ -413,8 +413,8 @@ const startEditModel = (model: Model) => {
           v-model:value="editProviderForm.provider.type"
           @confirm="
             async () =>
-              await api.updateProvider(editProviderForm.provider!.id, {
-                type: editProviderForm.provider!.type,
+              await api.updateProvider(editProviderForm.provider!.id!, {
+                type: editProviderForm.provider!.type!,
               })
           "
           type="select"
@@ -427,8 +427,8 @@ const startEditModel = (model: Model) => {
           v-model:value="editProviderForm.provider!.name"
           @confirm="
             async () =>
-              await api.updateProvider(editProviderForm.provider!.id, {
-                name: editProviderForm.provider!.name,
+              await api.updateProvider(editProviderForm.provider!.id!, {
+                name: editProviderForm.provider!.name!,
               })
           "
         />
@@ -438,8 +438,8 @@ const startEditModel = (model: Model) => {
           v-model:value="editProviderForm.provider!.description"
           @confirm="
             async () =>
-              await api.updateProvider(editProviderForm.provider!.id, {
-                description: editProviderForm.provider!.description,
+              await api.updateProvider(editProviderForm.provider!.id!, {
+                description: editProviderForm.provider!.description!,
               })
           "
         />
@@ -449,8 +449,8 @@ const startEditModel = (model: Model) => {
           v-model:value="editProviderForm.provider!.url"
           @confirm="
             async () =>
-              await api.updateProvider(editProviderForm.provider!.id, {
-                url: editProviderForm.provider!.url,
+              await api.updateProvider(editProviderForm.provider!.id!, {
+                url: editProviderForm.provider!.url!,
               })
           "
         />
@@ -460,8 +460,8 @@ const startEditModel = (model: Model) => {
           v-model:value="editProviderForm.provider!.apiKey"
           @confirm="
             async () =>
-              await api.updateProvider(editProviderForm.provider!.id, {
-                apiKey: editProviderForm.provider!.apiKey,
+              await api.updateProvider(editProviderForm.provider!.id!, {
+                apiKey: editProviderForm.provider!.apiKey!,
               })
           "
         />
@@ -500,7 +500,7 @@ const startEditModel = (model: Model) => {
           @confirm="
             async () => {
               await api.updateModel(editModelForm.model!.id!, {
-                name: editModelForm.model!.name,
+                name: editModelForm.model!.name!,
               })
             }
           "
@@ -512,7 +512,7 @@ const startEditModel = (model: Model) => {
           @confirm="
             async () => {
               await api.updateModel(editModelForm.model!.id!, {
-                modelName: editModelForm.model!.modelName,
+                modelName: editModelForm.model!.modelName!,
               })
             }
           "
@@ -524,7 +524,7 @@ const startEditModel = (model: Model) => {
           @confirm="
             async () => {
               await api.updateModel(editModelForm.model!.id!, {
-                description: editModelForm.model!.description,
+                description: editModelForm.model!.description!,
               })
             }
           "

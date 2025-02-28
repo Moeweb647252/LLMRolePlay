@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { api } from '@/api'
-import { usePresetStore, type Preset } from '@/stores/presets'
+import { Preset } from '@/types/preset'
 import { useMessage, useModal } from 'naive-ui'
 import { ref } from 'vue'
 import SettingsInput from '../SettingsInput.vue'
 import SettingsSwitch from '../SettingsSwitch.vue'
 import SettingsDynamicInput from '../SettingsDynamicInput.vue'
 
-const presets = usePresetStore().presets
+const presets = ref(await api.getPresets())
 const message = useMessage()
 const model = useModal()
 
@@ -29,13 +29,7 @@ const addPreset = async () => {
     isPublic: false,
   }
   let id = await api.addPreset(data.name, data.description, data.settings, data.isPublic)
-  presets.push({
-    id,
-    name: data.name,
-    description: data.description,
-    settings: data.settings,
-    isPublic: data.isPublic,
-  })
+  presets.value.push(new Preset(id, data.name, data.description, data.settings, data.isPublic))
   message.success('添加成功')
 }
 
@@ -70,8 +64,8 @@ const deletePreset = async (preset: Preset) => {
     negativeText: '取消',
     onPositiveClick: async () => {
       try {
-        await api.deletePreset(preset.id)
-        presets.splice(presets.indexOf(preset), 1)
+        await api.deletePreset(preset.id!)
+        presets.value.splice(presets.value.indexOf(preset), 1)
         message.success('删除成功')
       } catch (e) {
         message.error('删除失败')
@@ -146,8 +140,8 @@ const deletePreset = async (preset: Preset) => {
           :value="editPresetForm.preset!.name"
           @confirm="
             async () =>
-              await api.updatePreset(editPresetForm.preset!.id, {
-                name: editPresetForm.preset!.name,
+              await api.updatePreset(editPresetForm.preset!.id!, {
+                name: editPresetForm.preset!.name!,
               })
           "
         ></SettingsInput>
@@ -157,8 +151,8 @@ const deletePreset = async (preset: Preset) => {
           :value="editPresetForm.preset!.description"
           @confirm="
             async () =>
-              await api.updatePreset(editPresetForm.preset!.id, {
-                description: editPresetForm.preset!.description,
+              await api.updatePreset(editPresetForm.preset!.id!, {
+                description: editPresetForm.preset!.description!,
               })
           "
         ></SettingsInput>
@@ -168,7 +162,7 @@ const deletePreset = async (preset: Preset) => {
           :value="editPresetForm.preset!.isPublic"
           @confirm="
             async (isPublic) => {
-              await api.updatePreset(editPresetForm.preset!.id, {
+              await api.updatePreset(editPresetForm.preset!.id!, {
                 isPublic: isPublic,
               })
               editPresetForm.preset!.isPublic = isPublic
@@ -181,7 +175,7 @@ const deletePreset = async (preset: Preset) => {
           :value="editPresetForm.preset!.settings"
           @confirm="
             async (settings: any) => {
-              await api.updatePreset(editPresetForm.preset!.id, {
+              await api.updatePreset(editPresetForm.preset!.id!, {
                 settings: settings,
               })
               editPresetForm.preset!.settings = settings

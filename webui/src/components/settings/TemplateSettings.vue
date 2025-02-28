@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { api } from '@/api'
-import { useTemplateStore, type Template } from '@/stores/templates'
+import { Template } from '@/types/template'
 import { useMessage, useModal } from 'naive-ui'
 import { ref } from 'vue'
 import SettingsInput from '../SettingsInput.vue'
 
-const templates = useTemplateStore().templates
+const templates = ref(await api.getTemplates())
 const message = useMessage()
 const model = useModal()
 
@@ -27,13 +27,7 @@ const addTemplate = async () => {
     isPublic: false,
   }
   let id = await api.addTemplate(data.name, data.content, data.description)
-  templates.push({
-    id,
-    name: data.name,
-    description: data.description,
-    content: data.content,
-    isPublic: data.isPublic,
-  })
+  templates.value.push(new Template(id, data.name, data.description, data.content, data.isPublic))
   message.success('添加成功')
 }
 
@@ -68,8 +62,8 @@ const deleteTemplate = async (template: Template) => {
     negativeText: '取消',
     onPositiveClick: async () => {
       try {
-        await api.deleteTemplate(template.id)
-        templates.splice(templates.indexOf(template), 1)
+        await api.deleteTemplate(template.id!)
+        templates.value.splice(templates.value.indexOf(template), 1)
         message.success('删除成功')
       } catch (e) {
         message.error('删除失败')
@@ -139,8 +133,8 @@ const deleteTemplate = async (template: Template) => {
           :value="editTemplateForm.template!.name"
           @confirm="
             async () =>
-              await api.updateTemplate(editTemplateForm.template!.id, {
-                name: editTemplateForm.template!.name,
+              await api.updateTemplate(editTemplateForm.template!.id!, {
+                name: editTemplateForm.template!.name!,
               })
           "
         ></SettingsInput>
@@ -150,8 +144,8 @@ const deleteTemplate = async (template: Template) => {
           :value="editTemplateForm.template!.description"
           @confirm="
             async () =>
-              await api.updateTemplate(editTemplateForm.template!.id, {
-                description: editTemplateForm.template!.description,
+              await api.updateTemplate(editTemplateForm.template!.id!, {
+                description: editTemplateForm.template!.description!,
               })
           "
         ></SettingsInput>
@@ -161,7 +155,7 @@ const deleteTemplate = async (template: Template) => {
           :value="editTemplateForm.template!.isPublic"
           @confirm="
             async (isPublic: boolean) => {
-              await api.updateTemplate(editTemplateForm.template!.id, {
+              await api.updateTemplate(editTemplateForm.template!.id!, {
                 isPublic: isPublic,
               })
               editTemplateForm.template!.isPublic = isPublic
@@ -175,7 +169,7 @@ const deleteTemplate = async (template: Template) => {
           type="textarea"
           @confirm="
             async (content: any) => {
-              await api.updateTemplate(editTemplateForm.template!.id, {
+              await api.updateTemplate(editTemplateForm.template!.id!, {
                 content,
               })
               editTemplateForm.template!.content = content

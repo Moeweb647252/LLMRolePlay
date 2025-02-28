@@ -1,25 +1,26 @@
 <script setup lang="ts">
 import { api } from '@/api'
 import ChatBox from '@/components/ChatBox.vue'
-import { useCharacterStore, type Character } from '@/stores/characters'
-import type { Chat, Participant } from '@/stores/chats'
-import { usePresetStore, type Preset } from '@/stores/presets'
-import { useProviderStore } from '@/stores/providers'
+import { type Character } from '@/types/character'
 import { useSettingsStore } from '@/stores/settings'
-import { useTemplateStore, type Template } from '@/stores/templates'
 import { IosMenu, MdAdd, MdContact } from '@vicons/ionicons4'
 import { NTag, type UploadFileInfo } from 'naive-ui'
 import { computed, h, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import type { Provider } from '@/types/provider'
+import type { Preset } from '@/types/preset'
+import type { Template } from '@/types/template'
+import type { Chat, Participant } from '@/types/chat'
 
 const settings = useSettingsStore()
 const router = useRouter()
 const showSider = ref(true)
 
-const providers = useProviderStore().providers
-const presets = usePresetStore().presets
-const characters = useCharacterStore().characters
-const templates = useTemplateStore().templates
+const providers = ref([] as Provider[])
+const presets = ref([] as Preset[])
+const characters = ref([] as Character[])
+const templates = ref([] as Template[])
+const chats = ref(await api.getChats())
 
 const currentChat = ref(null as Chat | null)
 
@@ -101,7 +102,7 @@ const addChatAddParticipant = () => {
 }
 
 const modelOptions = computed(() => {
-  return providers
+  return providers.value
     .map((providers) => providers.models)
     .flat()
     .map((model) => ({
@@ -110,28 +111,10 @@ const modelOptions = computed(() => {
     }))
 })
 
-const uploadAvatar = async (
-  file: {
-    file: UploadFileInfo
-    fileList: UploadFileInfo[]
-  },
-  value: any,
-) => {
-  return true
-}
-
 const addChat = async () => {
   const chatId = await api.addChat(addChatForm.value.name, addChatForm.value.description)
   const participants = []
   for (const participant of addChatForm.value.participants) {
-    if (!participant) continue
-    let fileId = null
-    if (participant.avatarFileList.length > 0) {
-      const buffer = participant.avatarFileList[0].file.file?.arrayBuffer()
-      if (buffer) {
-        fileId = await api.uploadFile(buffer)
-      }
-    }
     const participantId = await api.addParticipant(
       chatId,
       participant.characterId,
@@ -139,7 +122,6 @@ const addChat = async () => {
       participant.templateId,
       participant.modelId,
       participant.name,
-      fileId,
       settings,
     )
     participants.push({
@@ -254,15 +236,6 @@ const addChat = async () => {
     <n-form label-placement="left">
       <n-form-item label="姓名">
         <n-input v-model:value="addParticipantForm.name" />
-      </n-form-item>
-      <n-form-item label="头像">
-        <n-upload
-          v-model:file-list="addParticipantForm.avatarFileList"
-          @before-upload="uploadAvatar($event, addParticipantForm)"
-          :multiple="false"
-          list-type="image-card"
-          :trigger-style="{ display: addParticipantForm.avatarFileList.length ? 'none' : 'block' }"
-        />
       </n-form-item>
       <n-form-item label="模型">
         <n-select v-model:value="addParticipantForm.modelId" filterable :options="modelOptions" />

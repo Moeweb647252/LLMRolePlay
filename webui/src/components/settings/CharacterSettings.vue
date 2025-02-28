@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { api } from '@/api'
-import { useCharacterStore, type Character } from '@/stores/characters'
-import { useMessage, useModal } from 'naive-ui'
+import { Character } from '@/types/character'
+import { useMessage, useModal, type UploadFileInfo } from 'naive-ui'
 import { ref } from 'vue'
 import SettingsInput from '../SettingsInput.vue'
 import SettingsSwitch from '../SettingsSwitch.vue'
-const characters = useCharacterStore().characters
+const characters = ref(await api.getCharacters())
 const message = useMessage()
 const model = useModal()
 
@@ -15,25 +15,30 @@ const addCharacterForm = ref({
   description: '',
   settings: [],
   isPublic: false,
+  avatarFileList: [] as UploadFileInfo[],
 })
 
 const addCharacter = async () => {
-  let data = JSON.parse(JSON.stringify(addCharacterForm.value))
+  let data: typeof addCharacterForm.value = JSON.parse(JSON.stringify(addCharacterForm.value))
   addCharacterForm.value = {
     name: '',
     description: '',
     settings: [],
     visible: false,
     isPublic: false,
+    avatarFileList: [],
+  }
+  let fileId = null
+  if (data.avatarFileList.length > 0) {
+    const buffer = await data.avatarFileList[0].file?.arrayBuffer()
+    if (buffer) {
+      fileId = await api.uploadFile(buffer)
+    }
   }
   let id = await api.addCharacter(data.name, data.description, data.settings, data.isPublic)
-  characters.push({
-    id,
-    name: data.name,
-    description: data.description,
-    settings: data.settings,
-    isPublic: data.isPublic,
-  })
+  characters.value.push(
+    new Character(id, data.name, data.settings, data.description, data.isPublic, fileId),
+  )
   message.success('添加成功')
 }
 
@@ -44,6 +49,7 @@ const cancelAddCharacter = () => {
     settings: [],
     visible: false,
     isPublic: false,
+    avatarFileList: [],
   }
 }
 
@@ -68,14 +74,18 @@ const deleteCharacter = async (character: Character) => {
     negativeText: '取消',
     onPositiveClick: async () => {
       try {
-        await api.deleteCharacter(character.id)
-        characters.splice(characters.indexOf(character), 1)
+        await api.deleteCharacter(character.id!)
+        characters.value.splice(characters.value.indexOf(character), 1)
         message.success('删除成功')
       } catch (e) {
         message.error('删除失败')
       }
     },
   })
+}
+
+const uploadAvatar = async () => {
+  return true
 }
 </script>
 <template>
@@ -108,6 +118,15 @@ const deleteCharacter = async (character: Character) => {
     <n-form label-placement="left">
       <n-form-item label="名称">
         <n-input v-model:value="addCharacterForm.name" />
+      </n-form-item>
+      <n-form-item label="头像">
+        <n-upload
+          v-model:file-list="addCharacterForm.avatarFileList"
+          @before-upload="uploadAvatar()"
+          :multiple="false"
+          list-type="image-card"
+          :trigger-style="{ display: addCharacterForm.avatarFileList.length ? 'none' : 'block' }"
+        />
       </n-form-item>
       <n-form-item label="描述">
         <n-input v-model:value="addCharacterForm.description" />
@@ -144,8 +163,8 @@ const deleteCharacter = async (character: Character) => {
           :value="editCharacterForm.character!.name"
           @confirm="
             async () =>
-              await api.updateCharacter(editCharacterForm.character!.id, {
-                name: editCharacterForm.character!.name,
+              await api.updateCharacter(editCharacterForm.character!.id!, {
+                name: editCharacterForm.character!.name!,
               })
           "
         ></SettingsInput>
@@ -155,8 +174,8 @@ const deleteCharacter = async (character: Character) => {
           :value="editCharacterForm.character!.description"
           @confirm="
             async () =>
-              await api.updateCharacter(editCharacterForm.character!.id, {
-                description: editCharacterForm.character!.description,
+              await api.updateCharacter(editCharacterForm.character!.id!, {
+                description: editCharacterForm.character!.description!,
               })
           "
         ></SettingsInput>
@@ -166,7 +185,7 @@ const deleteCharacter = async (character: Character) => {
           :value="editCharacterForm.character!.isPublic"
           @confirm="
             async (isPublic: boolean) => {
-              await api.updatePreset(editCharacterForm.character!.id, {
+              await api.updatePreset(editCharacterForm.character!.id!, {
                 isPublic: isPublic,
               })
               editCharacterForm.character!.isPublic = isPublic
@@ -179,7 +198,7 @@ const deleteCharacter = async (character: Character) => {
           :value="editCharacterForm.character!.settings"
           @confirm="
             async (settings: any) => {
-              await api.updateCharacter(editCharacterForm.character!.id, {
+              await api.updateCharacter(editCharacterForm.character!.id!, {
                 settings: settings,
               })
               editCharacterForm.character!.settings = settings

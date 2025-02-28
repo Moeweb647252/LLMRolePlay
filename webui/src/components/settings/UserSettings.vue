@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { api } from '@/api'
-import { type User } from '@/stores/settings'
+import { User } from '@/types/user'
 import { useMessage, useModal } from 'naive-ui'
 import { onMounted, ref } from 'vue'
 import SettingsInput from '../SettingsInput.vue'
@@ -66,7 +66,7 @@ const editUser = (user: User) => {
 }
 
 const deleteUser = async (user: User) => {
-  await api.deleteUser(user.id)
+  await api.deleteUser(user.id!)
   users.value.splice(users.value.indexOf(user), 1)
   message.success('删除成功')
   model.create({
@@ -77,7 +77,7 @@ const deleteUser = async (user: User) => {
     negativeText: '取消',
     onPositiveClick: async () => {
       try {
-        await api.deleteUser(user.id)
+        await api.deleteUser(user.id!)
         users.value.splice(users.value.indexOf(user), 1)
         message.success('删除成功')
       } catch (e) {

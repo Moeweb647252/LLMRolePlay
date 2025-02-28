@@ -2,8 +2,15 @@ import { sha256 } from 'js-sha256'
 import { useSettingsStore } from './stores/settings'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
-import type { Preset } from './stores/presets'
-import type { Character } from './stores/characters'
+import { Preset } from './types/preset'
+import { Character } from './types/character'
+import { Model } from './types/provider'
+import { Message } from './types/chat'
+import { User } from './types/user'
+import { Chat } from './types/chat'
+import { Template } from './types/template'
+import { Participant } from './types/chat'
+import { Provider } from './types/provider'
 
 export class NoTokenError extends Error {
   constructor() {
@@ -15,7 +22,7 @@ export class Api {
   store: ReturnType<typeof useSettingsStore> | null = null
   constructor() {}
 
-  async request(path: string, body: object, method: string = 'POST') {
+  async request(path: string, body: object, method: string = 'POST'): Promise<any> {
     const router = useRouter()
     const token = this.store!.user?.token
     if (!token && path !== 'login') {
@@ -42,7 +49,7 @@ export class Api {
     return data.data
   }
 
-  async login(email: string, password: string) {
+  async login(email: string, password: string): Promise<void> {
     const resp = await this.request('login', {
       email: email,
       password: sha256(password),
@@ -56,8 +63,12 @@ export class Api {
     }
   }
 
-  async logout() {
+  async logout(): Promise<void> {
     this.store!.user = null
+  }
+
+  async check(): Promise<void> {
+    await this.request('check', {})
   }
 
   async addCharacter(
@@ -65,7 +76,7 @@ export class Api {
     description: string,
     settings: object,
     isPublic: boolean = false,
-  ) {
+  ): Promise<number> {
     let data = await this.request('createCharacter', {
       name: name,
       description: description,
@@ -80,17 +91,18 @@ export class Api {
       characters: any[]
     } = await this.request('getCharacters', {})
     return data.characters.map((character) => {
-      return {
-        id: character.id,
-        name: character.name,
-        description: character.description,
-        settings: JSON.parse(character.settings),
-        isPublic: character.isPublic,
-      }
+      return new Character(
+        character.id,
+        character.name,
+        JSON.parse(character.settings),
+        character.description,
+        character.isPublic,
+        character.avatar,
+      )
     })
   }
 
-  async deleteCharacter(id: number) {
+  async deleteCharacter(id: number): Promise<void> {
     await this.request('deleteCharacter', {
       characterId: id,
     })
@@ -104,7 +116,7 @@ export class Api {
       settings?: object
       isPublic?: boolean
     } = {},
-  ) {
+  ): Promise<void> {
     await this.request('updateCharacter', {
       characterId: id,
       name: options.name ?? null,
@@ -114,7 +126,12 @@ export class Api {
     })
   }
 
-  async addPreset(name: string, description: string, settings: object, isPublic: boolean = false) {
+  async addPreset(
+    name: string,
+    description: string,
+    settings: object,
+    isPublic: boolean = false,
+  ): Promise<number> {
     let data = await this.request('createPreset', {
       name: name,
       description: description,
@@ -128,19 +145,18 @@ export class Api {
     let data: {
       presets: any[]
     } = await this.request('getPresets', {})
-    console.log(data)
     return data.presets.map((preset) => {
-      return {
-        id: preset.id,
-        name: preset.name,
-        description: preset.description,
-        settings: JSON.parse(preset.settings),
-        isPublic: preset.isPublic,
-      }
+      return new Preset(
+        preset.id,
+        preset.name,
+        preset.description,
+        JSON.parse(preset.settings),
+        preset.isPublic,
+      )
     })
   }
 
-  async deletePreset(id: number) {
+  async deletePreset(id: number): Promise<void> {
     await this.request('deletePreset', {
       presetId: id,
     })
@@ -154,7 +170,7 @@ export class Api {
       settings?: object
       isPublic?: boolean
     } = {},
-  ) {
+  ): Promise<void> {
     await this.request('updatePreset', {
       presetId: id,
       name: options.name ?? null,
@@ -171,7 +187,7 @@ export class Api {
     description: string,
     settings: object,
     type: 'openai' | 'google' | 'azure',
-  ) {
+  ): Promise<number> {
     let resp = await this.request('createProvider', {
       name: name,
       baseUrl: url,
@@ -183,37 +199,37 @@ export class Api {
     return resp.id
   }
 
-  async getProviders() {
+  async getProviders(): Promise<Provider[]> {
     let data: {
       providers: any[]
     } = await this.request('getProviders', {})
-    let providers = data.providers.map((provider) => {
-      let ret = {
-        id: provider.id,
-        name: provider.name,
-        url: provider.url,
-        apiKey: provider.apiKey,
-        description: provider.description,
-        settings: JSON.parse(provider.settings),
-        type: provider.type,
-        models: [],
-      }
-      ret.models = provider.models.map((model: any) => {
-        return {
-          id: model.id,
-          name: model.name,
-          modelName: model.modelName,
-          description: model.description,
-          settings: JSON.parse(model.settings),
-          provider: ret,
-        }
+    return data.providers.map((provider) => {
+      const providerObj = new Provider(
+        provider.id,
+        provider.name,
+        provider.url,
+        provider.apiKey,
+        provider.description,
+        JSON.parse(provider.settings),
+        provider.type,
+        [],
+      )
+      providerObj.models = provider.models.map((model: any) => {
+        return new Model(
+          model.id,
+          model.name,
+          model.modelName,
+          model.description,
+          model.isPublic,
+          JSON.parse(model.settings),
+          providerObj,
+        )
       })
-      return ret
+      return providerObj
     })
-    return providers
   }
 
-  async deleteProvider(id: number) {
+  async deleteProvider(id: number): Promise<void> {
     await this.request('deleteProvider', {
       providerId: id,
     })
@@ -229,7 +245,7 @@ export class Api {
       type?: string
       settings?: object
     } = {},
-  ) {
+  ): Promise<void> {
     await this.request('updateProvider', {
       providerId: id,
       name: options.name ?? null,
@@ -247,7 +263,7 @@ export class Api {
     description: string,
     providerId: number,
     settings: object,
-  ) {
+  ): Promise<number> {
     let data = await this.request('createModel', {
       name: name,
       modelName: modelName,
@@ -259,7 +275,7 @@ export class Api {
     return data.id
   }
 
-  async deleteModel(id: number) {
+  async deleteModel(id: number): Promise<void> {
     await this.request('deleteModel', {
       modelId: id,
     })
@@ -274,7 +290,7 @@ export class Api {
       settings?: object
       isPublic?: boolean
     } = {},
-  ) {
+  ): Promise<void> {
     await this.request('updateModel', {
       modelId: id,
       name: options.name ?? null,
@@ -285,17 +301,16 @@ export class Api {
     })
   }
 
-  async getUsers() {
+  async getUsers(): Promise<User[]> {
     let data: {
       users: any[]
     } = await this.request('getUsers', {})
-    data.users.forEach((user) => {
-      user.group = user.group.toString()
+    return data.users.map((user) => {
+      return new User(user.id, user.username, user.email, user.token, user.group.toString())
     })
-    return data.users
   }
 
-  async deleteUser(id: number) {
+  async deleteUser(id: number): Promise<void> {
     await this.request('deleteUser', {
       userId: id,
     })
@@ -308,7 +323,7 @@ export class Api {
       email?: string
       group?: number
     } = {},
-  ) {
+  ): Promise<void> {
     await this.request('updateUser', {
       userId: id,
       username: options.username ?? null,
@@ -317,7 +332,7 @@ export class Api {
     })
   }
 
-  async addUser(username: string, email: string, password: string, group: string) {
+  async addUser(username: string, email: string, password: string, group: string): Promise<number> {
     let data = await this.request('createUser', {
       username: username,
       email: email,
@@ -327,33 +342,47 @@ export class Api {
     return data.id
   }
 
-  async getChats() {
+  async getChats(): Promise<Chat[]> {
     let data: {
       chats: any[]
     } = await this.request('getChats', {})
-    return data.chats
+    return data.chats.map((chat) => {
+      return new Chat(chat.id, chat.name, chat.participants || [], chat.messages || [])
+    })
   }
 
-  async getMessages(chatId: number) {
+  async getMessages(chatId: number): Promise<Message[]> {
     let data: {
       messages: any[]
     } = await this.request('getMessages', {
       chatId: chatId,
     })
-    return data.messages
+    return data.messages.map((message) => {
+      return new Message(message.id, message.content, message.role, message.createdAt)
+    })
   }
 
-  async getTemplates() {
+  async getTemplates(): Promise<Template[]> {
     let data: {
       templates: any[]
     } = await this.request('getTemplates', {})
-    return data.templates
+    return data.templates.map((template) => {
+      return new Template(
+        template.id,
+        template.name,
+        template.content,
+        template.description,
+        template.isPublic,
+      )
+    })
   }
-  async deleteTemplate(id: number) {
+
+  async deleteTemplate(id: number): Promise<void> {
     await this.request('deleteTemplate', {
       templateId: id,
     })
   }
+
   async updateTemplate(
     id: number,
     options: {
@@ -362,7 +391,7 @@ export class Api {
       description?: string
       isPublic?: boolean
     } = {},
-  ) {
+  ): Promise<void> {
     await this.request('updateTemplate', {
       templateId: id,
       name: options.name ?? null,
@@ -371,7 +400,13 @@ export class Api {
       isPublic: options.isPublic ?? null,
     })
   }
-  async addTemplate(name: string, content: string, description: string, isPublic: boolean = false) {
+
+  async addTemplate(
+    name: string,
+    content: string,
+    description: string,
+    isPublic: boolean = false,
+  ): Promise<number> {
     let data = await this.request('createTemplate', {
       name: name,
       content: content,
@@ -388,9 +423,8 @@ export class Api {
     templateId: number,
     modelId: number,
     name: string,
-    avatar: number | null,
     settings: object,
-  ) {
+  ): Promise<number> {
     let data = await this.request('addParticipant', {
       chatId: chatId,
       characterId: characterId,
@@ -398,17 +432,17 @@ export class Api {
       templateId: templateId,
       modelId: modelId,
       name: name,
-      avatar: avatar,
       settings: JSON.stringify(settings),
     })
     return data.id
   }
 
-  async deleteParticipant(id: number) {
+  async deleteParticipant(id: number): Promise<void> {
     await this.request('deleteParticipant', {
       participantId: id,
     })
   }
+
   async updateParticipant(
     id: number,
     options: {
@@ -419,7 +453,7 @@ export class Api {
       avatar?: number
       settings?: object
     } = {},
-  ) {
+  ): Promise<void> {
     await this.request('updateParticipant', {
       participantId: id,
       characterId: options.characterId ?? null,
@@ -430,12 +464,13 @@ export class Api {
       settings: options.settings != null ? JSON.stringify(options.settings) : null,
     })
   }
-  async uploadFile(data: ArrayBuffer) {
+
+  async uploadFile(data: ArrayBuffer): Promise<number> {
     let resp = await this.request('createFile', data)
     return resp.id
   }
 
-  async addChat(name: string, description: string) {
+  async addChat(name: string, description: string): Promise<number> {
     let data = await this.request('createChat', {
       name: name,
       description: description,
@@ -443,7 +478,7 @@ export class Api {
     return data.id
   }
 
-  async deleteChat(id: number) {
+  async deleteChat(id: number): Promise<void> {
     await this.request('deleteChat', {
       chatId: id,
     })
@@ -456,7 +491,7 @@ export const generate = async (
   chatId: number,
   participantId: number,
   callback: (data: string) => void,
-) => {
+): Promise<void> => {
   const token = api.store!.user?.token
   if (!token) {
     throw new NoTokenError()

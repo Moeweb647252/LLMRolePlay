@@ -1,13 +1,6 @@
+import type { User } from '@/types/user'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-
-export interface User {
-  id: number
-  username: string
-  email: string
-  token: string
-  group: '1' | '2'
-}
 
 export const useSettingsStore = defineStore(
   'settings',

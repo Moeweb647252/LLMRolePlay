@@ -24,7 +24,6 @@ namespace LLMRolePlay.Models
     public uint Id { get; set; }
     public string Name { get; set; }
     public string Settings { get; set; }
-    public uint? Avatar { get; set; }
     public Model Model { get; set; } = null!;
     [ForeignKey("Model")]
     public uint ModelId { get; set; }
@@ -47,7 +46,7 @@ namespace LLMRolePlay.Models
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     // 添加一个新的构造函数，接受多个PresetId
-    public Participant(uint modelId, uint characterId, string presetIds, uint chatId, uint templateId, string name, string settings, uint? avatar = null)
+    public Participant(uint modelId, uint characterId, string presetIds, uint chatId, uint templateId, string name, string settings)
     {
       ModelId = modelId;
       CharacterId = characterId;
@@ -56,10 +55,9 @@ namespace LLMRolePlay.Models
       TemplateId = templateId;
       Name = name;
       Settings = settings;
-      Avatar = avatar;
     }
 
-    public Participant(uint modelId, uint characterId, IEnumerable<uint> presetIds, uint chatId, uint templateId, string name, string settings, uint? avatar = null)
+    public Participant(uint modelId, uint characterId, IEnumerable<uint> presetIds, uint chatId, uint templateId, string name, string settings)
     {
       ModelId = modelId;
       CharacterId = characterId;
@@ -68,7 +66,6 @@ namespace LLMRolePlay.Models
       TemplateId = templateId;
       Name = name;
       Settings = settings;
-      Avatar = avatar;
     }
 
     // 辅助方法，获取PresetId列表
