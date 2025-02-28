@@ -48,22 +48,28 @@ namespace LLMRolePlay.Providers
 
   public class OpenAI
   {
-    public Model model { get; set; }
+    public Participant Participant { get; set; }
+    public DBContext _dBContext { get; set; }
 
-    public OpenAI(Model model)
+    public OpenAI(Participant participant, DBContext dBContext)
     {
-      this.model = model;
+      _dBContext = dBContext;
+      Participant = participant;
     }
 
-    public async IAsyncEnumerable<OpenAIStreamingResponseChunk> Compeletion(IEnumerable<ChatMessage> messages)
+    public async IAsyncEnumerable<OpenAIStreamingResponseChunk> Compeletion(IEnumerable<ChatMessage> _messages)
     {
       var client = new HttpClient();
-      client.DefaultRequestHeaders.Add("Authorization", $"Bearer {model.Provider.ApiKey}");
-      var request = new HttpRequestMessage(HttpMethod.Post, model.Provider.BaseUrl + "/v1/chat/completions");
-      OpenAISettings? settings = JsonConvert.DeserializeObject<OpenAISettings>(model.Settings);
+      client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Participant.Model.Provider.ApiKey}");
+      var request = new HttpRequestMessage(HttpMethod.Post, Participant.Model.Provider.BaseUrl + "/v1/chat/completions");
+      OpenAISettings? settings = JsonConvert.DeserializeObject<OpenAISettings>(Participant.Model.Settings);
+      List<ChatMessage> messages = ([
+        new ChatMessage { Role = "system", Content = await Participant.MakeSystemPrompt(_dBContext) },
+      ]);
+      messages.Concat(_messages);
       request.Content = new StringContent(JsonConvert.SerializeObject(new OpenAICompletionRequest
       {
-        model = model.ModelName,
+        model = Participant.Model.ModelName,
         messages = messages,
         temperature = settings?.temperature,
         max_tokens = settings?.max_tokens,

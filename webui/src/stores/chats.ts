@@ -6,7 +6,7 @@ import type { Model } from './providers'
 export interface Participant {
   id: number
   model: Model
-  preset: Preset
+  presets: Preset[]
   character: Character
   name: string
   settings: {}

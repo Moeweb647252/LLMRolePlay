@@ -28,7 +28,7 @@ namespace LLMRolePlay.Controllers
           {
             id = participant.Id,
             model = participant.Model,
-            preset = participant.Preset,
+            presetIds = participant.PresetIds,
             character = participant.Character
           })
         })

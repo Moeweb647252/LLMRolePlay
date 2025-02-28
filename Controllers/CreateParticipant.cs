@@ -9,7 +9,7 @@ namespace LLMRolePlay.Controllers
     public required uint chatId { get; set; }
     public required uint modelId { get; set; }
     public required uint characterId { get; set; }
-    public required uint presetId { get; set; }
+    public required uint[] presetIds { get; set; }
     public required uint templateId { get; set; }
     public required string name { get; set; }
     public required string settings { get; set; }
@@ -35,15 +35,18 @@ namespace LLMRolePlay.Controllers
       if (character == null) return ApiResponse.MessageOnly(500, "character not found");
       if (character.UserId != user.Id) return ApiResponse.MessageOnly(500, "character does not belong to user");
 
-      Preset? preset = await Preset.GetPresetById(_dBContext, data.presetId);
-      if (preset == null) return ApiResponse.MessageOnly(500, "preset not found");
-      if (preset.UserId != user.Id) return ApiResponse.MessageOnly(500, "preset does not belong to user");
+      foreach (var presetId in data.presetIds)
+      {
+        Preset? preset = await Preset.GetPresetById(_dBContext, presetId);
+        if (preset == null) return ApiResponse.MessageOnly(500, "preset not found");
+        if (preset.UserId != user.Id) return ApiResponse.MessageOnly(500, "preset does not belong to user");
+      }
 
       Chat? chat = await Chat.GetChatById(_dBContext, data.chatId);
       if (chat == null) return ApiResponse.MessageOnly(500, "chat not found");
       if (chat.UserId != user.Id) return ApiResponse.MessageOnly(500, "chat does not belong to user");
 
-      Participant participant = new Participant(data.modelId, data.characterId, data.presetId, chat.Id, data.templateId, data.name, data.settings);
+      Participant participant = new Participant(data.modelId, data.characterId, data.presetIds, chat.Id, data.templateId, data.name, data.settings);
       _dBContext.Participants.Add(participant);
       await _dBContext.SaveChangesAsync();
 

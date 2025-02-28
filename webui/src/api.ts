@@ -384,17 +384,19 @@ export class Api {
   async addParticipant(
     chatId: number,
     characterId: number,
-    presetId: number,
+    presetIds: number[],
     templateId: number,
+    modelId: number,
     name: string,
-    avatar: number,
+    avatar: number | null,
     settings: object,
   ) {
     let data = await this.request('addParticipant', {
       chatId: chatId,
       characterId: characterId,
-      presetId: presetId,
+      presetId: presetIds,
       templateId: templateId,
+      modelId: modelId,
       name: name,
       avatar: avatar,
       settings: JSON.stringify(settings),
@@ -411,7 +413,7 @@ export class Api {
     id: number,
     options: {
       characterId?: number
-      presetId?: number
+      presetIds?: number[]
       templateId?: number
       name?: string
       avatar?: number
@@ -421,7 +423,7 @@ export class Api {
     await this.request('updateParticipant', {
       participantId: id,
       characterId: options.characterId ?? null,
-      presetId: options.presetId ?? null,
+      presetId: options.presetIds ?? null,
       templateId: options.templateId ?? null,
       name: options.name ?? null,
       avatar: options.avatar ?? null,
@@ -431,6 +433,20 @@ export class Api {
   async uploadFile(data: ArrayBuffer) {
     let resp = await this.request('createFile', data)
     return resp.id
+  }
+
+  async addChat(name: string, description: string) {
+    let data = await this.request('createChat', {
+      name: name,
+      description: description,
+    })
+    return data.id
+  }
+
+  async deleteChat(id: number) {
+    await this.request('deleteChat', {
+      chatId: id,
+    })
   }
 }
 

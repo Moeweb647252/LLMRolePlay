@@ -8,6 +8,7 @@ namespace LLMRolePlay.Models
   {
     public DbSet<Preset> Presets { get; set; }
   }
+
   public class Preset
   {
     [Key]

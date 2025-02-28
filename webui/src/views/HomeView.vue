@@ -69,7 +69,7 @@ const addParticipantForm = ref({
   name: '',
   settings: {},
   modelId: null as null | number,
-  presetId: null as null | number,
+  presetIds: null as null | { id: number | null }[],
   characterId: null as null | number,
   templateId: null as null | number,
   avatarFileList: [] as UploadFileInfo[],
@@ -82,7 +82,7 @@ const addChatAddParticipant = () => {
     name: '',
     settings: {},
     modelId: null,
-    presetId: null,
+    presetIds: [],
     characterId: null,
     templateId: null,
     avatarFileList: [] as UploadFileInfo[],
@@ -91,8 +91,9 @@ const addChatAddParticipant = () => {
         name: addParticipantForm.value.name,
         settings: addParticipantForm.value.settings,
         modelId: addParticipantForm.value.modelId,
-        presetId: addParticipantForm.value.presetId,
+        presetIds: addParticipantForm.value.presetIds,
         characterId: addParticipantForm.value.characterId,
+        templateId: addParticipantForm.value.templateId,
       })
       addParticipantForm.value.visible = false
     },
@@ -119,7 +120,36 @@ const uploadAvatar = async (
   return true
 }
 
-const addChat = async () => {}
+const addChat = async () => {
+  const chatId = await api.addChat(addChatForm.value.name, addChatForm.value.description)
+  const participants = []
+  for (const participant of addChatForm.value.participants) {
+    if (!participant) continue
+    let fileId = null
+    if (participant.avatarFileList.length > 0) {
+      const buffer = participant.avatarFileList[0].file.file?.arrayBuffer()
+      if (buffer) {
+        fileId = await api.uploadFile(buffer)
+      }
+    }
+    const participantId = await api.addParticipant(
+      chatId,
+      participant.characterId,
+      participant.presetIds,
+      participant.templateId,
+      participant.modelId,
+      participant.name,
+      fileId,
+      settings,
+    )
+    participants.push({
+      id: participantId,
+      name: participant.name,
+      settings: participant.settings,
+      modelId: participant.modelId,
+    })
+  }
+}
 </script>
 <template>
   <n-layout :has-sider="showSider" class="full bfc">
@@ -238,18 +268,31 @@ const addChat = async () => {}
         <n-select v-model:value="addParticipantForm.modelId" filterable :options="modelOptions" />
       </n-form-item>
       <n-form-item label="预设">
-        <n-select
-          v-model:value="addParticipantForm.presetId"
-          filterable
-          :options="
-            presets.map((p: Preset) => {
-              return {
-                label: p.name,
-                value: p.id,
-              }
-            })
+        <n-dynamic-input
+          v-model:value="addParticipantForm.presetIds"
+          @create="
+            () => {
+              let obj = { id: null }
+              addParticipantForm.presetIds!.push(obj)
+              return obj
+            }
           "
-        />
+        >
+          <template #default="obj">
+            <n-select
+              @update:value="(v: any) => (obj.value.id = v)"
+              filterable
+              :options="
+                presets.map((p: Preset) => {
+                  return {
+                    label: p.name,
+                    value: p.id,
+                  }
+                })
+              "
+            />
+          </template>
+        </n-dynamic-input>
       </n-form-item>
       <n-form-item label="角色">
         <n-select
@@ -267,7 +310,7 @@ const addChat = async () => {}
       </n-form-item>
       <n-form-item label="模板">
         <n-select
-          v-model:value="addParticipantForm.avatar"
+          v-model:value="addParticipantForm.templateId"
           filterable
           :options="
             templates.map((t: Template) => {
@@ -287,6 +330,7 @@ const addChat = async () => {}
       </n-space>
     </template>
   </n-modal>
+  <n-modal></n-modal>
 </template>
 
 <style scoped>
