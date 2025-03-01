@@ -7,6 +7,7 @@ namespace LLMRolePlay.Controllers
   public class CreateCharacterRequest
   {
     public required string name { get; set; }
+    public required string content { get; set; }
     public required string settings { get; set; }
     public required string description { get; set; }
     public bool isPublic { get; set; } = false;
@@ -23,7 +24,7 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Character character = await Character.CreateCharacter(_dBContext, data.name, data.settings, data.description, user.Id, data.isPublic);
+      Character character = await Character.CreateCharacter(_dBContext, data.name, data.content, data.settings, data.description, user.Id, data.isPublic);
       user.MarkAsModified(_dBContext);
       await _dBContext.SaveChangesAsync();
       return ApiResponse.Success(new

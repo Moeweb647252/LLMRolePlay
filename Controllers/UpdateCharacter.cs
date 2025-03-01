@@ -8,6 +8,7 @@ namespace LLMRolePlay.Controllers
   {
     public required uint characterId;
     public string? name = null;
+    public string? content = null;
     public string? settings = null;
     public string? description = null;
     public bool? isPublic = null;
@@ -30,6 +31,7 @@ namespace LLMRolePlay.Controllers
       if (character.UserId != user.Id) return ApiResponse.MessageOnly(505, "character not belongs to current user");
 
       if (data.name != null) character.Name = data.name;
+      if (data.content != null) character.Content = data.content;
       if (data.settings != null) character.Settings = data.settings;
       if (data.description != null) character.Description = data.description;
       if (data.isPublic != null) character.IsPublic = data.isPublic.Value;

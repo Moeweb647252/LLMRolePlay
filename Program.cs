@@ -40,20 +40,12 @@ using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>(
   }
 }
 
-if (app.Environment.IsDevelopment())
+app.UseFileServer(new FileServerOptions
 {
-  app.MapOpenApi();
-  app.MapScalarApiReference();
-}
-else
-{
-  app.UseFileServer(new FileServerOptions
-  {
-    FileProvider = new ManifestEmbeddedFileProvider(
-    typeof(Program).Assembly, "webui/dist"
-  )
-  });
-}
+  FileProvider = new ManifestEmbeddedFileProvider(
+  typeof(Program).Assembly, "webui/dist"
+)
+});
 
 app.UseExceptionHandler(h =>
 {

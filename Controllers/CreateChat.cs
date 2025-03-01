@@ -7,6 +7,7 @@ namespace LLMRolePlay.Controllers
   public class CreateChatRequest
   {
     public required string name { get; set; }
+    public string? description { get; set; }
     public required string settings { get; set; }
   }
   public partial class API : ControllerBase
@@ -21,7 +22,7 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Chat? chat = await Chat.CreateChat(_dBContext, data.name, data.settings, user.Id);
+      Chat? chat = await Chat.CreateChat(_dBContext, data.name, data.description, data.settings, user.Id);
       if (chat == null) return ApiResponse.MessageOnly(502, "Chat creation failed");
       await _dBContext.SaveChangesAsync();
       return ApiResponse.Success(new

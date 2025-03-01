@@ -33,11 +33,15 @@ namespace LLMRolePlay.Controllers
       {
         var openai = new OpenAI(participant, _dBContext);
         var content = "";
-        var stream = openai.Compeletion(await Utils.AwaitAll(chat.Messages.Select(async m => new ChatMessage
+        var stream = openai.Compeletion(await Utils.AwaitAll(chat.Messages.Select(async m =>
         {
-          content = m.Content,
-          role = m.Role,
-          name = await _dBContext.Participants.Where(p => p.Id == m.ParticipantId).Select(p => p.Name).FirstOrDefaultAsync()
+          var participant = await _dBContext.Participants.Where(p => p.Id == m.ParticipantId).FirstOrDefaultAsync();
+          return new ChatMessage
+          {
+            content = m.Content,
+            role = participant?.Id == participantId ? "assistant" : "user",
+            name = participant?.Name,
+          };
         }).ToList())).GetAsyncEnumerator();
         while (true)
         {

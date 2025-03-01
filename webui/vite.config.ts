@@ -18,30 +18,25 @@ export default defineConfig({
       imports: [
         'vue',
         {
-          'naive-ui': [
-            'useDialog',
-            'useMessage',
-            'useNotification',
-            'useLoadingBar'
-          ]
-        }
-      ]
+          'naive-ui': ['useDialog', 'useMessage', 'useNotification', 'useLoadingBar'],
+        },
+      ],
     }),
     Components({
-      resolvers: [NaiveUiResolver()]
-    })
+      resolvers: [NaiveUiResolver()],
+    }),
   ],
   server: {
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:5257',
         changeOrigin: true,
-      }
-    }
+      },
+    },
   },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
     },
   },
 })

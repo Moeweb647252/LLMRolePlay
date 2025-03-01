@@ -114,7 +114,7 @@ namespace LLMRolePlay.Models
           JsonConvert.DeserializeObject<List<ContentItem>>(Character.Content)?
           .Select(s => $"{s.Key}: {s.Value}") ?? []
         );
-      ret += "\nCharacter:\n";
+      ret += "\nYour Character:\n";
       ret += $"姓名: {Character.Name}\n";
       if (ret.Contains("{{ character }}"))
       {
@@ -141,6 +141,23 @@ namespace LLMRolePlay.Models
       else
       {
         ret = ret + "\nPreset:\n" + preset;
+      }
+      var chat = await db.Chats.Include(c => c.Participants).ThenInclude(p => p.Character).Where(c => c.Id == ChatId).FirstAsync();
+      if (chat.Description != null) ret += $"\nChatroom Description: {chat.Description}\n";
+      ret += "\nOther participants in chat: \n";
+      foreach (var participant in Chat.Participants)
+      {
+        if (participant.Id == Id)
+        {
+          continue;
+        }
+        ret += $"姓名: {participant.Name}\n";
+        ret += "描述:" + participant.Character.Description + "\n";
+        ret += string.Join("\n",
+          JsonConvert.DeserializeObject<List<ContentItem>>(participant.Character.Content)?
+          .Select(s => $"{s.Key}: {s.Value}") ?? []
+        );
+        ret += "\n\n";
       }
       return ret;
     }

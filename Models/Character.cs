@@ -22,18 +22,19 @@ namespace LLMRolePlay.Models
 
     public uint? Avatar { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public Character(string name, string content, uint userId, string description = "", bool isPublic = false, uint? avatar = null)
+    public Character(string name, string content, string settings, uint userId, string description = "", bool isPublic = false, uint? avatar = null)
     {
       Name = name;
       Content = content;
+      Settings = settings;
       UserId = userId;
       Description = description;
       IsPublic = isPublic;
       Avatar = avatar;
     }
-    public static async Task<Character> CreateCharacter(DBContext db, string name, string settings, string description, uint userId, bool isPublic = false, uint? avatar = null)
+    public static async Task<Character> CreateCharacter(DBContext db, string name, string content, string settings, string description, uint userId, bool isPublic = false, uint? avatar = null)
     {
-      Character character = new Character(name, settings, userId, description, isPublic, avatar);
+      Character character = new Character(name, content, settings, userId, description, isPublic, avatar);
       await db.Characters.AddAsync(character);
       await db.SaveChangesAsync();
       return character;

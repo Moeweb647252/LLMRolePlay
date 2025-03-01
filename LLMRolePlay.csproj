@@ -2,9 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Exe</OutputType>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <GenerateEmbeddedFilesManifest Condition="'$(Configuration)' == 'Release' ">true</GenerateEmbeddedFilesManifest>
+    <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
 
   <ItemGroup>
@@ -19,7 +20,7 @@
     <Watch Remove="webui/**" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="9.0.2" />
     <PackageReference Include="Scalar.AspNetCore" Version="2.0.14" />
-    <EmbeddedResource Include="webui/dist/**" Condition="'$(Configuration)' == 'Release' " />
+    <EmbeddedResource Include="webui/dist/**" />
   </ItemGroup>
 
   <ItemGroup>

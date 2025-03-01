@@ -13,7 +13,8 @@ const addCharacterForm = ref({
   visible: false,
   name: '',
   description: '',
-  settings: [],
+  settings: {},
+  content: [],
   isPublic: false,
   avatarFileList: [] as UploadFileInfo[],
 })
@@ -23,7 +24,8 @@ const addCharacter = async () => {
   addCharacterForm.value = {
     name: '',
     description: '',
-    settings: [],
+    settings: {},
+    content: [],
     visible: false,
     isPublic: false,
     avatarFileList: [],
@@ -35,9 +37,9 @@ const addCharacter = async () => {
       fileId = await api.uploadFile(buffer)
     }
   }
-  let id = await api.addCharacter(data.name, data.description, data.settings, data.isPublic)
+  let id = await api.addCharacter(data.name, data.description, data.content, {}, data.isPublic)
   characters.value.push(
-    new Character(id, data.name, data.settings, data.description, data.isPublic, fileId),
+    new Character(id, data.name, data.content, {}, data.description, data.isPublic, fileId),
   )
   message.success('添加成功')
 }
@@ -46,7 +48,8 @@ const cancelAddCharacter = () => {
   addCharacterForm.value = {
     name: '',
     description: '',
-    settings: [],
+    settings: {},
+    content: [],
     visible: false,
     isPublic: false,
     avatarFileList: [],
@@ -136,7 +139,7 @@ const uploadAvatar = async () => {
       </n-form-item>
       <n-form-item label="设置">
         <n-dynamic-input
-          v-model:value="addCharacterForm.settings"
+          v-model:value="addCharacterForm.content"
           preset="pair"
           key-placeholder="设置名"
           value-placeholder="值"
@@ -195,13 +198,13 @@ const uploadAvatar = async () => {
       </n-form-item>
       <n-form-item label="设置">
         <SettingsDynamicInput
-          :value="editCharacterForm.character!.settings"
+          :value="editCharacterForm.character!.content"
           @confirm="
-            async (settings: any) => {
+            async (content: any) => {
               await api.updateCharacter(editCharacterForm.character!.id!, {
-                settings: settings,
+                content: content,
               })
-              editCharacterForm.character!.settings = settings
+              editCharacterForm.character!.content = content
             }
           "
         ></SettingsDynamicInput>

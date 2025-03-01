@@ -23,6 +23,11 @@ namespace LLMRolePlay.Controllers
 
       Chat? chat = await _dBContext.Chats
         .Include(c => c.Participants)
+        .ThenInclude(p => p.Model)
+        .Include(c => c.Participants)
+        .ThenInclude(p => p.Character)
+        .Include(c => c.Participants)
+        .ThenInclude(p => p.Template)
         .Where(c => c.Id == data.chatId)
         .FirstOrDefaultAsync();
       if (chat == null) return ApiResponse.MessageOnly(404, "Chat not found");
@@ -33,10 +38,12 @@ namespace LLMRolePlay.Controllers
         {
           id = chat.Id,
           name = chat.Name,
+          description = chat.Description,
           settings = chat.Settings,
           participants = await Utils.AwaitAll(chat.Participants.Select(async participant => new
           {
             id = participant.Id,
+            name = participant.Name,
             model = participant.Model,
             settings = participant.Settings,
             presets = await Utils.AwaitAll(participant.GetPresetIdList().Select(async presetId => await Preset.GetPresetById(_dBContext, presetId))),

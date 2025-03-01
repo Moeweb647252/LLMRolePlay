@@ -27,7 +27,7 @@ const addTemplate = async () => {
     isPublic: false,
   }
   let id = await api.addTemplate(data.name, data.content, data.description)
-  templates.value.push(new Template(id, data.name, data.description, data.content, data.isPublic))
+  templates.value.push(new Template(id, data.name, data.content, data.description, data.isPublic))
   message.success('添加成功')
 }
 

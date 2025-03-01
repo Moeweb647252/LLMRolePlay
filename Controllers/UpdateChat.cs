@@ -8,6 +8,7 @@ namespace LLMRolePlay.Controllers
   {
     public required uint chatId { get; set; }
     public string? name { get; set; } = null;
+    public string? description { get; set; } = null;
     public string? settings { get; set; } = null;
     public uint? modelId { get; set; } = null;
     public uint? characterId { get; set; } = null;
@@ -29,6 +30,7 @@ namespace LLMRolePlay.Controllers
       if (user == null) return ApiResponse.TokenError();
 
       if (data.name != null) chat.Name = data.name;
+      if (data.description != null) chat.Description = data.description;
       if (data.settings != null) chat.Settings = data.settings;
 
       chat.MarkAsModified(_dBContext);

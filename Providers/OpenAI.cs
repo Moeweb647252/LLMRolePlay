@@ -78,6 +78,7 @@ namespace LLMRolePlay.Providers
       content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
       var req = new HttpRequestMessage(HttpMethod.Post, Participant.Model.Provider.BaseUrl + "/chat/completions");
       req.Content = content;
+      Console.WriteLine(await req.Content.ReadAsStringAsync());
       var response = await client.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
       if (response.IsSuccessStatusCode)
       {
@@ -88,7 +89,6 @@ namespace LLMRolePlay.Providers
           string? line = await reader.ReadLineAsync();
           if (line != null)
           {
-            Console.WriteLine(line);
             if (line == "data: [DONE]") break;
             if (line.StartsWith("data: "))
             {

@@ -15,7 +15,8 @@ const addPresetForm = ref({
   visible: false,
   name: '',
   description: '',
-  settings: [],
+  content: [],
+  settings: {},
   isPublic: false,
 })
 
@@ -24,12 +25,21 @@ const addPreset = async () => {
   addPresetForm.value = {
     name: '',
     description: '',
-    settings: [],
+    content: [],
+    settings: {},
     visible: false,
     isPublic: false,
   }
-  let id = await api.addPreset(data.name, data.description, data.settings, data.isPublic)
-  presets.value.push(new Preset(id, data.name, data.description, data.settings, data.isPublic))
+  let id = await api.addPreset(
+    data.name,
+    data.description,
+    data.content,
+    data.settings,
+    data.isPublic,
+  )
+  presets.value.push(
+    new Preset(id, data.name, data.description, data.content, data.settings, data.isPublic),
+  )
   message.success('添加成功')
 }
 
@@ -37,7 +47,8 @@ const cancelAddPreset = () => {
   addPresetForm.value = {
     name: '',
     description: '',
-    settings: [],
+    content: [],
+    settings: {},
     visible: false,
     isPublic: false,
   }
@@ -113,7 +124,7 @@ const deletePreset = async (preset: Preset) => {
       </n-form-item>
       <n-form-item label="设置">
         <n-dynamic-input
-          v-model:value="addPresetForm.settings"
+          v-model:value="addPresetForm.content"
           preset="pair"
           key-placeholder="设置名"
           value-placeholder="值"
@@ -172,13 +183,13 @@ const deletePreset = async (preset: Preset) => {
       </n-form-item>
       <n-form-item label="设置">
         <SettingsDynamicInput
-          :value="editPresetForm.preset!.settings"
+          :value="editPresetForm.preset!.content"
           @confirm="
-            async (settings: any) => {
+            async (content: any) => {
               await api.updatePreset(editPresetForm.preset!.id!, {
-                settings: settings,
+                content: content,
               })
-              editPresetForm.preset!.settings = settings
+              editPresetForm.preset!.content = content
             }
           "
         ></SettingsDynamicInput>

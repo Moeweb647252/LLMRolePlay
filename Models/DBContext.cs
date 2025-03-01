@@ -9,7 +9,6 @@ namespace LLMRolePlay.Models
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
       optionsBuilder.LogTo(Console.WriteLine, LogLevel.None);
-      base.OnConfiguring(optionsBuilder);
     }
 
   }

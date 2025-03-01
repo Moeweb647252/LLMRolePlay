@@ -28,16 +28,39 @@ const chats = ref(await api.getChats())
 const currentChat = ref(null as Chat | null)
 const chatBoxKey = ref(0)
 
-const renderAddChatParticipant = (paticipant: Participant, index: number) => {
+const renderAddChatParticipant = (participant: Participant, index: number) => {
   return h(
     NTag,
     {
       closable: true,
-      onClose: () => {},
+      onClose: () => {
+        addChatForm.value.participants.splice(index, 1)
+      },
       onClick: () => {},
     },
     {
-      default: () => paticipant.name,
+      default: () => participant.name,
+    },
+  )
+}
+
+const renderEditChatParticipant = (participant: Participant, index: number) => {
+  return h(
+    NTag,
+    {
+      closable: true,
+      onClose: async () => {
+        await deleteParticipant(participant, () => {
+          editChatForm.value.chat!.participants.splice(
+            editChatForm.value.chat!.participants.indexOf(participant),
+            1,
+          )
+        })
+      },
+      onClick: () => {},
+    },
+    {
+      default: () => participant.name,
     },
   )
 }
@@ -203,6 +226,72 @@ const editChatForm = ref({
   visible: false,
   chat: null as FullChat | null,
 })
+
+const editChatAddParticipant = () => {
+  addParticipantForm.value = {
+    visible: true,
+    name: '',
+    settings: {},
+    model: null,
+    presets: [],
+    character: null,
+    template: null,
+    avatarFileList: [] as UploadFileInfo[],
+    onConfirm: async () => {
+      let id = await api.addParticipant(
+        editChatForm.value.chat!.id!,
+        addParticipantForm.value.character!.id!,
+        addParticipantForm.value.presets!.map((p: any) => p.data!.id),
+        addParticipantForm.value.template!.id!,
+        addParticipantForm.value.model!.id!,
+        addParticipantForm.value.name,
+        {},
+      )
+      editChatForm.value.chat!.participants.push(
+        new Participant(
+          id,
+          addParticipantForm.value.name,
+          addParticipantForm.value.model!,
+          addParticipantForm.value.presets!.map((p: any) => p.data!),
+          addParticipantForm.value.character!,
+          addParticipantForm.value.template!,
+          {},
+        ),
+      )
+      addParticipantForm.value.visible = false
+    },
+  }
+}
+
+const deleteParticipant = async (participant: Participant, onDeleted: () => void) => {
+  modal.create({
+    title: '删除参与者',
+    content: `确定删除参与者 ${participant.name} ?`,
+    preset: 'dialog',
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      try {
+        await api.deleteParticipant(participant.id!)
+        onDeleted()
+        message.success('删除成功')
+      } catch (e) {
+        message.error('删除失败')
+      }
+    },
+  })
+}
+
+const startEditChat = async (chat: Chat) => {
+  editChatForm.value = {
+    visible: true,
+    chat: await api.getFullChat(chat.id!),
+  }
+  providers.value = await api.getProviders()
+  presets.value = await api.getPresets()
+  characters.value = await api.getCharacters()
+  templates.value = await api.getTemplates()
+}
 </script>
 <template>
   <n-layout :has-sider="showSider" class="full bfc">
@@ -239,7 +328,7 @@ const editChatForm = ref({
               <n-space style="width: 100%" align="center" justify="space-between">
                 <div @click="setChat(chat)">{{ chat.name }}</div>
                 <n-space>
-                  <n-button text size="small" class="chat-button">
+                  <n-button text size="small" class="chat-button" @click="startEditChat(chat)">
                     <template #icon>
                       <n-icon>
                         <MdCreate />
@@ -428,7 +517,7 @@ const editChatForm = ref({
     <n-form label-placement="left">
       <n-form-item label="名称">
         <SettingsInput
-          v-model:value="editChatForm.chat?.name"
+          v-model:value="editChatForm.chat!.name!"
           @confirm="
             async () => {
               await api.updateChat(editChatForm.chat!.id!, {
@@ -441,7 +530,7 @@ const editChatForm = ref({
       </n-form-item>
       <n-form-item label="描述">
         <SettingsInput
-          v-model:value="editChatForm.chat?.description"
+          v-model:value="editChatForm.chat!.description!"
           @confirm="
             async () => {
               await api.updateChat(editChatForm.chat!.id!, {
@@ -454,11 +543,11 @@ const editChatForm = ref({
       </n-form-item>
       <n-form-item label="参与者">
         <n-dynamic-tags
-          v-model:value="editChatForm.chat?.participants"
-          :render-tag="renderAddChatParticipant"
+          v-model:value="editChatForm.chat!.participants!"
+          :render-tag="renderEditChatParticipant"
         >
           <template #trigger>
-            <n-button size="small" type="primary" dashed @click="addChatAddParticipant">
+            <n-button size="small" type="primary" dashed @click="editChatAddParticipant">
               <template #icon>
                 <n-icon>
                   <MdAdd />
@@ -468,6 +557,7 @@ const editChatForm = ref({
             </n-button>
           </template>
         </n-dynamic-tags>
+      </n-form-item>
     </n-form>
   </n-modal>
 </template>

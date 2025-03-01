@@ -22,7 +22,7 @@ const addMessage = async () => {
     id: 0,
     content: input.value,
     role: 'user',
-    participantId: props.chat.participants[0].id!,
+    participantId: null,
     createdAt: new Date().toISOString(),
   })
   input.value = ''
@@ -47,6 +47,10 @@ const generateMessage = async () => {
   })
   msg.id = id
   generating.value = false
+  participantIndex.value++
+  if (participantIndex.value >= props.chat.participants.length) {
+    participantIndex.value = 0
+  }
 }
 
 const deleteMessage = async (message: Message) => {
@@ -74,7 +78,7 @@ onMounted(async () => {
   <div class="container">
     <div style="height: 4em">
       <n-flex align="center" justify="space-between" style="height: 100%; width: 100%">
-        <h2>Chat Name</h2>
+        <h2>{{ props.chat.name }}</h2>
       </n-flex>
     </div>
     <div style="height: calc(100% - 2em); padding-top: 2em; overflow: hidden">

@@ -22,10 +22,11 @@ namespace LLMRolePlay.Models
     public bool IsPublic { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-    public Preset(string name, string content, uint userId, string description = "", bool isPublic = false)
+    public Preset(string name, string content, string? settings, uint userId, string description = "", bool isPublic = false)
     {
       Name = name;
       Content = content;
+      Settings = settings;
       Description = description;
       UserId = userId;
       IsPublic = isPublic;
@@ -40,9 +41,9 @@ namespace LLMRolePlay.Models
     /// <param name="userId"></param>
     /// <param name="isPublic"></param>
     /// <returns></returns>
-    public static async Task<Preset> CreatePreset(DBContext db, string name, string settings, string description, uint userId, bool isPublic = false)
+    public static async Task<Preset> CreatePreset(DBContext db, string name, string content, string? settings, string description, uint userId, bool isPublic = false)
     {
-      Preset preset = new Preset(name, settings, userId, description, isPublic);
+      Preset preset = new Preset(name, content, settings, userId, description, isPublic);
       await db.Presets.AddAsync(preset);
       await db.SaveChangesAsync();
       return preset;

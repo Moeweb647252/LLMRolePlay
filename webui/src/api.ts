@@ -75,12 +75,14 @@ export class Api {
   async addCharacter(
     name: string,
     description: string,
+    content: { key: string; value: string }[],
     settings: object,
     isPublic: boolean = false,
   ): Promise<number> {
     let data = await this.request('createCharacter', {
       name: name,
       description: description,
+      content: JSON.stringify(content),
       settings: JSON.stringify(settings),
       isPublic: isPublic,
     })
@@ -95,6 +97,7 @@ export class Api {
       return new Character(
         character.id,
         character.name,
+        JSON.parse(character.content),
         JSON.parse(character.settings),
         character.description,
         character.isPublic,
@@ -114,6 +117,7 @@ export class Api {
     options: {
       name?: string
       description?: string
+      content?: { key: string; value: string }[]
       settings?: object
       isPublic?: boolean
     } = {},
@@ -123,6 +127,7 @@ export class Api {
       name: options.name ?? null,
       description: options.description ?? null,
       settings: options.settings != null ? JSON.stringify(options.settings) : null,
+      content: options.content != null ? JSON.stringify(options.content) : null,
       isPublic: options.isPublic ?? null,
     })
   }
@@ -130,12 +135,14 @@ export class Api {
   async addPreset(
     name: string,
     description: string,
+    content: { key: string; value: string }[],
     settings: object,
     isPublic: boolean = false,
   ): Promise<number> {
     let data = await this.request('createPreset', {
       name: name,
       description: description,
+      content: JSON.stringify(content),
       settings: JSON.stringify(settings),
       isPublic: isPublic,
     })
@@ -151,6 +158,7 @@ export class Api {
         preset.id,
         preset.name,
         preset.description,
+        JSON.parse(preset.content),
         JSON.parse(preset.settings),
         preset.isPublic,
       )
@@ -168,6 +176,7 @@ export class Api {
     options: {
       name?: string
       description?: string
+      content?: { key: string; value: string }[]
       settings?: object
       isPublic?: boolean
     } = {},
@@ -176,6 +185,7 @@ export class Api {
       presetId: id,
       name: options.name ?? null,
       description: options.description ?? null,
+      content: options.content != null ? JSON.stringify(options.content) : null,
       settings: options.settings != null ? JSON.stringify(options.settings) : null,
       isPublic: options.isPublic ?? null,
     })
@@ -365,7 +375,7 @@ export class Api {
       data.chat.id,
       data.chat.name,
       data.chat.description,
-      data.participants.map((participant) => {
+      data.chat.participants.map((participant: any) => {
         return new Participant(
           participant.id,
           participant.name,
