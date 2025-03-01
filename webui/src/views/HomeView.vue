@@ -523,24 +523,26 @@ const editChatEditParticipant = (participant: Participant) => {
     <n-form label-placement="left">
       <n-form-item label="名称">
         <SettingsInput
-          v-model:value="editChatForm.chat!.name!"
+          :value="editChatForm.chat!.name!"
           @confirm="
-            async () => {
+            async (name) => {
               await api.updateChat(editChatForm.chat!.id!, {
-                name: editChatForm.chat!.name!,
+                name: name,
               })
+              editChatForm.chat!.name = name
             }
           "
         />
       </n-form-item>
       <n-form-item label="描述">
         <SettingsInput
-          v-model:value="editChatForm.chat!.description!"
+          :value="editChatForm.chat!.description!"
           @confirm="
-            async () => {
+            async (description) => {
               await api.updateChat(editChatForm.chat!.id!, {
                 description: editChatForm.chat!.description!,
               })
+              editChatForm.chat!.description = description
             }
           "
         />
@@ -574,12 +576,13 @@ const editChatEditParticipant = (participant: Participant) => {
     <n-form label-placement="left">
       <n-form-item label="姓名">
         <SettingsInput
-          v-model:value="editParticipantForm.participant!.name"
+          :value="editParticipantForm.participant!.name"
           @confirm="
-            async () => {
+            async (name) => {
               await api.updateParticipant(editParticipantForm.participant!.id!, {
                 name: editParticipantForm.participant!.name!,
               })
+              editParticipantForm.participant!.name = name
             }
           "
         />
@@ -588,12 +591,13 @@ const editChatEditParticipant = (participant: Participant) => {
         <SettingsInput
           type="select"
           :options="modelOptions"
-          v-model:value="editParticipantForm.participant!.model!.name"
+          :value="editParticipantForm.participant!.model!.name"
           @confirm="
-            async () => {
+            async (model) => {
               await api.updateParticipant(editParticipantForm.participant!.id!, {
-                modelId: editParticipantForm.participant!.model!.id!,
+                modelId: model.id!,
               })
+              editParticipantForm.participant!.model = model
             }
           "
         />
@@ -625,7 +629,7 @@ const editChatEditParticipant = (participant: Participant) => {
       </n-form-item>
       <n-form-item label="角色">
         <SettingsInput
-          v-model:value="editParticipantForm.participant!.character!.name"
+          :value="editParticipantForm.participant!.character!.name"
           type="select"
           :options="
             characters.map((c: Character) => {
@@ -636,17 +640,18 @@ const editChatEditParticipant = (participant: Participant) => {
             })
           "
           @confirm="
-            async () => {
+            async (character) => {
               await api.updateParticipant(editParticipantForm.participant!.id!, {
-                characterId: editParticipantForm.participant!.character!.id!,
+                characterId: character.id!,
               })
+              editParticipantForm.participant!.character = character
             }
           "
         />
       </n-form-item>
       <n-form-item label="模板">
         <SettingsInput
-          v-model:value="editParticipantForm.participant!.template!.name"
+          :value="editParticipantForm.participant!.template!.name"
           type="select"
           :options="
             templates.map((t: Template) => {
@@ -657,10 +662,11 @@ const editChatEditParticipant = (participant: Participant) => {
             })
           "
           @confirm="
-            async () => {
+            async (template) => {
               await api.updateParticipant(editParticipantForm.participant!.id!, {
-                templateId: editParticipantForm.participant!.template!.id!,
+                templateId: template.id!,
               })
+              editParticipantForm.participant!.template = template
             }
           "
         />

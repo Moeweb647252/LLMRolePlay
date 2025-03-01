@@ -17,6 +17,7 @@ const startEditing = () => {
 }
 
 const confirm = () => {
+  editingValue.value = parseFloat(editingValue.value as any)
   value.value = editingValue.value
   emit('confirm', editingValue.value)
   editing.value = false

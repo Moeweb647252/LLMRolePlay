@@ -22,6 +22,10 @@ const providerTypeOptions = [
     label: 'Azure',
     value: 'azure',
   },
+  {
+    label: 'openrouter',
+    value: 'openrouter',
+  },
 ]
 
 const addProviderForm = ref({

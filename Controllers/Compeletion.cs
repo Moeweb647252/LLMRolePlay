@@ -68,9 +68,11 @@ namespace LLMRolePlay.Controllers
           }
           else
           {
-            await Response.WriteAsync(":LLMRolePlay Processing");
+            await Response.WriteAsync(": keep-alive\n\n");
           }
         }
+        // Remove <think>...</think> tags from content  
+        content = System.Text.RegularExpressions.Regex.Replace(content, @"<think>.*?</think>", "", System.Text.RegularExpressions.RegexOptions.Singleline);
         var newMessage = new Message("assistant", content, 0, chat.Id, participant.Id);
         _dBContext.Messages.Add(newMessage);
         await _dBContext.SaveChangesAsync();
