@@ -393,6 +393,7 @@ export class Api {
               preset.id,
               preset.name,
               preset.description,
+              JSON.parse(preset.content),
               JSON.parse(preset.settings),
               preset.isPublic,
             )
@@ -538,6 +539,7 @@ export class Api {
       characterId?: number
       presetIds?: number[]
       templateId?: number
+      modelId?: number
       name?: string
       avatar?: number
       settings?: object
@@ -546,9 +548,10 @@ export class Api {
     await this.request('updateParticipant', {
       participantId: id,
       characterId: options.characterId ?? null,
-      presetId: options.presetIds ?? null,
+      presetIds: options.presetIds ?? null,
       templateId: options.templateId ?? null,
       name: options.name ?? null,
+      modelId: options.modelId ?? null,
       avatar: options.avatar ?? null,
       settings: options.settings != null ? JSON.stringify(options.settings) : null,
     })

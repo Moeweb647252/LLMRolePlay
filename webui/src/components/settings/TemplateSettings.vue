@@ -132,10 +132,12 @@ const deleteTemplate = async (template: Template) => {
         <SettingsInput
           :value="editTemplateForm.template!.name"
           @confirm="
-            async () =>
+            async () => {
               await api.updateTemplate(editTemplateForm.template!.id!, {
                 name: editTemplateForm.template!.name!,
               })
+              editTemplateForm.template!.name = editTemplateForm.template!.name!
+            }
           "
         ></SettingsInput>
       </n-form-item>
@@ -143,10 +145,12 @@ const deleteTemplate = async (template: Template) => {
         <SettingsInput
           :value="editTemplateForm.template!.description"
           @confirm="
-            async () =>
+            async () => {
               await api.updateTemplate(editTemplateForm.template!.id!, {
                 description: editTemplateForm.template!.description!,
               })
+              editTemplateForm.template!.description = editTemplateForm.template!.description!
+            }
           "
         ></SettingsInput>
       </n-form-item>

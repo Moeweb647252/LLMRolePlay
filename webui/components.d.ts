@@ -47,6 +47,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SettingsDynamicInput: typeof import('./src/components/SettingsDynamicInput.vue')['default']
+    SettingsDynamicSelect: typeof import('./src/components/SettingsDynamicSelect.vue')['default']
     SettingsInput: typeof import('./src/components/SettingsInput.vue')['default']
     SettingsNumberInput: typeof import('./src/components/SettingsNumberInput.vue')['default']
     SettingsSwitch: typeof import('./src/components/SettingsSwitch.vue')['default']

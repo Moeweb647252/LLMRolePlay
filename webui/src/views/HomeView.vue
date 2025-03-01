@@ -12,6 +12,7 @@ import { Preset } from '@/types/preset'
 import { Template } from '@/types/template'
 import { Chat, FullChat, Participant } from '@/types/chat'
 import SettingsInput from '@/components/SettingsInput.vue'
+import SettingsDynamicSelect from '@/components/SettingsDynamicSelect.vue'
 
 const settings = useSettingsStore()
 const router = useRouter()
@@ -57,7 +58,9 @@ const renderEditChatParticipant = (participant: Participant, index: number) => {
           )
         })
       },
-      onClick: () => {},
+      onClick: () => {
+        editChatEditParticipant(participant)
+      },
     },
     {
       default: () => participant.name,
@@ -110,11 +113,7 @@ const addParticipantForm = ref({
   name: '',
   settings: {},
   model: null as null | Model,
-  presets: null as
-    | null
-    | {
-        data: Preset | null
-      }[],
+  presets: [] as Preset[],
   character: null as null | Character,
   template: null as null | Template,
   avatarFileList: [] as UploadFileInfo[],
@@ -162,7 +161,7 @@ const addChat = async () => {
     const participantId = await api.addParticipant(
       chatId,
       participant.character.id,
-      participant.presets.map((p: any) => p.data!.id),
+      participant.presets.map((p: any) => p.id),
       participant.template.id,
       participant.model.id,
       participant.name,
@@ -178,8 +177,8 @@ const addChat = async () => {
       },
       presets: participant.presets.map((p: any) => {
         return {
-          id: p.data!.id,
-          name: p.data!.name,
+          id: p.id,
+          name: p.name,
         }
       }),
       character: {
@@ -241,7 +240,7 @@ const editChatAddParticipant = () => {
       let id = await api.addParticipant(
         editChatForm.value.chat!.id!,
         addParticipantForm.value.character!.id!,
-        addParticipantForm.value.presets!.map((p: any) => p.data!.id),
+        addParticipantForm.value.presets!.map((p: any) => p.id),
         addParticipantForm.value.template!.id!,
         addParticipantForm.value.model!.id!,
         addParticipantForm.value.name,
@@ -252,7 +251,7 @@ const editChatAddParticipant = () => {
           id,
           addParticipantForm.value.name,
           addParticipantForm.value.model!,
-          addParticipantForm.value.presets!.map((p: any) => p.data!),
+          addParticipantForm.value.presets!,
           addParticipantForm.value.character!,
           addParticipantForm.value.template!,
           {},
@@ -291,6 +290,25 @@ const startEditChat = async (chat: Chat) => {
   presets.value = await api.getPresets()
   characters.value = await api.getCharacters()
   templates.value = await api.getTemplates()
+}
+
+const editParticipantForm = ref({
+  visible: false,
+  participant: null as Participant | null,
+})
+
+const addChatEditParticipant = (participant: Participant) => {
+  editParticipantForm.value = {
+    visible: true,
+    participant: participant,
+  }
+}
+
+const editChatEditParticipant = (participant: Participant) => {
+  editParticipantForm.value = {
+    visible: true,
+    participant: participant,
+  }
 }
 </script>
 <template>
@@ -445,31 +463,19 @@ const startEditChat = async (chat: Chat) => {
         <n-select v-model:value="addParticipantForm.model" filterable :options="modelOptions" />
       </n-form-item>
       <n-form-item label="预设">
-        <n-dynamic-input
+        <n-select
           v-model:value="addParticipantForm.presets"
-          @create="
-            () => {
-              let obj = { data: null }
-              addParticipantForm.presets!.push(obj)
-              return obj
-            }
+          filterable
+          multiple
+          :options="
+            presets.map((p: Preset) => {
+              return {
+                label: p.name,
+                value: p,
+              }
+            })
           "
-        >
-          <template #default="obj">
-            <n-select
-              @update:value="(v: any) => (obj.value.data = v)"
-              filterable
-              :options="
-                presets.map((p: Preset) => {
-                  return {
-                    label: p.name,
-                    value: p,
-                  }
-                })
-              "
-            />
-          </template>
-        </n-dynamic-input>
+        />
       </n-form-item>
       <n-form-item label="角色">
         <n-select
@@ -522,7 +528,6 @@ const startEditChat = async (chat: Chat) => {
             async () => {
               await api.updateChat(editChatForm.chat!.id!, {
                 name: editChatForm.chat!.name!,
-                description: editChatForm.chat!.description!,
               })
             }
           "
@@ -534,7 +539,6 @@ const startEditChat = async (chat: Chat) => {
           @confirm="
             async () => {
               await api.updateChat(editChatForm.chat!.id!, {
-                name: editChatForm.chat!.name!,
                 description: editChatForm.chat!.description!,
               })
             }
@@ -557,6 +561,109 @@ const startEditChat = async (chat: Chat) => {
             </n-button>
           </template>
         </n-dynamic-tags>
+      </n-form-item>
+    </n-form>
+  </n-modal>
+  <n-modal
+    title="编辑参与者"
+    v-model:show="editParticipantForm.visible"
+    preset="card"
+    style="width: fit-content; min-width: 25em"
+    size="medium"
+  >
+    <n-form label-placement="left">
+      <n-form-item label="姓名">
+        <SettingsInput
+          v-model:value="editParticipantForm.participant!.name"
+          @confirm="
+            async () => {
+              await api.updateParticipant(editParticipantForm.participant!.id!, {
+                name: editParticipantForm.participant!.name!,
+              })
+            }
+          "
+        />
+      </n-form-item>
+      <n-form-item label="模型">
+        <SettingsInput
+          type="select"
+          :options="modelOptions"
+          v-model:value="editParticipantForm.participant!.model!.name"
+          @confirm="
+            async () => {
+              await api.updateParticipant(editParticipantForm.participant!.id!, {
+                modelId: editParticipantForm.participant!.model!.id!,
+              })
+            }
+          "
+        />
+      </n-form-item>
+      <n-form-item label="预设">
+        <SettingsInput
+          type="select"
+          multiple
+          :options="
+            presets.map((p: Preset) => {
+              return {
+                label: p.name!,
+                value: p.id!,
+              }
+            })
+          "
+          :value="editParticipantForm.participant!.presets!.map((p: Preset) => p.id!)"
+          @confirm="
+            async (_presets) => {
+              await api.updateParticipant(editParticipantForm.participant!.id!, {
+                presetIds: _presets,
+              })
+              editParticipantForm.participant!.presets = presets.filter((p: Preset) =>
+                _presets.includes(p.id!),
+              )
+            }
+          "
+        />
+      </n-form-item>
+      <n-form-item label="角色">
+        <SettingsInput
+          v-model:value="editParticipantForm.participant!.character!.name"
+          type="select"
+          :options="
+            characters.map((c: Character) => {
+              return {
+                label: c.name!,
+                value: c,
+              }
+            })
+          "
+          @confirm="
+            async () => {
+              await api.updateParticipant(editParticipantForm.participant!.id!, {
+                characterId: editParticipantForm.participant!.character!.id!,
+              })
+            }
+          "
+        />
+      </n-form-item>
+      <n-form-item label="模板">
+        <SettingsInput
+          v-model:value="editParticipantForm.participant!.template!.name"
+          type="select"
+          :options="
+            templates.map((t: Template) => {
+              return {
+                label: t.name!,
+                value: t,
+              }
+            })
+          "
+          @confirm="
+            async () => {
+              await api.updateParticipant(editParticipantForm.participant!.id!, {
+                templateId: editParticipantForm.participant!.template!.id!,
+              })
+            }
+          "
+        />
       </n-form-item>
     </n-form>
   </n-modal>

@@ -165,10 +165,12 @@ const uploadAvatar = async () => {
         <SettingsInput
           :value="editCharacterForm.character!.name"
           @confirm="
-            async () =>
+            async () => {
               await api.updateCharacter(editCharacterForm.character!.id!, {
                 name: editCharacterForm.character!.name!,
               })
+              editCharacterForm.character!.name = editCharacterForm.character!.name!
+            }
           "
         ></SettingsInput>
       </n-form-item>
@@ -176,10 +178,11 @@ const uploadAvatar = async () => {
         <SettingsInput
           :value="editCharacterForm.character!.description"
           @confirm="
-            async () =>
+            async () => {
               await api.updateCharacter(editCharacterForm.character!.id!, {
                 description: editCharacterForm.character!.description!,
               })
+            }
           "
         ></SettingsInput>
       </n-form-item>

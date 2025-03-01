@@ -150,15 +150,15 @@ onMounted(async () => {
   >
     <n-form label-placement="left">
       <n-form-item label="用户名">
-        <SettingsInput v-model:value="editUserForm.user!.username" />
+        <SettingsInput :value="editUserForm.user!.username" />
       </n-form-item>
       <n-form-item label="邮箱">
-        <SettingsInput v-model:value="editUserForm.user!.email" />
+        <SettingsInput :value="editUserForm.user!.email" />
       </n-form-item>
       <n-form-item label="组">
         <SettingsInput
           type="select"
-          v-model:value="editUserForm.user!.group"
+          :value="editUserForm.user!.group"
           :options="userTypeOptions"
           @confirm="async () => {}"
         >

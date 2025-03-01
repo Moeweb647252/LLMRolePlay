@@ -496,36 +496,39 @@ const startEditModel = (model: Model) => {
     <n-form label-placement="left" v-if="editModelForm.model">
       <n-form-item label="名称">
         <SettingsInput
-          v-model:value="editModelForm.model.name"
+          :value="editModelForm.model.name"
           @confirm="
             async () => {
               await api.updateModel(editModelForm.model!.id!, {
                 name: editModelForm.model!.name!,
               })
+              editModelForm.model!.name = editModelForm.model!.name!
             }
           "
         />
       </n-form-item>
       <n-form-item label="模型名">
         <SettingsInput
-          v-model:value="editModelForm.model.modelName"
+          :value="editModelForm.model.modelName"
           @confirm="
             async () => {
               await api.updateModel(editModelForm.model!.id!, {
                 modelName: editModelForm.model!.modelName!,
               })
+              editModelForm.model!.modelName = editModelForm.model!.modelName!
             }
           "
         />
       </n-form-item>
       <n-form-item label="描述">
         <SettingsInput
-          v-model:value="editModelForm.model.description"
+          value="editModelForm.model.description"
           @confirm="
             async () => {
               await api.updateModel(editModelForm.model!.id!, {
                 description: editModelForm.model!.description!,
               })
+              editModelForm.model!.description = editModelForm.model!.description!
             }
           "
         />

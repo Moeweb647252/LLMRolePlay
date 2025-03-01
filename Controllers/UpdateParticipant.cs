@@ -11,7 +11,7 @@ namespace LLMRolePlay.Controllers
       public required uint participantId { get; set; }
       public uint? modelId { get; set; } = null;
       public uint? characterId { get; set; } = null;
-      public string? presetIds { get; set; } = null;
+      public uint[]? presetIds { get; set; } = null;
       public uint? templateId { get; set; } = null;
       public string? name { get; set; } = null;
       public string? settings { get; set; } = null;
@@ -38,7 +38,7 @@ namespace LLMRolePlay.Controllers
 
       if (data.modelId != null) participant.ModelId = data.modelId.Value;
       if (data.characterId != null) participant.CharacterId = data.characterId.Value;
-      if (data.presetIds != null) participant.PresetIds = data.presetIds;
+      if (data.presetIds != null) participant.PresetIds = string.Join(',', data.presetIds);
       if (data.templateId != null) participant.TemplateId = data.templateId.Value;
       if (data.name != null) participant.Name = data.name;
       if (data.settings != null) participant.Settings = data.settings;

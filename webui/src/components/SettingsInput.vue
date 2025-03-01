@@ -2,29 +2,25 @@
 import { MdCreate } from '@vicons/ionicons4'
 import { ref } from 'vue'
 
-let editingValue = ref(null as string | null)
+let editingValue = ref(null as any | null)
 let editing = ref(false)
 const props = defineProps<{
+  value?: any
   type?: 'text' | 'select' | 'textarea'
+  multiple?: boolean
   options?: {
     label: string
-    value: string
+    value: any
   }[]
 }>()
-
-const value = defineModel<string | null>('value', {
-  default: null,
-})
-
 const emit = defineEmits(['confirm'])
 
 const startEditing = () => {
-  editingValue.value = value.value
+  editingValue.value = props.value
   editing.value = true
 }
 
 const confirm = () => {
-  value.value = editingValue.value
   emit('confirm', editingValue.value)
   editing.value = false
 }
@@ -39,7 +35,13 @@ const cancel = () => {
   <div v-if="editing">
     <n-input-group>
       <n-input v-if="props.type == 'text' || props.type == null" v-model:value="editingValue" />
-      <n-select v-if="props.type == 'select'" v-model:value="editingValue" :options="props.options">
+      <n-select
+        v-if="props.type == 'select'"
+        style="min-width: 10em"
+        :multiple="multiple"
+        v-model:value="editingValue"
+        :options="props.options"
+      >
       </n-select>
       <n-input v-if="props.type == 'textarea'" v-model:value="editingValue" type="textarea" />
       <n-button @click="confirm">确定</n-button>
@@ -48,7 +50,12 @@ const cancel = () => {
   </div>
   <div v-else>
     <n-space :wrap="false" align="center">
-      {{ options?.find((o) => o.value == value)?.label || value }}
+      <div v-if="props.multiple">
+        {{ value?.map((v: any) => options?.find((o) => o.value == v)?.label).join() }}
+      </div>
+      <div v-else>
+        {{ options?.find((o) => o.value == value)?.label || value }}
+      </div>
       <n-button quaternary circle @click="startEditing">
         <template #icon>
           <n-icon>

@@ -150,10 +150,12 @@ const deletePreset = async (preset: Preset) => {
         <SettingsInput
           :value="editPresetForm.preset!.name"
           @confirm="
-            async () =>
+            async () => {
               await api.updatePreset(editPresetForm.preset!.id!, {
                 name: editPresetForm.preset!.name!,
               })
+              editPresetForm.preset!.name = editPresetForm.preset!.name!
+            }
           "
         ></SettingsInput>
       </n-form-item>
@@ -161,10 +163,12 @@ const deletePreset = async (preset: Preset) => {
         <SettingsInput
           :value="editPresetForm.preset!.description"
           @confirm="
-            async () =>
+            async () => {
               await api.updatePreset(editPresetForm.preset!.id!, {
                 description: editPresetForm.preset!.description!,
               })
+              editPresetForm.preset!.description = editPresetForm.preset!.description!
+            }
           "
         ></SettingsInput>
       </n-form-item>
