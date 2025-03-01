@@ -6,5 +6,6 @@ namespace LLMRolePlay.Models
   {
     public required string content { get; set; }
     public required string role { get; set; }
+    public string? name { get; set; }
   }
 }

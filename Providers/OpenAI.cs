@@ -76,8 +76,9 @@ namespace LLMRolePlay.Providers
         top_p = settings?.top_p
       }), Encoding.UTF8, "application/json");
       content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-      Console.WriteLine(await content.ReadAsStringAsync());
-      var response = await client.PostAsync(Participant.Model.Provider.BaseUrl + "/chat/completions", content);
+      var req = new HttpRequestMessage(HttpMethod.Post, Participant.Model.Provider.BaseUrl + "/chat/completions");
+      req.Content = content;
+      var response = await client.SendAsync(req, HttpCompletionOption.ResponseHeadersRead);
       if (response.IsSuccessStatusCode)
       {
         var stream = await response.Content.ReadAsStreamAsync();

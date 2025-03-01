@@ -7,6 +7,7 @@ const props = defineProps<{
   direction: 'left' | 'right'
   name: string
   avatar: string
+  reloadable: boolean
 }>()
 
 const emit = defineEmits(['delete'])
@@ -37,13 +38,6 @@ const emit = defineEmits(['delete'])
           <n-button size="small" strong secondary circle>
             <template #icon>
               <n-icon>
-                <MdSync />
-              </n-icon>
-            </template>
-          </n-button>
-          <n-button size="small" strong secondary circle>
-            <template #icon>
-              <n-icon>
                 <MdClipboard />
               </n-icon>
             </template>
@@ -52,6 +46,13 @@ const emit = defineEmits(['delete'])
             <template #icon>
               <n-icon>
                 <DeleteFilled />
+              </n-icon>
+            </template>
+          </n-button>
+          <n-button size="small" strong secondary circle v-if="reloadable">
+            <template #icon>
+              <n-icon>
+                <MdSync />
               </n-icon>
             </template>
           </n-button>

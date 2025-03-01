@@ -17,6 +17,7 @@
   "dependencies": {
     "@vicons/material": "^0.13.0",
     "axios": "^1.7.9",
+    "event-source-polyfill": "^1.0.31",
     "js-sha256": "^0.11.0",
     "pinia": "3.0.1",
     "pinia-plugin-persistedstate": "^4.2.0",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@tsconfig/node22": "^22.0.0",
+    "@types/event-source-polyfill": "^1.0.5",
     "@types/node": "^22.13.1",
     "@vicons/ionicons4": "^0.13.0",
     "@vitejs/plugin-vue": "^5.2.1",

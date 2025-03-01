@@ -76,10 +76,12 @@ export class FullChat {
   participants: Participant[]
   settings: ChatSettings | null
   messages: Message[]
+  description: string | null
 
   constructor(
     id: number | null = null,
     name: string | null = null,
+    description: string | null = null,
     participants: Participant[] = [],
     messages: Message[] = [],
     settings: ChatSettings | null = null,
@@ -89,5 +91,6 @@ export class FullChat {
     this.participants = participants
     this.messages = messages
     this.settings = settings
+    this.description = description
   }
 }

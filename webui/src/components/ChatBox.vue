@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue'
+import { onMounted, reactive, ref, useTemplateRef, watch } from 'vue'
 import { IosSend } from '@vicons/ionicons4'
 import { Chat } from '@/types/chat'
 import { api, generate } from '@/api'
 import type { Message } from '@/types/chat'
+import { NScrollbar } from 'naive-ui'
 
 const participantIndex = ref(0)
 
@@ -11,9 +12,10 @@ const props = defineProps<{
   chat: Chat
 }>()
 
-const messages = ref<Message[]>(await api.getMessages(props.chat.id!))
+const messages = reactive<Message[]>(await api.getMessages(props.chat.id!))
 const input = ref('')
 const generating = ref(false)
+const messageScroll = useTemplateRef('messageScroll')
 
 const addMessage = async () => {
   const msg = reactive({
@@ -24,7 +26,7 @@ const addMessage = async () => {
     createdAt: new Date().toISOString(),
   })
   input.value = ''
-  messages.value.push(msg)
+  messages.push(msg)
   let id = await api.addMessage(props.chat.id!, msg.content, msg.role)
   msg.id = id
   await generateMessage()
@@ -39,22 +41,33 @@ const generateMessage = async () => {
     participantId: props.chat.participants[participantIndex.value].id!,
     createdAt: new Date().toISOString(),
   })
-  messages.value.push(msg)
-  let id = await generate(
-    props.chat.id!,
-    props.chat.participants[participantIndex.value].id!,
-    (delta) => {
-      msg.content += delta
-    },
-  )
+  messages.push(msg)
+  let id = await generate(props.chat.participants[participantIndex.value].id!, (delta) => {
+    msg.content += delta
+  })
   msg.id = id
   generating.value = false
 }
 
 const deleteMessage = async (message: Message) => {
   await api.deleteMessage(message.id!)
-  messages.value = messages.value.filter((i) => i.id !== message.id)
+  messages.splice(messages.indexOf(message), 1)
 }
+
+onMounted(async () => {
+  watch(
+    messages,
+    () => {
+      messageScroll.value!.scrollTo(
+        0,
+        messageScroll.value?.scrollbarInstRef?.containerRef?.scrollHeight!,
+      )
+    },
+    {
+      immediate: true,
+    },
+  )
+})
 </script>
 
 <template>
@@ -67,12 +80,13 @@ const deleteMessage = async (message: Message) => {
     <div style="height: calc(100% - 2em); padding-top: 2em; overflow: hidden">
       <div class="chat-box">
         <div class="messages">
-          <n-scrollbar style="height: 100%; width: calc(100% - 2em)">
+          <n-scrollbar ref="messageScroll" style="height: 100%; width: calc(100% - 2em)">
             <Message
-              v-for="i in messages"
+              v-for="(i, index) in messages"
               class="message"
               :key="i.id"
               :content="i.content"
+              :reloadable="index == messages.length - 1"
               :name="
                 i.participantId
                   ? chat.participants.find((c) => c.id === i.participantId)?.name

@@ -11,6 +11,7 @@ import { Chat } from './types/chat'
 import { Template } from './types/template'
 import { Participant } from './types/chat'
 import { Provider } from './types/provider'
+import { EventSourcePolyfill } from 'event-source-polyfill'
 
 export class NoTokenError extends Error {
   constructor() {
@@ -363,6 +364,7 @@ export class Api {
     return new FullChat(
       data.chat.id,
       data.chat.name,
+      data.chat.description,
       data.participants.map((participant) => {
         return new Participant(
           participant.id,
@@ -404,6 +406,22 @@ export class Api {
       }),
       data.settings,
     )
+  }
+
+  async updateChat(
+    id: number,
+    options: {
+      name?: string
+      description?: string
+      settings?: object
+    } = {},
+  ): Promise<void> {
+    await this.request('updateChat', {
+      chatId: id,
+      name: options.name ?? null,
+      description: options.description ?? null,
+      settings: options.settings != null ? JSON.stringify(options.settings) : null,
+    })
   }
 
   async getMessages(chatId: number): Promise<Message[]> {
@@ -572,7 +590,6 @@ export class Api {
 export const api = new Api()
 
 export const generate = async (
-  chatId: number,
   participantId: number,
   callback: (data: string) => void,
 ): Promise<number> => {
@@ -584,50 +601,22 @@ export const generate = async (
     Token: token,
     'Content-Type': 'application/json',
   }
-  const resp = await fetch('/api/completion', {
-    method: 'POST',
+  const source = new EventSourcePolyfill(`/api/completion/${participantId}`, {
     headers: headers,
-    body: JSON.stringify({
-      chatId: chatId,
-      participantId: participantId,
-    }),
   })
-  let reader = resp.body?.getReader()
-  let buffer = ''
   let id
-  if (reader) {
-    let decoder = new TextDecoder('utf-8')
-    while (true) {
-      // Read the next chunk of data
-      const { done, value } = await reader.read()
-
-      // If the stream is done, break the loop
-      if (done) {
-        break
+  source.onerror = (event) => {
+    source.close()
+  }
+  return await new Promise((resolve) => {
+    source.onmessage = (event) => {
+      let data = JSON.parse(event.data)
+      if (data.delta) {
+        callback(data.delta)
       }
-
-      // Decode the chunk and add it to the buffer
-      buffer += decoder.decode(value, { stream: true })
-
-      // Process lines in the buffer
-      let lineEndIndex
-      while ((lineEndIndex = buffer.indexOf('\n')) >= 0) {
-        // Extract the line
-        const line = buffer.slice(0, lineEndIndex - 1)
-        buffer = buffer.slice(lineEndIndex + 1)
-        if (line.startsWith('id: ')) {
-          id = parseInt(line.slice(4))
-        }
-        // Process the line (e.g., log it or do something else)
-        if (line.startsWith('data: ')) {
-          const data = line.slice(6)
-          if (data === '[DONE]') {
-            break
-          }
-          callback(data)
-        }
+      if (data.id) {
+        resolve(data.id)
       }
     }
-  }
-  return id!
+  })
 }

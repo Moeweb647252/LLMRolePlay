@@ -10,7 +10,8 @@ import { useRouter } from 'vue-router'
 import { Model, Provider } from '@/types/provider'
 import { Preset } from '@/types/preset'
 import { Template } from '@/types/template'
-import { Chat, Participant } from '@/types/chat'
+import { Chat, FullChat, Participant } from '@/types/chat'
+import SettingsInput from '@/components/SettingsInput.vue'
 
 const settings = useSettingsStore()
 const router = useRouter()
@@ -197,6 +198,11 @@ const setChat = (chat: Chat) => {
   currentChat.value = chat
   chatBoxKey.value++
 }
+
+const editChatForm = ref({
+  visible: false,
+  chat: null as FullChat | null,
+})
 </script>
 <template>
   <n-layout :has-sider="showSider" class="full bfc">
@@ -412,7 +418,58 @@ const setChat = (chat: Chat) => {
       </n-space>
     </template>
   </n-modal>
-  <n-modal></n-modal>
+  <n-modal
+    title="编辑聊天"
+    v-model:show="editChatForm.visible"
+    preset="card"
+    style="width: fit-content; min-width: 25em"
+    size="medium"
+  >
+    <n-form label-placement="left">
+      <n-form-item label="名称">
+        <SettingsInput
+          v-model:value="editChatForm.chat?.name"
+          @confirm="
+            async () => {
+              await api.updateChat(editChatForm.chat!.id!, {
+                name: editChatForm.chat!.name!,
+                description: editChatForm.chat!.description!,
+              })
+            }
+          "
+        />
+      </n-form-item>
+      <n-form-item label="描述">
+        <SettingsInput
+          v-model:value="editChatForm.chat?.description"
+          @confirm="
+            async () => {
+              await api.updateChat(editChatForm.chat!.id!, {
+                name: editChatForm.chat!.name!,
+                description: editChatForm.chat!.description!,
+              })
+            }
+          "
+        />
+      </n-form-item>
+      <n-form-item label="参与者">
+        <n-dynamic-tags
+          v-model:value="editChatForm.chat?.participants"
+          :render-tag="renderAddChatParticipant"
+        >
+          <template #trigger>
+            <n-button size="small" type="primary" dashed @click="addChatAddParticipant">
+              <template #icon>
+                <n-icon>
+                  <MdAdd />
+                </n-icon>
+              </template>
+              添加参与者
+            </n-button>
+          </template>
+        </n-dynamic-tags>
+    </n-form>
+  </n-modal>
 </template>
 
 <style scoped>
