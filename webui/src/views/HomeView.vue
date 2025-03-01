@@ -12,7 +12,6 @@ import { Preset } from '@/types/preset'
 import { Template } from '@/types/template'
 import { Chat, FullChat, Participant } from '@/types/chat'
 import SettingsInput from '@/components/SettingsInput.vue'
-import SettingsDynamicSelect from '@/components/SettingsDynamicSelect.vue'
 
 const settings = useSettingsStore()
 const router = useRouter()

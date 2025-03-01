@@ -5,6 +5,9 @@
     <OutputType>Exe</OutputType>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <PublishSingleFile Condition="'$(Configuration)' == 'Release' ">true</PublishSingleFile>
+    <SelfContained  Condition="'$(Configuration)' == 'Release' ">true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract  Condition="'$(Configuration)' == 'Release' ">true</IncludeNativeLibrariesForSelfExtract>
     <GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
   </PropertyGroup>
 
