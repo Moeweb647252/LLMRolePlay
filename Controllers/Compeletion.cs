@@ -1,5 +1,5 @@
 using LLMRolePlay.Models;
-using LLMRolePlay.Providers;
+using LLMRolePlay.Providers.OpenAI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +25,7 @@ namespace LLMRolePlay.Controllers
       Participant? participant = await _dBContext.Participants.Include(p => p.Template).Include(p => p.Character).Include(p => p.Model).ThenInclude(m => m.Provider).FirstOrDefaultAsync(p => p.Id == participantId);
       if (participant == null) return;
       Chat? chat = await _dBContext.Chats.Include(c => c.Messages).FirstOrDefaultAsync(c => c.Id == participant.ChatId);
+      ChatSettings? chatSettings = JsonConvert.DeserializeObject<ChatSettings>(chat?.Settings ?? "{}");
       if (chat == null) return;
       Response.Headers.Append("Content-Type", "text/event-stream");
       Response.Headers.Append("Cache-Control", "no-cache");
@@ -40,7 +41,7 @@ namespace LLMRolePlay.Controllers
           {
             content = m.Content,
             role = participant?.Id == participantId ? "assistant" : "user",
-            name = participant?.Name,
+            name = participant == null ? chatSettings?.NameOfUser : participant.Name,
           };
         }).ToList())).GetAsyncEnumerator();
         while (true)
@@ -68,7 +69,7 @@ namespace LLMRolePlay.Controllers
           }
           else
           {
-            await Response.WriteAsync(": keep-alive\n\n");
+            await Response.WriteAsync("data: {\"action\": \"keep-alive\", \"delta\": \"\"}\n\n");
           }
         }
         // Remove <think>...</think> tags from content  

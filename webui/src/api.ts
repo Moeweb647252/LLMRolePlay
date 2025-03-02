@@ -218,7 +218,7 @@ export class Api {
       const providerObj = new Provider(
         provider.id,
         provider.name,
-        provider.url,
+        provider.baseUrl,
         provider.apiKey,
         provider.description,
         JSON.parse(provider.settings),
@@ -358,7 +358,7 @@ export class Api {
       chats: any[]
     } = await this.request('getChats', {})
     return data.chats.map((chat) => {
-      return new Chat(chat.id, chat.name, chat.participants)
+      return new Chat(chat.id, chat.name, chat.participants, JSON.parse(chat.settings))
     })
   }
 
@@ -415,7 +415,7 @@ export class Api {
           ),
         )
       }),
-      data.settings,
+      JSON.parse(data.chat.settings),
     )
   }
 

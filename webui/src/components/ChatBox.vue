@@ -51,6 +51,11 @@ const generateMessage = async () => {
   if (participantIndex.value >= props.chat.participants.length) {
     participantIndex.value = 0
   }
+  let settings = JSON.parse(JSON.stringify(props.chat.settings))
+  settings.currentParticipantId = props.chat.participants[participantIndex.value].id!
+  await api.updateChat(props.chat.id!, {
+    settings: settings,
+  })
 }
 
 const deleteMessage = async (message: Message) => {
@@ -71,6 +76,14 @@ onMounted(async () => {
       immediate: true,
     },
   )
+  if (props.chat.settings.currentParticipantId) {
+    const index = props.chat.participants.findIndex(
+      (c) => c.id === props.chat.settings.currentParticipantId,
+    )
+    if (index !== -1) {
+      participantIndex.value = index
+    }
+  }
 })
 </script>
 

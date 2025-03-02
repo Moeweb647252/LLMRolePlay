@@ -42,6 +42,7 @@ export interface Message {
 export class Chat {
   id: number | null
   name: string | null
+  settings: ChatSettings
   participants: {
     id: number
     name: string
@@ -59,15 +60,22 @@ export class Chat {
     }
   }[]
 
-  constructor(id: number | null = null, name: string | null = null, participants: any[] = []) {
+  constructor(
+    id: number | null = null,
+    name: string | null = null,
+    participants: any[] = [],
+    settings: ChatSettings = { nameOfUser: null, currentParticipantId: null },
+  ) {
     this.id = id
     this.name = name
     this.participants = participants
+    this.settings = settings
   }
 }
 
 interface ChatSettings {
-  nameOfUser: string
+  nameOfUser: string | null
+  currentParticipantId: number | null
 }
 
 export class FullChat {

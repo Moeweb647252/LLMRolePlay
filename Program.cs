@@ -2,7 +2,6 @@ using LLMRolePlay;
 using LLMRolePlay.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
-using Scalar.AspNetCore;
 
 
 var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LLMRolePlay");
@@ -11,7 +10,6 @@ string dbPath = Path.Combine(directory, "LLMRolePlay.db");
 string connectionString = $"Data Source={dbPath}";
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddOpenApi();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<DBContext>(options => options.UseSqlite(connectionString));
 builder.Services.AddAuthentication(option =>

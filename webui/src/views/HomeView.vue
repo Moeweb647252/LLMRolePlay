@@ -5,7 +5,7 @@ import { type Character } from '@/types/character'
 import { useSettingsStore } from '@/stores/settings'
 import { IosMenu, MdAdd, MdContact, MdCreate, MdClose } from '@vicons/ionicons4'
 import { NTag, useMessage, type UploadFileInfo, useModal } from 'naive-ui'
-import { computed, h, ref } from 'vue'
+import { computed, h, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Model, Provider } from '@/types/provider'
 import { Preset } from '@/types/preset'
@@ -216,6 +216,7 @@ const deleteChat = async (chat: Chat) => {
 }
 
 const setChat = (chat: Chat) => {
+  settings.currentChatId = chat.id
   currentChat.value = chat
   chatBoxKey.value++
 }
@@ -309,6 +310,15 @@ const editChatEditParticipant = (participant: Participant) => {
     participant: participant,
   }
 }
+
+onMounted(async () => {
+  if (settings.currentChatId) {
+    const chat = chats.value.find((chat) => chat.id === settings.currentChatId)
+    if (chat) {
+      setChat(chat)
+    }
+  }
+})
 </script>
 <template>
   <n-layout :has-sider="showSider" class="full bfc">
@@ -538,8 +548,9 @@ const editChatEditParticipant = (participant: Participant) => {
           :value="editChatForm.chat!.description!"
           @confirm="
             async (description) => {
+              console.log(description)
               await api.updateChat(editChatForm.chat!.id!, {
-                description: editChatForm.chat!.description!,
+                description: description,
               })
               editChatForm.chat!.description = description
             }

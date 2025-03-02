@@ -66,7 +66,8 @@ namespace LLMRolePlay.Controllers
         {
           id = chat.Id,
           name = chat.Name,
-          participants
+          participants,
+          settings = chat.Settings
         });
       }
       return ApiResponse.Success(new

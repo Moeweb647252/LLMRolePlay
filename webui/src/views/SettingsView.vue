@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useSettingsStore } from '@/stores/settings'
 import { ref, onMounted, onUnmounted } from 'vue'
+import { MenuOutlined, CloseOutlined } from '@vicons/material'
 
 const settings = useSettingsStore()
 const collapsed = ref(false)
@@ -40,7 +41,7 @@ const toggleSider = () => {
 <template>
   <div class="menu-toggle" v-if="isMobile" @click="toggleSider">
     <n-icon size="24">
-      <component :is="collapsed ? 'MenuOutline' : 'CloseOutline'" />
+      <component :is="collapsed ? MenuOutlined : CloseOutlined" />
     </n-icon>
   </div>
 

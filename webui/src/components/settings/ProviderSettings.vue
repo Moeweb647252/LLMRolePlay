@@ -414,12 +414,14 @@ const startEditModel = (model: Model) => {
     <n-form label-placement="left" v-if="editProviderForm.provider">
       <n-form-item label="类型">
         <SettingsInput
-          v-model:value="editProviderForm.provider.type"
+          :value="editProviderForm.provider!.type"
           @confirm="
-            async () =>
+            async (type) => {
               await api.updateProvider(editProviderForm.provider!.id!, {
-                type: editProviderForm.provider!.type!,
+                type: type,
               })
+              editProviderForm.provider!.type = type
+            }
           "
           type="select"
           :options="providerTypeOptions"
@@ -428,23 +430,27 @@ const startEditModel = (model: Model) => {
       </n-form-item>
       <n-form-item label="名称">
         <SettingsInput
-          v-model:value="editProviderForm.provider!.name"
+          :value="editProviderForm.provider!.name"
           @confirm="
-            async () =>
+            async (name) => {
               await api.updateProvider(editProviderForm.provider!.id!, {
-                name: editProviderForm.provider!.name!,
+                name: name,
               })
+              editProviderForm.provider!.name = name
+            }
           "
         />
       </n-form-item>
       <n-form-item label="描述">
         <SettingsInput
-          v-model:value="editProviderForm.provider!.description"
+          :value="editProviderForm.provider!.description"
           @confirm="
-            async () =>
+            async (description) => {
               await api.updateProvider(editProviderForm.provider!.id!, {
-                description: editProviderForm.provider!.description!,
+                description: description,
               })
+              editProviderForm.provider!.description = description
+            }
           "
         />
       </n-form-item>
@@ -452,10 +458,12 @@ const startEditModel = (model: Model) => {
         <SettingsInput
           v-model:value="editProviderForm.provider!.url"
           @confirm="
-            async () =>
+            async (url) => {
               await api.updateProvider(editProviderForm.provider!.id!, {
-                url: editProviderForm.provider!.url!,
+                url: url,
               })
+              editProviderForm.provider!.url = url
+            }
           "
         />
       </n-form-item>
@@ -463,10 +471,12 @@ const startEditModel = (model: Model) => {
         <SettingsInput
           v-model:value="editProviderForm.provider!.apiKey"
           @confirm="
-            async () =>
+            async (apiKey) => {
               await api.updateProvider(editProviderForm.provider!.id!, {
-                apiKey: editProviderForm.provider!.apiKey!,
+                apiKey: apiKey,
               })
+              editProviderForm.provider!.apiKey = apiKey
+            }
           "
         />
       </n-form-item>
@@ -502,11 +512,11 @@ const startEditModel = (model: Model) => {
         <SettingsInput
           :value="editModelForm.model.name"
           @confirm="
-            async () => {
+            async (name) => {
               await api.updateModel(editModelForm.model!.id!, {
-                name: editModelForm.model!.name!,
+                name: name,
               })
-              editModelForm.model!.name = editModelForm.model!.name!
+              editModelForm.model!.name = name
             }
           "
         />
@@ -515,24 +525,24 @@ const startEditModel = (model: Model) => {
         <SettingsInput
           :value="editModelForm.model.modelName"
           @confirm="
-            async () => {
+            async (modelName) => {
               await api.updateModel(editModelForm.model!.id!, {
-                modelName: editModelForm.model!.modelName!,
+                modelName: modelName,
               })
-              editModelForm.model!.modelName = editModelForm.model!.modelName!
+              editModelForm.model!.modelName = modelName
             }
           "
         />
       </n-form-item>
       <n-form-item label="描述">
         <SettingsInput
-          value="editModelForm.model.description"
+          :value="editModelForm.model.description"
           @confirm="
-            async () => {
+            async (description) => {
               await api.updateModel(editModelForm.model!.id!, {
-                description: editModelForm.model!.description!,
+                description: description,
               })
-              editModelForm.model!.description = editModelForm.model!.description!
+              editModelForm.model!.description = description
             }
           "
         />
@@ -552,28 +562,30 @@ const startEditModel = (model: Model) => {
       </n-form-item>
       <n-form-item label="Temperture">
         <SettingsNumberInput
-          v-model:value="editModelForm.model!.settings.temperture"
+          :value="editModelForm.model!.settings.temperture"
           @confirm="
-            async () => {
+            async (temperture) => {
               await api.updateModel(editModelForm.model!.id!, {
                 settings: {
-                  temperture: editModelForm.model!.settings.temperture,
+                  temperture: temperture,
                 },
               })
+              editModelForm.model!.settings.temperture = temperture
             }
           "
         />
       </n-form-item>
       <n-form-item label="Top P">
         <SettingsNumberInput
-          v-model:value="editModelForm.model!.settings.top_p"
+          :value="editModelForm.model!.settings.top_p"
           @confirm="
-            async () => {
+            async (top_p) => {
               await api.updateModel(editModelForm.model!.id!, {
                 settings: {
-                  top_p: editModelForm.model!.settings.top_p,
+                  top_p: top_p,
                 },
               })
+              editModelForm.model!.settings.top_p = top_p
             }
           "
         />
@@ -582,12 +594,13 @@ const startEditModel = (model: Model) => {
         <SettingsNumberInput
           v-model:value="editModelForm.model!.settings.max_tokens"
           @confirm="
-            async () => {
+            async (max_tokens) => {
               await api.updateModel(editModelForm.model!.id!, {
                 settings: {
-                  max_tokens: editModelForm.model!.settings.max_tokens,
+                  max_tokens: max_tokens,
                 },
               })
+              editModelForm.model!.settings.max_tokens = max_tokens
             }
           "
         />

@@ -12,6 +12,7 @@ namespace LLMRolePlay.Models
   public class ChatSettings
   {
     public string? NameOfUser { get; set; }
+    public uint? currentParticipantId { get; set; }
   }
 
   public class Chat

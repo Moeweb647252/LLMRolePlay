@@ -6,12 +6,12 @@ namespace LLMRolePlay.Controllers
 {
   public class UpdateCharacterRequest
   {
-    public required uint characterId;
-    public string? name = null;
-    public string? content = null;
-    public string? settings = null;
-    public string? description = null;
-    public bool? isPublic = null;
+    public required uint characterId { get; set; }
+    public string? name { get; set; } = null;
+    public string? content { get; set; } = null;
+    public string? settings { get; set; } = null;
+    public string? description { get; set; } = null;
+    public bool? isPublic { get; set; } = null;
   }
   public partial class API : ControllerBase
   {

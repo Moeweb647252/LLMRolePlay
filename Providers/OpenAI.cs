@@ -5,16 +5,21 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 
-namespace LLMRolePlay.Providers
+namespace LLMRolePlay.Providers.OpenAI
 {
-  public class OpenAISettings
+  public class Settings
   {
     public double? temperature;
     public ulong? max_tokens;
     public double? top_p;
   }
 
-  public class OpenAICompletionRequest
+  public class StreamingOptions
+  {
+    public bool include_usage { get; set; }
+  }
+
+  public class CompletionRequest
   {
     public required string model { get; set; }
     public required IEnumerable<ChatMessage> messages { get; set; }
@@ -22,27 +27,29 @@ namespace LLMRolePlay.Providers
     public double? temperature { get; set; }
     public ulong? max_tokens { get; set; }
     public double? top_p { get; set; }
+    public StreamingOptions? streaming_options { get; set; }
   }
-  public class OpenAIStreamingResponseChunkChoiceDelta
+  public class StreamingResponseChunkChoiceDelta
   {
     public string? content { get; set; }
+    public string? reasoning { get; set; }
     public string? role { get; set; }
     public string? refusal { get; set; }
     public ulong? index { get; set; }
   }
 
-  public class OpenAIStreamingResponseChunkChoice
+  public class StreamingResponseChunkChoice
   {
-    public required OpenAIStreamingResponseChunkChoiceDelta delta { get; set; }
+    public required StreamingResponseChunkChoiceDelta delta { get; set; }
     public required string id { get; set; }
     public required ulong created { get; set; }
     public required string model { get; set; }
   }
 
-  public class OpenAIStreamingResponseChunk
+  public class StreamingResponseChunk
   {
     public string? id { get; set; }
-    public OpenAIStreamingResponseChunkChoice[]? choices { get; set; }
+    public StreamingResponseChunkChoice[]? choices { get; set; }
     public string? created { get; set; }
     public string? model { get; set; }
   }
@@ -58,22 +65,23 @@ namespace LLMRolePlay.Providers
       Participant = participant;
     }
 
-    public async IAsyncEnumerable<OpenAIStreamingResponseChunk> Compeletion(List<ChatMessage> _messages)
+    public async IAsyncEnumerable<StreamingResponseChunk> Compeletion(List<ChatMessage> _messages)
     {
       var client = new HttpClient();
       client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Participant.Model.Provider.ApiKey}");
-      OpenAISettings? settings = JsonConvert.DeserializeObject<OpenAISettings>(Participant.Model.Settings);
+      Settings? settings = JsonConvert.DeserializeObject<Settings>(Participant.Model.Settings);
       List<ChatMessage> messages = ([
         new ChatMessage { role = "system", content = await Participant.MakeSystemPrompt(_dBContext) },
       ]);
       messages = messages.Concat(_messages.ToList()).ToList();
-      var content = new StringContent(JsonConvert.SerializeObject(new OpenAICompletionRequest
+      var content = new StringContent(JsonConvert.SerializeObject(new CompletionRequest
       {
         model = Participant.Model.ModelName,
         messages = messages,
         temperature = settings?.temperature,
         max_tokens = settings?.max_tokens,
-        top_p = settings?.top_p
+        top_p = settings?.top_p,
+        streaming_options = new StreamingOptions { include_usage = true },
       }), Encoding.UTF8, "application/json");
       content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
       var req = new HttpRequestMessage(HttpMethod.Post, Participant.Model.Provider.BaseUrl + "/chat/completions");
@@ -88,11 +96,12 @@ namespace LLMRolePlay.Providers
           string? line = await reader.ReadLineAsync();
           if (line != null)
           {
+            Console.WriteLine(line);
             if (line == "data: [DONE]") break;
             if (line.StartsWith("data: "))
             {
               line = line[6..];
-              var chunk = JsonConvert.DeserializeObject<OpenAIStreamingResponseChunk>(line);
+              var chunk = JsonConvert.DeserializeObject<StreamingResponseChunk>(line);
               if (chunk != null)
               {
                 yield return chunk;
@@ -100,6 +109,11 @@ namespace LLMRolePlay.Providers
             }
           }
         }
+      }
+      else
+      {
+        Console.WriteLine(response.StatusCode);
+        Console.WriteLine(await response.Content.ReadAsStringAsync());
       }
     }
   }

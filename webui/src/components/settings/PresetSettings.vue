@@ -97,6 +97,7 @@ const deletePreset = async (preset: Preset) => {
           {{ preset.name }}
           <template #suffix>
             <n-space :wrap="false">
+              <n-button type="primary" @click="">分享</n-button>
               <n-button type="primary" @click="editPreset(preset)">编辑</n-button>
               <n-button type="error" @click="deletePreset(preset)">删除</n-button>
             </n-space>
@@ -150,11 +151,11 @@ const deletePreset = async (preset: Preset) => {
         <SettingsInput
           :value="editPresetForm.preset!.name"
           @confirm="
-            async () => {
+            async (name) => {
               await api.updatePreset(editPresetForm.preset!.id!, {
-                name: editPresetForm.preset!.name!,
+                name: name,
               })
-              editPresetForm.preset!.name = editPresetForm.preset!.name!
+              editPresetForm.preset!.name = name
             }
           "
         ></SettingsInput>
@@ -163,11 +164,11 @@ const deletePreset = async (preset: Preset) => {
         <SettingsInput
           :value="editPresetForm.preset!.description"
           @confirm="
-            async () => {
+            async (description) => {
               await api.updatePreset(editPresetForm.preset!.id!, {
-                description: editPresetForm.preset!.description!,
+                description: description,
               })
-              editPresetForm.preset!.description = editPresetForm.preset!.description!
+              editPresetForm.preset!.description = description
             }
           "
         ></SettingsInput>
