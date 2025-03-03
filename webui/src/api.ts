@@ -132,6 +132,23 @@ export class Api {
     })
   }
 
+  async getPublicCharacters(): Promise<Character[]> {
+    let data: {
+      characters: any[]
+    } = await this.request('getPublicCharacters', {})
+    return data.characters.map((character) => {
+      return new Character(
+        character.id,
+        character.name,
+        JSON.parse(character.content),
+        JSON.parse(character.settings),
+        character.description,
+        character.isPublic,
+        character.avatar,
+      )
+    })
+  }
+
   async addPreset(
     name: string,
     description: string,
@@ -188,6 +205,22 @@ export class Api {
       content: options.content != null ? JSON.stringify(options.content) : null,
       settings: options.settings != null ? JSON.stringify(options.settings) : null,
       isPublic: options.isPublic ?? null,
+    })
+  }
+
+  async getPublicPresets(): Promise<Preset[]> {
+    let data: {
+      presets: any[]
+    } = await this.request('getPublicPresets', {})
+    return data.presets.map((preset) => {
+      return new Preset(
+        preset.id,
+        preset.name,
+        preset.description,
+        JSON.parse(preset.content),
+        JSON.parse(preset.settings),
+        preset.isPublic,
+      )
     })
   }
 
@@ -309,6 +342,23 @@ export class Api {
       description: options.description ?? null,
       settings: options.settings != null ? JSON.stringify(options.settings) : null,
       isPublic: options.isPublic ?? null,
+    })
+  }
+
+  async getPublicModels(): Promise<Model[]> {
+    let data: {
+      models: any[]
+    } = await this.request('getPublicModels', {})
+    return data.models.map((model) => {
+      return new Model(
+        model.id,
+        model.name,
+        model.modelName,
+        model.description,
+        model.isPublic,
+        JSON.parse(model.settings),
+        null,
+      )
     })
   }
 
@@ -504,6 +554,21 @@ export class Api {
       isPublic: isPublic,
     })
     return data.id
+  }
+
+  async getPublicTemplates(): Promise<Template[]> {
+    let data: {
+      templates: any[]
+    } = await this.request('getPublicTemplates', {})
+    return data.templates.map((template) => {
+      return new Template(
+        template.id,
+        template.name,
+        template.content,
+        template.description,
+        template.isPublic,
+      )
+    })
   }
 
   async addParticipant(

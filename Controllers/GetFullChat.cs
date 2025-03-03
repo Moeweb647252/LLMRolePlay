@@ -46,7 +46,7 @@ namespace LLMRolePlay.Controllers
             name = participant.Name,
             model = participant.Model,
             settings = participant.Settings,
-            presets = await Utils.AwaitAll(participant.GetPresetIdList().Select(async presetId => await Preset.GetPresetById(_dBContext, presetId))),
+            presets = await participant.GetPresetList(_dBContext),
             character = participant.Character,
             template = participant.Template,
           }))

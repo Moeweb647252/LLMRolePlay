@@ -23,6 +23,10 @@ const providers = ref([] as Provider[])
 const presets = ref([] as Preset[])
 const characters = ref([] as Character[])
 const templates = ref([] as Template[])
+const publicPresets = ref([] as Preset[])
+const publicCharacters = ref([] as Character[])
+const publicTemplates = ref([] as Template[])
+const publicModels = ref([] as Model[])
 const chats = ref(await api.getChats())
 
 const currentChat = ref(null as Chat | null)
@@ -105,6 +109,10 @@ const startAddChat = async () => {
   presets.value = await api.getPresets()
   characters.value = await api.getCharacters()
   templates.value = await api.getTemplates()
+  publicPresets.value = await api.getPublicPresets()
+  publicCharacters.value = await api.getPublicCharacters()
+  publicTemplates.value = await api.getPublicTemplates()
+  publicModels.value = await api.getPublicModels()
 }
 
 const addParticipantForm = ref({

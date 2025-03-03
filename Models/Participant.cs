@@ -78,6 +78,30 @@ namespace LLMRolePlay.Models
                      .Select(uint.Parse);
     }
 
+    public async Task<IEnumerable<Preset>> GetPresetList(DBContext db)
+    {
+      if (string.IsNullOrEmpty(PresetIds))
+        return new List<Preset>();
+
+      var ids = PresetIds.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(uint.Parse);
+      var verified = new List<Preset>();
+      foreach (var id in ids)
+      {
+        var preset = await db.Presets.Where(p => p.Id == id).FirstOrDefaultAsync();
+        if (preset != null)
+        {
+          verified.Add(preset);
+        }
+      }
+      if (verified.Count != ids.Count())
+      {
+        PresetIds = string.Join(",", verified.Select(p => p.Id));
+        MarkAsModified(db);
+        await db.SaveChangesAsync();
+      }
+      return verified;
+    }
+
     // 添加一个PresetId
     public void AddPresetId(uint presetId)
     {
@@ -124,16 +148,14 @@ namespace LLMRolePlay.Models
       {
         ret += character;
       }
-      var tasks = GetPresetIdList().Select(async presetId =>
+      string preset = string.Join("\n", (await GetPresetList(db)).Select(preset =>
        string.Join("\n",
           JsonConvert.DeserializeObject<List<ContentItem>>(
-            (await Preset.GetPresetById(db, presetId))?.Content ?? ""
+            preset.Content ?? ""
           )?
           .Select(s => $"{s.Key}: {s.Value}") ?? []
         )
-      );
-      await Task.WhenAll(tasks);
-      string preset = string.Join("\n", tasks.Select(t => t.Result));
+      ));
       if (ret.Contains("{{ preset }}"))
       {
         ret = ret.Replace("{{ preset }}", preset);
