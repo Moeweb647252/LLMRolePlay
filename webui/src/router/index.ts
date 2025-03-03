@@ -1,5 +1,5 @@
-import { createRouter, createWebHashHistory, createWebHistory } from 'vue-router'
-import Main from '@/Main.vue'
+import { createRouter, createWebHashHistory } from 'vue-router'
+import Main from '@/MainView.vue'
 import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import SettingsView from '@/views/SettingsView.vue'

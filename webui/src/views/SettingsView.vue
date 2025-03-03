@@ -78,7 +78,9 @@ const toggleSider = () => {
 <style scoped>
 .layout-sider {
   position: relative;
+  height: 100%;
   z-index: 100;
+  border-right: 1px solid #e9e9e9;
   transition: all 0.3s ease;
 }
 
@@ -87,7 +89,6 @@ const toggleSider = () => {
   flex-direction: column;
   gap: 1rem;
   padding: 1rem;
-  border-right: 1px solid #e9e9e9;
   height: 100%;
 }
 

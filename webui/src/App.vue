@@ -1,6 +1,4 @@
-<script setup lang="ts">
-import Main from './Main.vue'
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <n-message-provider>
