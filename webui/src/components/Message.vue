@@ -94,7 +94,10 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div class="action" v-if="action.length">
+  <div
+    v-if="action.length"
+    class="action"
+  >
     <n-alert :show-icon="false">
       {{ action }}
     </n-alert>
@@ -108,34 +111,58 @@ onMounted(() => {
       </n-avatar>
     </div>
     <div class="main">
-      <div class="header">{{ props.name }}</div>
+      <div class="header">
+        {{ props.name }}
+      </div>
       <div class="content">
         {{ content }}
       </div>
       <div class="actions">
         <n-space size="small">
-          <n-button size="small" strong secondary circle>
+          <n-button
+            size="small"
+            strong
+            secondary
+            circle
+          >
             <template #icon>
               <n-icon>
                 <MdCreate />
               </n-icon>
             </template>
           </n-button>
-          <n-button size="small" strong secondary circle>
+          <n-button
+            size="small"
+            strong
+            secondary
+            circle
+          >
             <template #icon>
               <n-icon>
                 <MdClipboard />
               </n-icon>
             </template>
           </n-button>
-          <n-button size="small" strong secondary circle @click="emit('delete')">
+          <n-button
+            size="small"
+            strong
+            secondary
+            circle
+            @click="emit('delete')"
+          >
             <template #icon>
               <n-icon>
                 <DeleteFilled />
               </n-icon>
             </template>
           </n-button>
-          <n-button size="small" strong secondary circle v-if="reloadable">
+          <n-button
+            v-if="reloadable"
+            size="small"
+            strong
+            secondary
+            circle
+          >
             <template #icon>
               <n-icon>
                 <MdSync />

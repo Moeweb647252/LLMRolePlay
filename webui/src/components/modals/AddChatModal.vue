@@ -77,9 +77,17 @@ const emit = defineEmits(['cancel', 'confirm'])
         <n-input v-model:value="form.description" />
       </n-form-item>
       <n-form-item label="参与者">
-        <n-dynamic-tags v-model:value="form.participants" :render-tag="renderParticipantTags">
+        <n-dynamic-tags
+          v-model:value="form.participants"
+          :render-tag="renderParticipantTags"
+        >
           <template #trigger>
-            <n-button size="small" type="primary" dashed @click="startAddParticipant">
+            <n-button
+              size="small"
+              type="primary"
+              dashed
+              @click="startAddParticipant"
+            >
               <template #icon>
                 <n-icon>
                   <MdAdd />
@@ -93,8 +101,15 @@ const emit = defineEmits(['cancel', 'confirm'])
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="emit('cancel')">取消</n-button>
-        <n-button type="primary" @click="confirm">保存</n-button>
+        <n-button @click="emit('cancel')">
+          取消
+        </n-button>
+        <n-button
+          type="primary"
+          @click="confirm"
+        >
+          保存
+        </n-button>
       </n-space>
     </template>
   </n-modal>

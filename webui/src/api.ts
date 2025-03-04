@@ -41,7 +41,7 @@ export class Api {
     if (response.status !== 200) {
       throw new Error('Request failed')
     }
-    let data = response.data
+    const data = response.data
     if (data.code == 501) {
       throw new NoTokenError()
     } else if (data.code != 200) {
@@ -79,7 +79,7 @@ export class Api {
     settings: object,
     isPublic: boolean = false,
   ): Promise<number> {
-    let data = await this.request('createCharacter', {
+    const data = await this.request('createCharacter', {
       name: name,
       description: description,
       content: JSON.stringify(content),
@@ -90,7 +90,7 @@ export class Api {
   }
 
   async getCharacters(): Promise<Character[]> {
-    let data: {
+    const data: {
       characters: any[]
     } = await this.request('getCharacters', {})
     return data.characters.map((character) => {
@@ -133,7 +133,7 @@ export class Api {
   }
 
   async getPublicCharacters(): Promise<Character[]> {
-    let data: {
+    const data: {
       characters: any[]
     } = await this.request('getPublicCharacters', {})
     return data.characters.map((character) => {
@@ -156,7 +156,7 @@ export class Api {
     settings: object,
     isPublic: boolean = false,
   ): Promise<number> {
-    let data = await this.request('createPreset', {
+    const data = await this.request('createPreset', {
       name: name,
       description: description,
       content: JSON.stringify(content),
@@ -167,7 +167,7 @@ export class Api {
   }
 
   async getPresets(): Promise<Preset[]> {
-    let data: {
+    const data: {
       presets: any[]
     } = await this.request('getPresets', {})
     return data.presets.map((preset) => {
@@ -209,7 +209,7 @@ export class Api {
   }
 
   async getPublicPresets(): Promise<Preset[]> {
-    let data: {
+    const data: {
       presets: any[]
     } = await this.request('getPublicPresets', {})
     return data.presets.map((preset) => {
@@ -232,7 +232,7 @@ export class Api {
     settings: object,
     type: 'openai' | 'google' | 'azure',
   ): Promise<number> {
-    let resp = await this.request('createProvider', {
+    const resp = await this.request('createProvider', {
       name: name,
       baseUrl: url,
       apiKey: apiKey,
@@ -244,7 +244,7 @@ export class Api {
   }
 
   async getProviders(): Promise<Provider[]> {
-    let data: {
+    const data: {
       providers: any[]
     } = await this.request('getProviders', {})
     return data.providers.map((provider) => {
@@ -308,7 +308,7 @@ export class Api {
     providerId: number,
     settings: object,
   ): Promise<number> {
-    let data = await this.request('createModel', {
+    const data = await this.request('createModel', {
       name: name,
       modelName: modelName,
       description: description,
@@ -346,7 +346,7 @@ export class Api {
   }
 
   async getPublicModels(): Promise<Model[]> {
-    let data: {
+    const data: {
       models: any[]
     } = await this.request('getPublicModels', {})
     return data.models.map((model) => {
@@ -363,7 +363,7 @@ export class Api {
   }
 
   async getUsers(): Promise<User[]> {
-    let data: {
+    const data: {
       users: any[]
     } = await this.request('getUsers', {})
     return data.users.map((user) => {
@@ -394,7 +394,7 @@ export class Api {
   }
 
   async addUser(username: string, email: string, password: string, group: string): Promise<number> {
-    let data = await this.request('createUser', {
+    const data = await this.request('createUser', {
       username: username,
       email: email,
       password: sha256(password),
@@ -404,7 +404,7 @@ export class Api {
   }
 
   async getChats(): Promise<Chat[]> {
-    let data: {
+    const data: {
       chats: any[]
     } = await this.request('getChats', {})
     return data.chats.map((chat) => {
@@ -413,7 +413,7 @@ export class Api {
   }
 
   async getFullChat(chatId: number): Promise<FullChat> {
-    let data: {
+    const data: {
       chat: any
       messages: any[]
       participants: any[]
@@ -486,7 +486,7 @@ export class Api {
   }
 
   async getMessages(chatId: number): Promise<Message[]> {
-    let data: {
+    const data: {
       messages: any[]
     } = await this.request('getMessages', {
       chatId: chatId,
@@ -503,7 +503,7 @@ export class Api {
   }
 
   async getTemplates(): Promise<Template[]> {
-    let data: {
+    const data: {
       templates: any[]
     } = await this.request('getTemplates', {})
     return data.templates.map((template) => {
@@ -547,7 +547,7 @@ export class Api {
     description: string,
     isPublic: boolean = false,
   ): Promise<number> {
-    let data = await this.request('createTemplate', {
+    const data = await this.request('createTemplate', {
       name: name,
       content: content,
       description: description,
@@ -557,7 +557,7 @@ export class Api {
   }
 
   async getPublicTemplates(): Promise<Template[]> {
-    let data: {
+    const data: {
       templates: any[]
     } = await this.request('getPublicTemplates', {})
     return data.templates.map((template) => {
@@ -580,7 +580,7 @@ export class Api {
     name: string,
     settings: object,
   ): Promise<number> {
-    let data = await this.request('createParticipant', {
+    const data = await this.request('createParticipant', {
       chatId: chatId,
       characterId: characterId,
       presetIds: presetIds,
@@ -623,12 +623,12 @@ export class Api {
   }
 
   async uploadFile(data: ArrayBuffer): Promise<number> {
-    let resp = await this.request('createFile', data)
+    const resp = await this.request('createFile', data)
     return resp.id
   }
 
   async addChat(name: string, description: string, settings: any): Promise<number> {
-    let data = await this.request('createChat', {
+    const data = await this.request('createChat', {
       name: name,
       description: description,
       settings: JSON.stringify(settings),
@@ -643,7 +643,7 @@ export class Api {
   }
 
   async addMessage(chatId: number, content: string, role: string): Promise<number> {
-    let data = await this.request('createMessage', {
+    const data = await this.request('createMessage', {
       chatId: chatId,
       content: content,
       role: role,
@@ -688,7 +688,7 @@ export const generate = async (
   }
   return await new Promise((resolve) => {
     source.onmessage = (event) => {
-      let data = JSON.parse(event.data)
+      const data = JSON.parse(event.data)
       if (data.delta) {
         callback(data.delta)
       }

@@ -89,17 +89,40 @@ const deletePreset = async (preset: Preset) => {
   <div style="padding: 2em">
     <div class="header">
       <h3>预设</h3>
-      <n-button type="primary" @click="addPresetForm.visible = true">添加</n-button>
+      <n-button
+        type="primary"
+        @click="addPresetForm.visible = true"
+      >
+        添加
+      </n-button>
     </div>
     <div>
       <n-list>
-        <n-list-item v-for="preset in presets" :key="preset.id">
+        <n-list-item
+          v-for="preset in presets"
+          :key="preset.id"
+        >
           {{ preset.name }}
           <template #suffix>
             <n-space :wrap="false">
-              <n-button type="primary" @click="">分享</n-button>
-              <n-button type="primary" @click="editPreset(preset)">编辑</n-button>
-              <n-button type="error" @click="deletePreset(preset)">删除</n-button>
+              <n-button
+                type="primary"
+                @click=""
+              >
+                分享
+              </n-button>
+              <n-button
+                type="primary"
+                @click="editPreset(preset)"
+              >
+                编辑
+              </n-button>
+              <n-button
+                type="error"
+                @click="deletePreset(preset)"
+              >
+                删除
+              </n-button>
             </n-space>
           </template>
         </n-list-item>
@@ -107,9 +130,9 @@ const deletePreset = async (preset: Preset) => {
     </div>
   </div>
   <n-modal
+    v-model:show="addPresetForm.visible"
     title="添加预设"
     size="medium"
-    v-model:show="addPresetForm.visible"
     preset="card"
     style="width: fit-content; min-width: 25em"
   >
@@ -134,15 +157,22 @@ const deletePreset = async (preset: Preset) => {
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="cancelAddPreset">取消</n-button>
-        <n-button type="primary" @click="addPreset">保存</n-button>
+        <n-button @click="cancelAddPreset">
+          取消
+        </n-button>
+        <n-button
+          type="primary"
+          @click="addPreset"
+        >
+          保存
+        </n-button>
       </n-space>
     </template>
   </n-modal>
   <n-modal
+    v-model:show="editPresetForm.visible"
     title="编辑预设"
     size="medium"
-    v-model:show="editPresetForm.visible"
     preset="card"
     style="width: fit-content; min-width: 25em"
   >
@@ -158,7 +188,7 @@ const deletePreset = async (preset: Preset) => {
               editPresetForm.preset!.name = name
             }
           "
-        ></SettingsInput>
+        />
       </n-form-item>
       <n-form-item label="描述">
         <SettingsInput
@@ -171,7 +201,7 @@ const deletePreset = async (preset: Preset) => {
               editPresetForm.preset!.description = description
             }
           "
-        ></SettingsInput>
+        />
       </n-form-item>
       <n-form-item label="公开">
         <SettingsSwitch
@@ -184,7 +214,7 @@ const deletePreset = async (preset: Preset) => {
               editPresetForm.preset!.isPublic = isPublic
             }
           "
-        ></SettingsSwitch>
+        />
       </n-form-item>
       <n-form-item label="设置">
         <SettingsDynamicInput
@@ -197,7 +227,7 @@ const deletePreset = async (preset: Preset) => {
               editPresetForm.preset!.content = content
             }
           "
-        ></SettingsDynamicInput>
+        />
       </n-form-item>
     </n-form>
   </n-modal>

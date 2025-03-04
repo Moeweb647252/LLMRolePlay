@@ -292,22 +292,39 @@ const startEditModel = (model: Model) => {
   <div style="padding: 2em">
     <div class="header">
       <h3>Providers</h3>
-      <n-button type="primary" @click="addProviderForm.visible = true">添加</n-button>
+      <n-button
+        type="primary"
+        @click="addProviderForm.visible = true"
+      >
+        添加
+      </n-button>
     </div>
     <div>
       <n-list>
-        <n-list-item v-for="provider in providers" :key="provider.id">
+        <n-list-item
+          v-for="provider in providers"
+          :key="provider.id"
+        >
           <n-thing
             :title="provider.name"
             :description="provider.description"
             :title-extra="provider.type"
-          >
-          </n-thing>
+          />
 
           <template #suffix>
             <n-space :wrap="false">
-              <n-button type="primary" @click="startEditProvider(provider)">编辑</n-button>
-              <n-button type="error" @click="deleteProvider(provider)">删除</n-button>
+              <n-button
+                type="primary"
+                @click="startEditProvider(provider)"
+              >
+                编辑
+              </n-button>
+              <n-button
+                type="error"
+                @click="deleteProvider(provider)"
+              >
+                删除
+              </n-button>
             </n-space>
           </template>
         </n-list-item>
@@ -323,19 +340,22 @@ const startEditModel = (model: Model) => {
   >
     <n-form label-placement="left">
       <n-form-item label="类型">
-        <n-select :options="providerTypeOptions" v-model:value="addProviderForm.type"></n-select>
+        <n-select
+          v-model:value="addProviderForm.type"
+          :options="providerTypeOptions"
+        />
       </n-form-item>
       <n-form-item label="名称">
-        <n-input v-model:value="addProviderForm.name"></n-input>
+        <n-input v-model:value="addProviderForm.name" />
       </n-form-item>
       <n-form-item label="描述">
-        <n-input v-model:value="addProviderForm.description"></n-input>
+        <n-input v-model:value="addProviderForm.description" />
       </n-form-item>
       <n-form-item label="Base URL">
-        <n-input v-model:value="addProviderForm.url"></n-input>
+        <n-input v-model:value="addProviderForm.url" />
       </n-form-item>
       <n-form-item label="API Key">
-        <n-input v-model:value="addProviderForm.apiKey"></n-input>
+        <n-input v-model:value="addProviderForm.apiKey" />
       </n-form-item>
       <n-dynamic-tags
         v-model:value="addProviderForm.models as any"
@@ -349,7 +369,12 @@ const startEditModel = (model: Model) => {
         "
       >
         <template #trigger>
-          <n-button size="small" type="primary" dashed @click="addProviderAddModel">
+          <n-button
+            size="small"
+            type="primary"
+            dashed
+            @click="addProviderAddModel"
+          >
             <template #icon>
               <n-icon>
                 <MdAdd />
@@ -362,8 +387,15 @@ const startEditModel = (model: Model) => {
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="addProviderForm.visible = false">取消</n-button>
-        <n-button type="primary" @click="addProvider">添加</n-button>
+        <n-button @click="addProviderForm.visible = false">
+          取消
+        </n-button>
+        <n-button
+          type="primary"
+          @click="addProvider"
+        >
+          添加
+        </n-button>
       </n-space>
     </template>
   </n-modal>
@@ -376,45 +408,66 @@ const startEditModel = (model: Model) => {
   >
     <n-form label-placement="left">
       <n-form-item label="名称">
-        <n-input v-model:value="addModelForm.name"></n-input>
+        <n-input v-model:value="addModelForm.name" />
       </n-form-item>
       <n-form-item label="模型名">
-        <n-input v-model:value="addModelForm.modelName"></n-input>
+        <n-input v-model:value="addModelForm.modelName" />
       </n-form-item>
       <n-form-item label="描述">
-        <n-input v-model:value="addModelForm.description"></n-input>
+        <n-input v-model:value="addModelForm.description" />
       </n-form-item>
       <n-form-item label="公开">
-        <n-switch v-model:value="addModelForm.isPublic"></n-switch>
+        <n-switch v-model:value="addModelForm.isPublic" />
       </n-form-item>
       <n-form-item label="Temperture">
-        <n-input v-model:value="addModelForm.settings.temperture" type="number"></n-input>
+        <n-input
+          v-model:value="addModelForm.settings.temperture"
+          type="number"
+        />
       </n-form-item>
       <n-form-item label="Top P">
-        <n-input v-model:value="addModelForm.settings.top_p" type="number"></n-input>
+        <n-input
+          v-model:value="addModelForm.settings.top_p"
+          type="number"
+        />
       </n-form-item>
       <n-form-item label="Max Tokens">
-        <n-input v-model:value="addModelForm.settings.max_tokens" type="number"></n-input>
+        <n-input
+          v-model:value="addModelForm.settings.max_tokens"
+          type="number"
+        />
       </n-form-item>
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button type="primary" @click="addModelConfirm">添加</n-button>
-        <n-button @click="addModelForm.visible = false">取消</n-button>
+        <n-button
+          type="primary"
+          @click="addModelConfirm"
+        >
+          添加
+        </n-button>
+        <n-button @click="addModelForm.visible = false">
+          取消
+        </n-button>
       </n-space>
     </template>
   </n-modal>
   <n-modal
-    title="编辑Provider"
     v-model:show="editProviderForm.visible"
+    title="编辑Provider"
     preset="card"
     size="medium"
     style="width: fit-content; min-width: 25em"
   >
-    <n-form label-placement="left" v-if="editProviderForm.provider">
+    <n-form
+      v-if="editProviderForm.provider"
+      label-placement="left"
+    >
       <n-form-item label="类型">
         <SettingsInput
           :value="editProviderForm.provider!.type"
+          type="select"
+          :options="providerTypeOptions"
           @confirm="
             async (type) => {
               await api.updateProvider(editProviderForm.provider!.id!, {
@@ -423,10 +476,7 @@ const startEditModel = (model: Model) => {
               editProviderForm.provider!.type = type
             }
           "
-          type="select"
-          :options="providerTypeOptions"
-        >
-        </SettingsInput>
+        />
       </n-form-item>
       <n-form-item label="名称">
         <SettingsInput
@@ -487,7 +537,12 @@ const startEditModel = (model: Model) => {
           :render-tag="(a: any, b: any) => renderProviderModelsTag(a, b, editProviderEditModel)"
         >
           <template #trigger>
-            <n-button size="small" type="primary" dashed @click="editProviderAddModel">
+            <n-button
+              size="small"
+              type="primary"
+              dashed
+              @click="editProviderAddModel"
+            >
               <template #icon>
                 <n-icon>
                   <MdAdd />
@@ -501,13 +556,16 @@ const startEditModel = (model: Model) => {
     </n-form>
   </n-modal>
   <n-modal
+    v-model:show="editModelForm.visible"
     title="编辑Modal"
     preset="card"
-    v-model:show="editModelForm.visible"
     size="medium"
     style="width: fit-content; min-width: 25em"
   >
-    <n-form label-placement="left" v-if="editModelForm.model">
+    <n-form
+      v-if="editModelForm.model"
+      label-placement="left"
+    >
       <n-form-item label="名称">
         <SettingsInput
           :value="editModelForm.model.name"
@@ -558,7 +616,7 @@ const startEditModel = (model: Model) => {
               editModelForm.model!.isPublic = isPublic
             }
           "
-        ></SettingsSwitch>
+        />
       </n-form-item>
       <n-form-item label="Temperture">
         <SettingsNumberInput

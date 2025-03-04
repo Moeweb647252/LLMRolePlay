@@ -76,16 +76,34 @@ const deleteTemplate = async (template: Template) => {
   <div style="padding: 2em">
     <div class="header">
       <h3>模板</h3>
-      <n-button type="primary" @click="addTemplateForm.visible = true">添加</n-button>
+      <n-button
+        type="primary"
+        @click="addTemplateForm.visible = true"
+      >
+        添加
+      </n-button>
     </div>
     <div>
       <n-list>
-        <n-list-item v-for="template in templates" :key="template.id">
+        <n-list-item
+          v-for="template in templates"
+          :key="template.id"
+        >
           {{ template.name }}
           <template #suffix>
             <n-space :wrap="false">
-              <n-button type="primary" @click="editTemplate(template)">编辑</n-button>
-              <n-button type="error" @click="deleteTemplate(template)">删除</n-button>
+              <n-button
+                type="primary"
+                @click="editTemplate(template)"
+              >
+                编辑
+              </n-button>
+              <n-button
+                type="error"
+                @click="deleteTemplate(template)"
+              >
+                删除
+              </n-button>
             </n-space>
           </template>
         </n-list-item>
@@ -93,9 +111,9 @@ const deleteTemplate = async (template: Template) => {
     </div>
   </div>
   <n-modal
+    v-model:show="addTemplateForm.visible"
     title="添加模板"
     size="medium"
-    v-model:show="addTemplateForm.visible"
     preset="card"
     style="width: fit-content; min-width: 25em"
   >
@@ -110,20 +128,30 @@ const deleteTemplate = async (template: Template) => {
         <n-switch v-model:value="addTemplateForm.isPublic" />
       </n-form-item>
       <n-form-item label="内容">
-        <n-input type="textarea" v-model:value="addTemplateForm.content" />
+        <n-input
+          v-model:value="addTemplateForm.content"
+          type="textarea"
+        />
       </n-form-item>
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="cancelAddTemplate">取消</n-button>
-        <n-button type="primary" @click="addTemplate">保存</n-button>
+        <n-button @click="cancelAddTemplate">
+          取消
+        </n-button>
+        <n-button
+          type="primary"
+          @click="addTemplate"
+        >
+          保存
+        </n-button>
       </n-space>
     </template>
   </n-modal>
   <n-modal
+    v-model:show="editTemplateForm.visible"
     title="编辑模板"
     size="medium"
-    v-model:show="editTemplateForm.visible"
     preset="card"
     style="width: fit-content; min-width: 25em"
   >
@@ -139,7 +167,7 @@ const deleteTemplate = async (template: Template) => {
               editTemplateForm.template!.name = editTemplateForm.template!.name!
             }
           "
-        ></SettingsInput>
+        />
       </n-form-item>
       <n-form-item label="描述">
         <SettingsInput
@@ -152,7 +180,7 @@ const deleteTemplate = async (template: Template) => {
               editTemplateForm.template!.description = editTemplateForm.template!.description!
             }
           "
-        ></SettingsInput>
+        />
       </n-form-item>
       <n-form-item label="公开">
         <SettingsSwitch
@@ -165,7 +193,7 @@ const deleteTemplate = async (template: Template) => {
               editTemplateForm.template!.isPublic = isPublic
             }
           "
-        ></SettingsSwitch>
+        />
       </n-form-item>
       <n-form-item label="内容">
         <SettingsInput
@@ -179,7 +207,7 @@ const deleteTemplate = async (template: Template) => {
               editTemplateForm.template!.content = content
             }
           "
-        ></SettingsInput>
+        />
       </n-form-item>
     </n-form>
   </n-modal>

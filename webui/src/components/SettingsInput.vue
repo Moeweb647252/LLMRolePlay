@@ -34,29 +34,50 @@ const cancel = () => {
 <template>
   <div v-if="editing">
     <n-input-group>
-      <n-input v-if="props.type == 'text' || props.type == null" v-model:value="editingValue" />
+      <n-input
+        v-if="props.type == 'text' || props.type == null"
+        v-model:value="editingValue"
+      />
       <n-select
         v-if="props.type == 'select'"
+        v-model:value="editingValue"
         style="min-width: 10em"
         :multiple="multiple"
-        v-model:value="editingValue"
         :options="props.options"
-      >
-      </n-select>
-      <n-input v-if="props.type == 'textarea'" v-model:value="editingValue" type="textarea" />
-      <n-button @click="confirm">确定</n-button>
-      <n-button @click="cancel">取消</n-button>
+      />
+      <n-input
+        v-if="props.type == 'textarea'"
+        v-model:value="editingValue"
+        type="textarea"
+      />
+      <n-button @click="confirm">
+        确定
+      </n-button>
+      <n-button @click="cancel">
+        取消
+      </n-button>
     </n-input-group>
   </div>
   <div v-else>
-    <n-space :wrap="false" align="center">
+    <n-space
+      :wrap="false"
+      align="center"
+    >
       <div v-if="props.multiple">
-        {{ value?.map((v: any) => options?.find((o) => o.value == v)?.label).join() }}
+        {{
+          value
+            ?.map((v: any) => options?.find((o) => o.value == v)?.label)
+            .join()
+        }}
       </div>
       <div v-else>
         {{ options?.find((o) => o.value == value)?.label || value }}
       </div>
-      <n-button quaternary circle @click="startEditing">
+      <n-button
+        quaternary
+        circle
+        @click="startEditing"
+      >
         <template #icon>
           <n-icon>
             <MdCreate />

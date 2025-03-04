@@ -329,8 +329,16 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <n-layout :has-sider="showSider" class="full bfc">
-    <n-layout-sider width="200" theme="dark" class="bfc" v-if="showSider">
+  <n-layout
+    :has-sider="showSider"
+    class="full bfc"
+  >
+    <n-layout-sider
+      v-if="showSider"
+      width="200"
+      theme="dark"
+      class="bfc"
+    >
       <div class="sider bfc">
         <div
           style="
@@ -344,7 +352,11 @@ onMounted(async () => {
           <h2>LLMRolePlay</h2>
         </div>
         <div style="margin: 2px 4px; height: 2.5em">
-          <n-button type="default" style="width: 100%; height: 100%" @click="startAddChat">
+          <n-button
+            type="default"
+            style="width: 100%; height: 100%"
+            @click="startAddChat"
+          >
             <template #icon>
               <n-icon>
                 <MdAdd />
@@ -352,7 +364,10 @@ onMounted(async () => {
             </template>
           </n-button>
         </div>
-        <n-scrollbar style="height: 100%" content-style="margin: 0 4px">
+        <n-scrollbar
+          style="height: 100%"
+          content-style="margin: 0 4px"
+        >
           <n-list :show-divider="false">
             <n-list-item
               v-for="(chat, index) in chats"
@@ -360,17 +375,33 @@ onMounted(async () => {
               style="height: 2.5em; margin-left: 1em; margin-right: 1em"
               class="chat-list-item"
             >
-              <n-space style="width: 100%" align="center" justify="space-between">
-                <div @click="setChat(chat)">{{ chat.name }}</div>
+              <n-space
+                style="width: 100%"
+                align="center"
+                justify="space-between"
+              >
+                <div @click="setChat(chat)">
+                  {{ chat.name }}
+                </div>
                 <n-space>
-                  <n-button text size="small" class="chat-button" @click="startEditChat(chat)">
+                  <n-button
+                    text
+                    size="small"
+                    class="chat-button"
+                    @click="startEditChat(chat)"
+                  >
                     <template #icon>
                       <n-icon>
                         <MdCreate />
                       </n-icon>
                     </template>
                   </n-button>
-                  <n-button text size="small" class="chat-button" @click="deleteChat(chat)">
+                  <n-button
+                    text
+                    size="small"
+                    class="chat-button"
+                    @click="deleteChat(chat)"
+                  >
                     <template #icon>
                       <n-icon>
                         <MdClose />
@@ -395,20 +426,38 @@ onMounted(async () => {
           margin-left: 0.5em;
         "
       >
-        <n-button type="default" @click="showSider = !showSider" strong secondary>
+        <n-button
+          type="default"
+          strong
+          secondary
+          @click="showSider = !showSider"
+        >
           <n-icon size="2em">
             <IosMenu />
           </n-icon>
         </n-button>
-        <n-dropdown :options="dropdownOptions" @select="onDropdownSelect">
-          <n-icon size="2.5em" style="padding-right: 0.5em">
+        <n-dropdown
+          :options="dropdownOptions"
+          @select="onDropdownSelect"
+        >
+          <n-icon
+            size="2.5em"
+            style="padding-right: 0.5em"
+          >
             <MdContact />
           </n-icon>
         </n-dropdown>
       </n-layout-header>
-      <n-layout-content class="bfc" style="height: calc(100% - 3.5em)">
+      <n-layout-content
+        class="bfc"
+        style="height: calc(100% - 3.5em)"
+      >
         <Suspense>
-          <ChatBox v-if="currentChat" :chat="currentChat" :key="chatBoxKey"></ChatBox>
+          <ChatBox
+            v-if="currentChat"
+            :key="chatBoxKey"
+            :chat="currentChat"
+          />
           <template #fallback>
             <div
               style="
@@ -446,7 +495,12 @@ onMounted(async () => {
           :render-tag="renderAddChatParticipant"
         >
           <template #trigger>
-            <n-button size="small" type="primary" dashed @click="addChatAddParticipant">
+            <n-button
+              size="small"
+              type="primary"
+              dashed
+              @click="addChatAddParticipant"
+            >
               <template #icon>
                 <n-icon>
                   <MdAdd />
@@ -460,15 +514,22 @@ onMounted(async () => {
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="addChatForm.visible = false">取消</n-button>
-        <n-button type="primary" @click="addChat">保存</n-button>
+        <n-button @click="addChatForm.visible = false">
+          取消
+        </n-button>
+        <n-button
+          type="primary"
+          @click="addChat"
+        >
+          保存
+        </n-button>
       </n-space>
     </template>
   </n-modal>
   <n-modal
+    v-model:show="addParticipantForm.visible"
     title="添加参与者"
     size="medium"
-    v-model:show="addParticipantForm.visible"
     preset="card"
     style="width: fit-content; min-width: 25em"
   >
@@ -477,7 +538,11 @@ onMounted(async () => {
         <n-input v-model:value="addParticipantForm.name" />
       </n-form-item>
       <n-form-item label="模型">
-        <n-select v-model:value="addParticipantForm.model" filterable :options="modelOptions" />
+        <n-select
+          v-model:value="addParticipantForm.model"
+          filterable
+          :options="modelOptions"
+        />
       </n-form-item>
       <n-form-item label="预设">
         <n-select
@@ -525,14 +590,21 @@ onMounted(async () => {
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="addParticipantForm.visible = false">取消</n-button>
-        <n-button type="primary" @click="addParticipantForm.onConfirm">保存</n-button>
+        <n-button @click="addParticipantForm.visible = false">
+          取消
+        </n-button>
+        <n-button
+          type="primary"
+          @click="addParticipantForm.onConfirm"
+        >
+          保存
+        </n-button>
       </n-space>
     </template>
   </n-modal>
   <n-modal
-    title="编辑聊天"
     v-model:show="editChatForm.visible"
+    title="编辑聊天"
     preset="card"
     style="width: fit-content; min-width: 25em"
     size="medium"
@@ -571,7 +643,12 @@ onMounted(async () => {
           :render-tag="renderEditChatParticipant"
         >
           <template #trigger>
-            <n-button size="small" type="primary" dashed @click="editChatAddParticipant">
+            <n-button
+              size="small"
+              type="primary"
+              dashed
+              @click="editChatAddParticipant"
+            >
               <template #icon>
                 <n-icon>
                   <MdAdd />
@@ -585,8 +662,8 @@ onMounted(async () => {
     </n-form>
   </n-modal>
   <n-modal
-    title="编辑参与者"
     v-model:show="editParticipantForm.visible"
+    title="编辑参与者"
     preset="card"
     style="width: fit-content; min-width: 25em"
     size="medium"

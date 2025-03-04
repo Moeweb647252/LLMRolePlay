@@ -47,9 +47,9 @@ const validate = () => {
 </script>
 <template>
   <n-modal
+    v-model:show="show"
     title="添加参与者"
     size="medium"
-    v-model:show="show"
     preset="card"
     style="width: fit-content; min-width: 25em"
     @cancel="emit('cancel')"
@@ -59,22 +59,46 @@ const validate = () => {
         <n-input v-model:value="form.name" />
       </n-form-item>
       <n-form-item label="模型">
-        <n-select v-model:value="form.model" filterable :options="models" />
+        <n-select
+          v-model:value="form.model"
+          filterable
+          :options="models"
+        />
       </n-form-item>
       <n-form-item label="预设">
-        <n-select v-model:value="form.presets" filterable multiple :options="presets" />
+        <n-select
+          v-model:value="form.presets"
+          filterable
+          multiple
+          :options="presets"
+        />
       </n-form-item>
       <n-form-item label="角色">
-        <n-select v-model:value="form.character" filterable :options="characters" />
+        <n-select
+          v-model:value="form.character"
+          filterable
+          :options="characters"
+        />
       </n-form-item>
       <n-form-item label="模板">
-        <n-select v-model:value="form.template" filterable :options="templates" />
+        <n-select
+          v-model:value="form.template"
+          filterable
+          :options="templates"
+        />
       </n-form-item>
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="emit('cancel')">取消</n-button>
-        <n-button type="primary" @click="confirm">保存</n-button>
+        <n-button @click="emit('cancel')">
+          取消
+        </n-button>
+        <n-button
+          type="primary"
+          @click="confirm"
+        >
+          保存
+        </n-button>
       </n-space>
     </template>
   </n-modal>

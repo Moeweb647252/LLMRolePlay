@@ -26,13 +26,25 @@ const login = async () => {
     <n-card style="width: fit-content">
       <n-form>
         <n-form-item label="Email">
-          <n-input v-model:value="email" placeholder="Enter your email" />
+          <n-input
+            v-model:value="email"
+            placeholder="Enter your email"
+          />
         </n-form-item>
         <n-form-item label="Password">
-          <n-input v-model:value="password" type="password" placeholder="Enter your password" />
+          <n-input
+            v-model:value="password"
+            type="password"
+            placeholder="Enter your password"
+          />
         </n-form-item>
         <n-form-item>
-          <n-button type="primary" @click="login">Login</n-button>
+          <n-button
+            type="primary"
+            @click="login"
+          >
+            Login
+          </n-button>
         </n-form-item>
       </n-form>
     </n-card>

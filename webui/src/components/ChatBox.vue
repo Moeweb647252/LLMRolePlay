@@ -90,18 +90,25 @@ onMounted(async () => {
 <template>
   <div class="container">
     <div style="height: 4em">
-      <n-flex align="center" justify="space-between" style="height: 100%; width: 100%">
+      <n-flex
+        align="center"
+        justify="space-between"
+        style="height: 100%; width: 100%"
+      >
         <h2>{{ props.chat.name }}</h2>
       </n-flex>
     </div>
     <div style="height: calc(100% - 2em); padding-top: 2em; overflow: hidden">
       <div class="chat-box">
         <div class="messages">
-          <n-scrollbar ref="messageScroll" style="height: 100%; width: calc(100% - 2em)">
+          <n-scrollbar
+            ref="messageScroll"
+            style="height: 100%; width: calc(100% - 2em)"
+          >
             <Message
               v-for="(i, index) in messages"
-              class="message"
               :key="i.id"
+              class="message"
               :content="i.content"
               :reloadable="index == messages.length - 1"
               :name="
@@ -110,11 +117,15 @@ onMounted(async () => {
                   : '你'
               "
               @delete="deleteMessage(i)"
-            ></Message>
+            />
           </n-scrollbar>
         </div>
         <div class="input">
-          <n-grid style="width: 100%" x-gap="12" :cols="2">
+          <n-grid
+            style="width: 100%"
+            x-gap="12"
+            :cols="2"
+          >
             <n-gi>
               <n-input
                 v-model:value="input"
@@ -156,7 +167,7 @@ onMounted(async () => {
                       }
                     })
                   "
-                ></n-select>
+                />
                 <n-button
                   :disabled="generating"
                   type="primary"

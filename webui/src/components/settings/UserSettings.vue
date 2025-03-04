@@ -95,18 +95,46 @@ onMounted(async () => {
   <div style="padding: 2em">
     <div class="header">
       <h3>用户</h3>
-      <n-button type="primary" @click="addUserForm.visible = true">添加</n-button>
+      <n-button
+        type="primary"
+        @click="addUserForm.visible = true"
+      >
+        添加
+      </n-button>
     </div>
     <div>
       <n-list>
-        <n-list-item v-for="user in users" :key="user.id">
+        <n-list-item
+          v-for="user in users"
+          :key="user.id"
+        >
           {{ user.username }}
-          <n-tag type="success" v-if="user.group == '2'">管理员</n-tag>
-          <n-tag type="info" v-if="user.group == '1'">用户</n-tag>
+          <n-tag
+            v-if="user.group == '2'"
+            type="success"
+          >
+            管理员
+          </n-tag>
+          <n-tag
+            v-if="user.group == '1'"
+            type="info"
+          >
+            用户
+          </n-tag>
           <template #suffix>
             <n-space :wrap="false">
-              <n-button type="primary" @click="editUser(user)">编辑</n-button>
-              <n-button type="error" @click="deleteUser(user)">删除</n-button>
+              <n-button
+                type="primary"
+                @click="editUser(user)"
+              >
+                编辑
+              </n-button>
+              <n-button
+                type="error"
+                @click="deleteUser(user)"
+              >
+                删除
+              </n-button>
             </n-space>
           </template>
         </n-list-item>
@@ -114,9 +142,9 @@ onMounted(async () => {
     </div>
   </div>
   <n-modal
+    v-model:show="addUserForm.visible"
     title="添加用户"
     size="medium"
-    v-model:show="addUserForm.visible"
     preset="card"
     style="width: fit-content; min-width: 25em"
   >
@@ -131,20 +159,30 @@ onMounted(async () => {
         <n-input v-model:value="addUserForm.password" />
       </n-form-item>
       <n-form-item label="组">
-        <n-select v-model:value="addUserForm.group" :options="userTypeOptions"> </n-select>
+        <n-select
+          v-model:value="addUserForm.group"
+          :options="userTypeOptions"
+        />
       </n-form-item>
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="cancelAddUser">取消</n-button>
-        <n-button type="primary" @click="addUser">保存</n-button>
+        <n-button @click="cancelAddUser">
+          取消
+        </n-button>
+        <n-button
+          type="primary"
+          @click="addUser"
+        >
+          保存
+        </n-button>
       </n-space>
     </template>
   </n-modal>
   <n-modal
+    v-model:show="editUserForm.visible"
     title="编辑用户"
     size="medium"
-    v-model:show="editUserForm.visible"
     preset="card"
     style="width: fit-content; min-width: 25em"
   >
@@ -161,8 +199,7 @@ onMounted(async () => {
           :value="editUserForm.user!.group"
           :options="userTypeOptions"
           @confirm="async () => {}"
-        >
-        </SettingsInput>
+        />
       </n-form-item>
     </n-form>
   </n-modal>

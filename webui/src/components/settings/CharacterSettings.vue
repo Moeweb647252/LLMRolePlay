@@ -20,7 +20,9 @@ const addCharacterForm = ref({
 })
 
 const addCharacter = async () => {
-  let data: typeof addCharacterForm.value = JSON.parse(JSON.stringify(addCharacterForm.value))
+  let data: typeof addCharacterForm.value = JSON.parse(
+    JSON.stringify(addCharacterForm.value),
+  )
   addCharacterForm.value = {
     name: '',
     description: '',
@@ -37,9 +39,23 @@ const addCharacter = async () => {
       fileId = await api.uploadFile(buffer)
     }
   }
-  let id = await api.addCharacter(data.name, data.description, data.content, {}, data.isPublic)
+  let id = await api.addCharacter(
+    data.name,
+    data.description,
+    data.content,
+    {},
+    data.isPublic,
+  )
   characters.value.push(
-    new Character(id, data.name, data.content, {}, data.description, data.isPublic, fileId),
+    new Character(
+      id,
+      data.name,
+      data.content,
+      {},
+      data.description,
+      data.isPublic,
+      fileId,
+    ),
   )
   message.success('添加成功')
 }
@@ -95,16 +111,34 @@ const uploadAvatar = async () => {
   <div style="padding: 2em">
     <div class="header">
       <h3>角色</h3>
-      <n-button type="primary" @click="addCharacterForm.visible = true">添加</n-button>
+      <n-button
+        type="primary"
+        @click="addCharacterForm.visible = true"
+      >
+        添加
+      </n-button>
     </div>
     <div>
       <n-list>
-        <n-list-item v-for="character in characters" :key="character.id">
+        <n-list-item
+          v-for="character in characters"
+          :key="character.id"
+        >
           {{ character.name }}
           <template #suffix>
             <n-space :wrap="false">
-              <n-button type="primary" @click="editCharacter(character)">编辑</n-button>
-              <n-button type="error" @click="deleteCharacter(character)">删除</n-button>
+              <n-button
+                type="primary"
+                @click="editCharacter(character)"
+              >
+                编辑
+              </n-button>
+              <n-button
+                type="error"
+                @click="deleteCharacter(character)"
+              >
+                删除
+              </n-button>
             </n-space>
           </template>
         </n-list-item>
@@ -112,9 +146,9 @@ const uploadAvatar = async () => {
     </div>
   </div>
   <n-modal
+    v-model:show="addCharacterForm.visible"
     title="添加角色"
     size="medium"
-    v-model:show="addCharacterForm.visible"
     preset="card"
     style="width: fit-content; min-width: 25em"
   >
@@ -125,10 +159,12 @@ const uploadAvatar = async () => {
       <n-form-item label="头像">
         <n-upload
           v-model:file-list="addCharacterForm.avatarFileList"
-          @before-upload="uploadAvatar()"
           :multiple="false"
           list-type="image-card"
-          :trigger-style="{ display: addCharacterForm.avatarFileList.length ? 'none' : 'block' }"
+          :trigger-style="{
+            display: addCharacterForm.avatarFileList.length ? 'none' : 'block',
+          }"
+          @before-upload="uploadAvatar()"
         />
       </n-form-item>
       <n-form-item label="描述">
@@ -148,15 +184,22 @@ const uploadAvatar = async () => {
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="cancelAddCharacter">取消</n-button>
-        <n-button type="primary" @click="addCharacter">保存</n-button>
+        <n-button @click="cancelAddCharacter">
+          取消
+        </n-button>
+        <n-button
+          type="primary"
+          @click="addCharacter"
+        >
+          保存
+        </n-button>
       </n-space>
     </template>
   </n-modal>
   <n-modal
+    v-model:show="editCharacterForm.visible"
     title="编辑角色"
     size="medium"
-    v-model:show="editCharacterForm.visible"
     preset="card"
     style="width: fit-content; min-width: 25em"
   >
@@ -172,7 +215,7 @@ const uploadAvatar = async () => {
               editCharacterForm.character!.name = name
             }
           "
-        ></SettingsInput>
+        />
       </n-form-item>
       <n-form-item label="描述">
         <SettingsInput
@@ -185,7 +228,7 @@ const uploadAvatar = async () => {
               editCharacterForm.character!.description = description
             }
           "
-        ></SettingsInput>
+        />
       </n-form-item>
       <n-form-item label="公开">
         <SettingsSwitch
@@ -198,7 +241,7 @@ const uploadAvatar = async () => {
               editCharacterForm.character!.isPublic = isPublic
             }
           "
-        ></SettingsSwitch>
+        />
       </n-form-item>
       <n-form-item label="设置">
         <SettingsDynamicInput
@@ -211,7 +254,7 @@ const uploadAvatar = async () => {
               editCharacterForm.character!.content = content
             }
           "
-        ></SettingsDynamicInput>
+        />
       </n-form-item>
     </n-form>
   </n-modal>

@@ -39,23 +39,30 @@ const toggleSider = () => {
 </script>
 
 <template>
-  <div class="menu-toggle" v-if="isMobile" @click="toggleSider">
+  <div
+    v-if="isMobile"
+    class="menu-toggle"
+    @click="toggleSider"
+  >
     <n-icon size="24">
       <component :is="collapsed ? MenuOutlined : CloseOutlined" />
     </n-icon>
   </div>
 
-  <n-layout has-sider style="height: 100%">
+  <n-layout
+    has-sider
+    style="height: 100%"
+  >
     <n-layout-sider
       :collapsed="collapsed"
       :collapsed-width="0"
       :width="200"
       show-trigger="arrow-circle"
       collapse-mode="transform"
-      @collapse="collapsed = true"
-      @expand="collapsed = false"
       :native-scrollbar="false"
       class="layout-sider"
+      @collapse="collapsed = true"
+      @expand="collapsed = false"
     >
       <div class="sider">
         <RouterLink
