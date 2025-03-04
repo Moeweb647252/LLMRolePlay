@@ -1,19 +1,34 @@
 <script setup lang="ts">
-import { NTag, useMessage } from 'naive-ui'
+import { useMessage } from 'naive-ui'
+import {
+  NModal,
+  NFormItem,
+  NForm,
+  NInput,
+  NButton,
+  NDynamicTags,
+  NSpace,
+  NTag,
+  NIcon,
+} from 'naive-ui'
+import { MdAdd } from '@vicons/ionicons4'
 import { h, ref } from 'vue'
 import AddParticipantModal from './AddParticipantModal.vue'
 import type { AddParticipantForm, AddChatForm, Options } from '@/types/modals'
 
 defineProps<{
-  models: Options[]
-  presets: Options[]
-  characters: Options[]
-  templates: Options[]
+  models: Options
+  presets: Options
+  characters: Options
+  templates: Options
 }>()
 
 const message = useMessage()
 
-const renderParticipantTags = (participant: AddParticipantForm, index: number) => {
+const renderParticipantTags = (
+  participant: AddParticipantForm,
+  index: number,
+) => {
   return h(
     NTag,
     {
@@ -78,8 +93,8 @@ const emit = defineEmits(['cancel', 'confirm'])
       </n-form-item>
       <n-form-item label="参与者">
         <n-dynamic-tags
-          v-model:value="form.participants"
-          :render-tag="renderParticipantTags"
+          v-model:value="form.participants as any[]"
+          :render-tag="renderParticipantTags as any"
         >
           <template #trigger>
             <n-button
@@ -101,15 +116,8 @@ const emit = defineEmits(['cancel', 'confirm'])
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="emit('cancel')">
-          取消
-        </n-button>
-        <n-button
-          type="primary"
-          @click="confirm"
-        >
-          保存
-        </n-button>
+        <n-button @click="emit('cancel')"> 取消 </n-button>
+        <n-button type="primary" @click="confirm"> 保存 </n-button>
       </n-space>
     </template>
   </n-modal>

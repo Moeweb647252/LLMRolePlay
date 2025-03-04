@@ -1,5 +1,8 @@
 {
     "eslint.workingDirectories": [
         "./webui"
+    ],
+    "cSpell.words": [
+      "Persistedstate"
     ]
 }

@@ -111,32 +111,20 @@ const uploadAvatar = async () => {
   <div style="padding: 2em">
     <div class="header">
       <h3>角色</h3>
-      <n-button
-        type="primary"
-        @click="addCharacterForm.visible = true"
-      >
+      <n-button type="primary" @click="addCharacterForm.visible = true">
         添加
       </n-button>
     </div>
     <div>
       <n-list>
-        <n-list-item
-          v-for="character in characters"
-          :key="character.id"
-        >
+        <n-list-item v-for="character in characters" :key="character.id">
           {{ character.name }}
           <template #suffix>
             <n-space :wrap="false">
-              <n-button
-                type="primary"
-                @click="editCharacter(character)"
-              >
+              <n-button type="primary" @click="editCharacter(character)">
                 编辑
               </n-button>
-              <n-button
-                type="error"
-                @click="deleteCharacter(character)"
-              >
+              <n-button type="error" @click="deleteCharacter(character)">
                 删除
               </n-button>
             </n-space>
@@ -145,57 +133,6 @@ const uploadAvatar = async () => {
       </n-list>
     </div>
   </div>
-  <n-modal
-    v-model:show="addCharacterForm.visible"
-    title="添加角色"
-    size="medium"
-    preset="card"
-    style="width: fit-content; min-width: 25em"
-  >
-    <n-form label-placement="left">
-      <n-form-item label="名称">
-        <n-input v-model:value="addCharacterForm.name" />
-      </n-form-item>
-      <n-form-item label="头像">
-        <n-upload
-          v-model:file-list="addCharacterForm.avatarFileList"
-          :multiple="false"
-          list-type="image-card"
-          :trigger-style="{
-            display: addCharacterForm.avatarFileList.length ? 'none' : 'block',
-          }"
-          @before-upload="uploadAvatar()"
-        />
-      </n-form-item>
-      <n-form-item label="描述">
-        <n-input v-model:value="addCharacterForm.description" />
-      </n-form-item>
-      <n-form-item label="公开">
-        <n-switch v-model:value="addCharacterForm.isPublic" />
-      </n-form-item>
-      <n-form-item label="设置">
-        <n-dynamic-input
-          v-model:value="addCharacterForm.content"
-          preset="pair"
-          key-placeholder="设置名"
-          value-placeholder="值"
-        />
-      </n-form-item>
-    </n-form>
-    <template #footer>
-      <n-space justify="end">
-        <n-button @click="cancelAddCharacter">
-          取消
-        </n-button>
-        <n-button
-          type="primary"
-          @click="addCharacter"
-        >
-          保存
-        </n-button>
-      </n-space>
-    </template>
-  </n-modal>
   <n-modal
     v-model:show="editCharacterForm.visible"
     title="编辑角色"

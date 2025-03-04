@@ -1,14 +1,22 @@
 <script setup lang="ts">
 import { useMessage } from 'naive-ui'
 import { ref } from 'vue'
-import { NModal, NFormItem } from 'naive-ui'
+import {
+  NModal,
+  NFormItem,
+  NSelect,
+  NForm,
+  NInput,
+  NSpace,
+  NButton,
+} from 'naive-ui'
 import type { AddParticipantForm, Options } from '@/types/modals'
 
 defineProps<{
-  models: Options[]
-  presets: Options[]
-  characters: Options[]
-  templates: Options[]
+  models: Options
+  presets: Options
+  characters: Options
+  templates: Options
 }>()
 
 const show = defineModel<boolean>('show', {
@@ -59,11 +67,7 @@ const validate = () => {
         <n-input v-model:value="form.name" />
       </n-form-item>
       <n-form-item label="模型">
-        <n-select
-          v-model:value="form.model"
-          filterable
-          :options="models"
-        />
+        <n-select v-model:value="form.model" filterable :options="models" />
       </n-form-item>
       <n-form-item label="预设">
         <n-select
@@ -90,15 +94,8 @@ const validate = () => {
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="emit('cancel')">
-          取消
-        </n-button>
-        <n-button
-          type="primary"
-          @click="confirm"
-        >
-          保存
-        </n-button>
+        <n-button @click="emit('cancel')"> 取消 </n-button>
+        <n-button type="primary" @click="confirm"> 保存 </n-button>
       </n-space>
     </template>
   </n-modal>

@@ -80,7 +80,6 @@ const uploadAvatar = async () => {
     size="medium"
     preset="card"
     style="width: fit-content; min-width: 25em"
-    @cancel="cancel"
   >
     <n-form label-placement="left">
       <n-form-item label="名称">

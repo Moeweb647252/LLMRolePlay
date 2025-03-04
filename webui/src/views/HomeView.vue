@@ -162,7 +162,11 @@ const modelOptions = computed(() => {
 })
 
 const addChat = async () => {
-  const chatId = await api.addChat(addChatForm.value.name, addChatForm.value.description, {})
+  const chatId = await api.addChat(
+    addChatForm.value.name,
+    addChatForm.value.description,
+    {},
+  )
   const participants = []
   for (const participant of addChatForm.value.participants) {
     const participantId = await api.addParticipant(
@@ -270,7 +274,10 @@ const editChatAddParticipant = () => {
   }
 }
 
-const deleteParticipant = async (participant: Participant, onDeleted: () => void) => {
+const deleteParticipant = async (
+  participant: Participant,
+  onDeleted: () => void,
+) => {
   modal.create({
     title: '删除参与者',
     content: `确定删除参与者 ${participant.name} ?`,
@@ -329,16 +336,8 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <n-layout
-    :has-sider="showSider"
-    class="full bfc"
-  >
-    <n-layout-sider
-      v-if="showSider"
-      width="200"
-      theme="dark"
-      class="bfc"
-    >
+  <n-layout :has-sider="showSider" class="full bfc">
+    <n-layout-sider v-if="showSider" width="200" theme="dark" class="bfc">
       <div class="sider bfc">
         <div
           style="
@@ -364,10 +363,7 @@ onMounted(async () => {
             </template>
           </n-button>
         </div>
-        <n-scrollbar
-          style="height: 100%"
-          content-style="margin: 0 4px"
-        >
+        <n-scrollbar style="height: 100%" content-style="margin: 0 4px">
           <n-list :show-divider="false">
             <n-list-item
               v-for="(chat, index) in chats"
@@ -436,28 +432,15 @@ onMounted(async () => {
             <IosMenu />
           </n-icon>
         </n-button>
-        <n-dropdown
-          :options="dropdownOptions"
-          @select="onDropdownSelect"
-        >
-          <n-icon
-            size="2.5em"
-            style="padding-right: 0.5em"
-          >
+        <n-dropdown :options="dropdownOptions" @select="onDropdownSelect">
+          <n-icon size="2.5em" style="padding-right: 0.5em">
             <MdContact />
           </n-icon>
         </n-dropdown>
       </n-layout-header>
-      <n-layout-content
-        class="bfc"
-        style="height: calc(100% - 3.5em)"
-      >
+      <n-layout-content class="bfc" style="height: calc(100% - 3.5em)">
         <Suspense>
-          <ChatBox
-            v-if="currentChat"
-            :key="chatBoxKey"
-            :chat="currentChat"
-          />
+          <ChatBox v-if="currentChat" :key="chatBoxKey" :chat="currentChat" />
           <template #fallback>
             <div
               style="
@@ -514,15 +497,8 @@ onMounted(async () => {
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="addChatForm.visible = false">
-          取消
-        </n-button>
-        <n-button
-          type="primary"
-          @click="addChat"
-        >
-          保存
-        </n-button>
+        <n-button @click="addChatForm.visible = false"> 取消 </n-button>
+        <n-button type="primary" @click="addChat"> 保存 </n-button>
       </n-space>
     </template>
   </n-modal>
@@ -590,13 +566,8 @@ onMounted(async () => {
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="addParticipantForm.visible = false">
-          取消
-        </n-button>
-        <n-button
-          type="primary"
-          @click="addParticipantForm.onConfirm"
-        >
+        <n-button @click="addParticipantForm.visible = false"> 取消 </n-button>
+        <n-button type="primary" @click="addParticipantForm.onConfirm">
           保存
         </n-button>
       </n-space>
@@ -674,9 +645,12 @@ onMounted(async () => {
           :value="editParticipantForm.participant!.name"
           @confirm="
             async (name) => {
-              await api.updateParticipant(editParticipantForm.participant!.id!, {
-                name: editParticipantForm.participant!.name!,
-              })
+              await api.updateParticipant(
+                editParticipantForm.participant!.id!,
+                {
+                  name: editParticipantForm.participant!.name!,
+                },
+              )
               editParticipantForm.participant!.name = name
             }
           "
@@ -689,9 +663,12 @@ onMounted(async () => {
           :value="editParticipantForm.participant!.model!.name"
           @confirm="
             async (model) => {
-              await api.updateParticipant(editParticipantForm.participant!.id!, {
-                modelId: model.id!,
-              })
+              await api.updateParticipant(
+                editParticipantForm.participant!.id!,
+                {
+                  modelId: model.id!,
+                },
+              )
               editParticipantForm.participant!.model = model
             }
           "
@@ -709,14 +686,19 @@ onMounted(async () => {
               }
             })
           "
-          :value="editParticipantForm.participant!.presets!.map((p: Preset) => p.id!)"
+          :value="
+            editParticipantForm.participant!.presets!.map((p: Preset) => p.id!)
+          "
           @confirm="
             async (_presets) => {
-              await api.updateParticipant(editParticipantForm.participant!.id!, {
-                presetIds: _presets,
-              })
-              editParticipantForm.participant!.presets = presets.filter((p: Preset) =>
-                _presets.includes(p.id!),
+              await api.updateParticipant(
+                editParticipantForm.participant!.id!,
+                {
+                  presetIds: _presets,
+                },
+              )
+              editParticipantForm.participant!.presets = presets.filter(
+                (p: Preset) => _presets.includes(p.id!),
               )
             }
           "
@@ -736,9 +718,12 @@ onMounted(async () => {
           "
           @confirm="
             async (character) => {
-              await api.updateParticipant(editParticipantForm.participant!.id!, {
-                characterId: character.id!,
-              })
+              await api.updateParticipant(
+                editParticipantForm.participant!.id!,
+                {
+                  characterId: character.id!,
+                },
+              )
               editParticipantForm.participant!.character = character
             }
           "
@@ -758,9 +743,12 @@ onMounted(async () => {
           "
           @confirm="
             async (template) => {
-              await api.updateParticipant(editParticipantForm.participant!.id!, {
-                templateId: template.id!,
-              })
+              await api.updateParticipant(
+                editParticipantForm.participant!.id!,
+                {
+                  templateId: template.id!,
+                },
+              )
               editParticipantForm.participant!.template = template
             }
           "

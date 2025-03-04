@@ -4,8 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
 
 
-var directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LLMRolePlay");
-Directory.CreateDirectory(directory);
+var directory = Directory.GetCurrentDirectory();
 string dbPath = Path.Combine(directory, "LLMRolePlay.db");
 string connectionString = $"Data Source={dbPath}";
 

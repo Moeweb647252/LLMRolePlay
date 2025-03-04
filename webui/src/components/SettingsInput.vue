@@ -1,16 +1,19 @@
 <script setup lang="ts">
 import { MdCreate } from '@vicons/ionicons4'
 import { ref } from 'vue'
+import { NInputGroup, NSelect, NInput, NButton, NSpace, NIcon } from 'naive-ui'
 
-let editingValue = ref(null as any | null)
+type Value = string | string[]
+
+let editingValue = ref(null as Value | null)
 let editing = ref(false)
 const props = defineProps<{
-  value?: any
+  value: Value | null
   type?: 'text' | 'select' | 'textarea'
   multiple?: boolean
   options?: {
     label: string
-    value: any
+    value: number | string
   }[]
 }>()
 const emit = defineEmits(['confirm'])
@@ -36,7 +39,7 @@ const cancel = () => {
     <n-input-group>
       <n-input
         v-if="props.type == 'text' || props.type == null"
-        v-model:value="editingValue"
+        v-model:value="editingValue as string"
       />
       <n-select
         v-if="props.type == 'select'"
@@ -47,25 +50,18 @@ const cancel = () => {
       />
       <n-input
         v-if="props.type == 'textarea'"
-        v-model:value="editingValue"
+        v-model:value="editingValue as string"
         type="textarea"
       />
-      <n-button @click="confirm">
-        确定
-      </n-button>
-      <n-button @click="cancel">
-        取消
-      </n-button>
+      <n-button @click="confirm"> 确定 </n-button>
+      <n-button @click="cancel"> 取消 </n-button>
     </n-input-group>
   </div>
   <div v-else>
-    <n-space
-      :wrap="false"
-      align="center"
-    >
+    <n-space :wrap="false" align="center">
       <div v-if="props.multiple">
         {{
-          value
+          (value as string[])
             ?.map((v: any) => options?.find((o) => o.value == v)?.label)
             .join()
         }}
@@ -73,11 +69,7 @@ const cancel = () => {
       <div v-else>
         {{ options?.find((o) => o.value == value)?.label || value }}
       </div>
-      <n-button
-        quaternary
-        circle
-        @click="startEditing"
-      >
+      <n-button quaternary circle @click="startEditing">
         <template #icon>
           <n-icon>
             <MdCreate />
