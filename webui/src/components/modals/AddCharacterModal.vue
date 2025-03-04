@@ -1,7 +1,17 @@
 <script setup lang="ts">
 import { useMessage } from 'naive-ui'
 import { ref } from 'vue'
-import { NModal } from 'naive-ui'
+import {
+  NModal,
+  NForm,
+  NFormItem,
+  NInput,
+  NUpload,
+  NSwitch,
+  NDynamicInput,
+  NSpace,
+  NButton,
+} from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
 
 const show = defineModel<boolean>('show', {
@@ -104,15 +114,8 @@ const uploadAvatar = async () => {
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="cancel">
-          取消
-        </n-button>
-        <n-button
-          type="primary"
-          @click="confirm"
-        >
-          保存
-        </n-button>
+        <n-button @click="cancel"> 取消 </n-button>
+        <n-button type="primary" @click="confirm"> 保存 </n-button>
       </n-space>
     </template>
   </n-modal>
