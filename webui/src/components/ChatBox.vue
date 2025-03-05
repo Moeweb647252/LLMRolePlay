@@ -42,9 +42,12 @@ const generateMessage = async () => {
     createdAt: new Date().toISOString(),
   })
   messages.push(msg)
-  let id = await generate(props.chat.participants[participantIndex.value].id!, (delta) => {
-    msg.content += delta
-  })
+  let id = await generate(
+    props.chat.participants[participantIndex.value].id!,
+    (delta) => {
+      msg.content += delta
+    },
+  )
   msg.id = id
   generating.value = false
   participantIndex.value++
@@ -52,7 +55,8 @@ const generateMessage = async () => {
     participantIndex.value = 0
   }
   let settings = JSON.parse(JSON.stringify(props.chat.settings))
-  settings.currentParticipantId = props.chat.participants[participantIndex.value].id!
+  settings.currentParticipantId =
+    props.chat.participants[participantIndex.value].id!
   await api.updateChat(props.chat.id!, {
     settings: settings,
   })
@@ -61,6 +65,10 @@ const generateMessage = async () => {
 const deleteMessage = async (message: Message) => {
   await api.deleteMessage(message.id!)
   messages.splice(messages.indexOf(message), 1)
+  participantIndex.value -= 1
+  if (participantIndex.value < 0) {
+    participantIndex.value = 0
+  }
 }
 
 onMounted(async () => {
@@ -113,7 +121,8 @@ onMounted(async () => {
               :reloadable="index == messages.length - 1"
               :name="
                 i.participantId
-                  ? chat.participants.find((c) => c.id === i.participantId)?.name
+                  ? chat.participants.find((c) => c.id === i.participantId)
+                      ?.name
                   : '你'
               "
               @delete="deleteMessage(i)"
@@ -121,11 +130,7 @@ onMounted(async () => {
           </n-scrollbar>
         </div>
         <div class="input">
-          <n-grid
-            style="width: 100%"
-            x-gap="12"
-            :cols="2"
-          >
+          <n-grid style="width: 100%" x-gap="12" :cols="2">
             <n-gi>
               <n-input
                 v-model:value="input"
