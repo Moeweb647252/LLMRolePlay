@@ -14,7 +14,8 @@ import {
 import { MdAdd } from '@vicons/ionicons4'
 import { h, ref } from 'vue'
 import AddParticipantModal from './AddParticipantModal.vue'
-import type { AddParticipantForm, AddChatForm, Options } from '@/types/modals'
+import type { AddParticipantForm, AddChatForm, Options } from '@/types/modal'
+import { api } from '@/api'
 
 defineProps<{
   models: Options
@@ -61,6 +62,11 @@ const startAddParticipant = () => {
 
 const confirm = () => {
   if (!validate()) return
+  api.addChat(
+    form.value.name,
+    form.value.description,
+    form.value.participants.map((p) => p.id),
+  )
   emit('confirm', form.value)
 }
 

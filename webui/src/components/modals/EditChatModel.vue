@@ -6,15 +6,93 @@ import {
   NButton,
   NDynamicTags,
   NIcon,
+  NTag,
+  useModal,
+  useMessage,
 } from 'naive-ui'
+import { MdAdd } from '@vicons/ionicons4'
 import SettingsInput from '../SettingsInput.vue'
-import { ref } from 'vue'
+import { ref, h } from 'vue'
+import type { EditChatForm, EditParticipantForm, Options } from '@/types/modal'
+import { api } from '@/api'
+import EditParticipantModal from './EditParticipantModal.vue'
+import AddParticipantModal from './AddParticipantModal.vue'
+
+const modal = useModal()
+const message = useMessage()
+
+defineProps<{
+  models: Options
+  presets: Options
+  characters: Options
+  templates: Options
+}>()
+
+const renderParticipantTags = (participant: EditParticipantForm) => {
+  return h(
+    NTag,
+    {
+      closable: true,
+      onClose: () => {
+        modal.create({
+          title: '删除参与者',
+          content: `确定删除参与者 ${participant.name} ?`,
+          preset: 'dialog',
+          positiveText: '确定',
+          negativeText: '取消',
+          onPositiveClick: async () => {
+            try {
+              await api.deleteParticipant(participant.id!)
+              form.value!.participants.splice(
+                form.value!.participants.indexOf(participant),
+                1,
+              )
+              message.success('删除成功')
+            } catch (e) {
+              console.log(e)
+              message.error('删除失败')
+            }
+          },
+        })
+      },
+      onClick: () => {
+        startEditParticipant(participant)
+      },
+    },
+    {
+      default: () => participant.name,
+    },
+  )
+}
+
+const editingParticipant = ref(null as EditParticipantForm | null)
+
+const startEditParticipant = (participant: EditParticipantForm) => {
+  editingParticipant.value = participant
+  showEditParticipantModal.value = true
+}
+
+const startAddParticipant = () => {
+  showAddParticipantModal.value = true
+}
 
 const show = defineModel<boolean>('show', {
   default: false,
 })
+const onEditParticipantConfirm = () => {
+  form.value!.participants[
+    form.value!.participants.indexOf(editingParticipant.value!)
+  ] = editingParticipant.value!
+}
+const onAddParticipantConfirm = (participant: EditParticipantForm) => {
+  form.value!.participants.push(participant)
+}
+const showEditParticipantModal = ref(false)
+const showAddParticipantModal = ref(false)
 
-const form = ref(null)
+const form = ref(null as EditChatForm | null)
+
+const emit = defineEmits(['confirm'])
 </script>
 
 <template>
@@ -25,45 +103,47 @@ const form = ref(null)
     style="width: fit-content; min-width: 25em"
     size="medium"
   >
-    <n-form label-placement="left">
+    <n-form v-if="form" label-placement="left">
       <n-form-item label="名称">
         <SettingsInput
-          :value="form.chat!.name!"
+          :value="form.name"
           @confirm="
             async (name) => {
-              await api.updateChat(form.chat!.id!, {
+              await api.updateChat(form!.id, {
                 name: name,
               })
-              form.chat!.name = name
+              form!.name = name
+              emit('confirm', form)
             }
           "
         />
       </n-form-item>
       <n-form-item label="描述">
         <SettingsInput
-          :value="form.chat!.description!"
+          :value="form!.description"
           @confirm="
             async (description) => {
-              console.log(description)
-              await api.updateChat(form.chat!.id!, {
-                description: description,
-              })
-              form.chat!.description = description
+              if (description) {
+                await api.updateChat(form!.id!, {
+                  description: description,
+                })
+                form!.description = description
+              }
             }
           "
         />
       </n-form-item>
       <n-form-item label="参与者">
         <n-dynamic-tags
-          v-model:value="form.chat!.participants!"
-          :render-tag="renderEditChatParticipant"
+          v-model:value="form!.participants as any[]"
+          :render-tag="renderParticipantTags as any"
         >
           <template #trigger>
             <n-button
               size="small"
               type="primary"
               dashed
-              @click="editChatAddParticipant"
+              @click="startAddParticipant"
             >
               <template #icon>
                 <n-icon>
@@ -77,4 +157,24 @@ const form = ref(null)
       </n-form-item>
     </n-form>
   </n-modal>
+  <AddParticipantModal
+    :characters="characters"
+    :models="models"
+    :presets="presets"
+    :templates="templates"
+    @confirm="onAddParticipantConfirm"
+  />
+  <EditParticipantModal
+    :characters="characters"
+    :models="models"
+    :presets="presets"
+    :templates="templates"
+    :participant="editingParticipant"
+    @confirm="
+      (value) => {
+        editingParticipant = value
+        onEditParticipantConfirm()
+      }
+    "
+  />
 </template>

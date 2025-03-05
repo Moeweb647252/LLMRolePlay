@@ -10,7 +10,7 @@ import {
   NSpace,
   NButton,
 } from 'naive-ui'
-import type { AddParticipantForm, Options } from '@/types/modals'
+import type { AddParticipantForm, Options } from '@/types/modal'
 
 defineProps<{
   models: Options

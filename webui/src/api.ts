@@ -23,7 +23,11 @@ export class Api {
   store: ReturnType<typeof useSettingsStore> | null = null
   constructor() {}
 
-  async request(path: string, body: object, method: string = 'POST'): Promise<any> {
+  async request(
+    path: string,
+    body: object,
+    method: string = 'POST',
+  ): Promise<any> {
     const router = useRouter()
     const token = this.store!.user?.token
     if (!token && path !== 'login') {
@@ -126,7 +130,8 @@ export class Api {
       characterId: id,
       name: options.name ?? null,
       description: options.description ?? null,
-      settings: options.settings != null ? JSON.stringify(options.settings) : null,
+      settings:
+        options.settings != null ? JSON.stringify(options.settings) : null,
       content: options.content != null ? JSON.stringify(options.content) : null,
       isPublic: options.isPublic ?? null,
     })
@@ -203,7 +208,8 @@ export class Api {
       name: options.name ?? null,
       description: options.description ?? null,
       content: options.content != null ? JSON.stringify(options.content) : null,
-      settings: options.settings != null ? JSON.stringify(options.settings) : null,
+      settings:
+        options.settings != null ? JSON.stringify(options.settings) : null,
       isPublic: options.isPublic ?? null,
     })
   }
@@ -297,7 +303,8 @@ export class Api {
       apiKey: options.apiKey ?? null,
       description: options.description ?? null,
       type: options.type ?? null,
-      settings: options.settings != null ? JSON.stringify(options.settings) : null,
+      settings:
+        options.settings != null ? JSON.stringify(options.settings) : null,
     })
   }
 
@@ -340,7 +347,8 @@ export class Api {
       name: options.name ?? null,
       modelName: options.modelName ?? null,
       description: options.description ?? null,
-      settings: options.settings != null ? JSON.stringify(options.settings) : null,
+      settings:
+        options.settings != null ? JSON.stringify(options.settings) : null,
       isPublic: options.isPublic ?? null,
     })
   }
@@ -367,7 +375,13 @@ export class Api {
       users: any[]
     } = await this.request('getUsers', {})
     return data.users.map((user) => {
-      return new User(user.id, user.username, user.email, user.token, user.group.toString())
+      return new User(
+        user.id,
+        user.username,
+        user.email,
+        user.token,
+        user.group.toString(),
+      )
     })
   }
 
@@ -393,7 +407,12 @@ export class Api {
     })
   }
 
-  async addUser(username: string, email: string, password: string, group: string): Promise<number> {
+  async addUser(
+    username: string,
+    email: string,
+    password: string,
+    group: string,
+  ): Promise<number> {
     const data = await this.request('createUser', {
       username: username,
       email: email,
@@ -408,7 +427,12 @@ export class Api {
       chats: any[]
     } = await this.request('getChats', {})
     return data.chats.map((chat) => {
-      return new Chat(chat.id, chat.name, chat.participants, JSON.parse(chat.settings))
+      return new Chat(
+        chat.id,
+        chat.name,
+        chat.participants,
+        JSON.parse(chat.settings),
+      )
     })
   }
 
@@ -481,7 +505,8 @@ export class Api {
       chatId: id,
       name: options.name ?? null,
       description: options.description ?? null,
-      settings: options.settings != null ? JSON.stringify(options.settings) : null,
+      settings:
+        options.settings != null ? JSON.stringify(options.settings) : null,
     })
   }
 
@@ -618,7 +643,8 @@ export class Api {
       name: options.name ?? null,
       modelId: options.modelId ?? null,
       avatar: options.avatar ?? null,
-      settings: options.settings != null ? JSON.stringify(options.settings) : null,
+      settings:
+        options.settings != null ? JSON.stringify(options.settings) : null,
     })
   }
 
@@ -627,7 +653,11 @@ export class Api {
     return resp.id
   }
 
-  async addChat(name: string, description: string, settings: any): Promise<number> {
+  async addChat(
+    name: string,
+    description: string | null,
+    settings: object,
+  ): Promise<number> {
     const data = await this.request('createChat', {
       name: name,
       description: description,
@@ -642,7 +672,11 @@ export class Api {
     })
   }
 
-  async addMessage(chatId: number, content: string, role: string): Promise<number> {
+  async addMessage(
+    chatId: number,
+    content: string,
+    role: string,
+  ): Promise<number> {
     const data = await this.request('createMessage', {
       chatId: chatId,
       content: content,
