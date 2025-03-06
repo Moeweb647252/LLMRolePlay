@@ -62,11 +62,7 @@ const startAddParticipant = () => {
 
 const confirm = () => {
   if (!validate()) return
-  api.addChat(
-    form.value.name,
-    form.value.description,
-    form.value.participants.map((p) => p.id),
-  )
+  api.addChat(form.value.name, form.value.description, form.value.participants)
   emit('confirm', form.value)
 }
 

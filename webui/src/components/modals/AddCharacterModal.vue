@@ -13,6 +13,8 @@ import {
   NButton,
 } from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
+import { api } from '@/api'
+import type { Form } from '@/types/modal/character'
 
 const show = defineModel<boolean>('show', {
   default: false,
@@ -21,43 +23,31 @@ const show = defineModel<boolean>('show', {
 const message = useMessage()
 
 const emit = defineEmits(['cancel', 'confirm'])
+const fileList = ref([] as UploadFileInfo[])
 
-const form = ref({
+const form = ref<Form>({
   name: '',
   description: '',
   content: [],
   isPublic: false,
-  avatarFileList: [] as UploadFileInfo[],
+  settings: {},
+  avatar: null,
 })
 
-const confirm = () => {
+const confirm = async () => {
   if (!validate()) return
-
-  const formData = {
-    name: form.value.name,
-    description: form.value.description,
-    content: form.value.content,
-    isPublic: form.value.isPublic,
-    avatarFileList: form.value.avatarFileList,
-  }
-
-  emit('confirm', formData)
-  resetForm()
+  api.addCharacter(
+    form.value.name,
+    form.value.description,
+    form.value.content,
+    {},
+    form.value.isPublic,
+  )
+  emit('confirm', form.value)
 }
 
 const cancel = () => {
-  resetForm()
   emit('cancel')
-}
-
-const resetForm = () => {
-  form.value = {
-    name: '',
-    description: '',
-    content: [],
-    isPublic: false,
-    avatarFileList: [],
-  }
 }
 
 const validate = () => {
@@ -87,11 +77,11 @@ const uploadAvatar = async () => {
       </n-form-item>
       <n-form-item label="头像">
         <n-upload
-          v-model:file-list="form.avatarFileList"
+          v-model:file-list="fileList"
           :multiple="false"
           list-type="image-card"
           :trigger-style="{
-            display: form.avatarFileList.length ? 'none' : 'block',
+            display: fileList.length ? 'none' : 'block',
           }"
           @before-upload="uploadAvatar()"
         />

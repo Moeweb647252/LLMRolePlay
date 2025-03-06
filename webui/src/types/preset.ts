@@ -3,7 +3,7 @@ export class Preset {
   name: string | null
   description: string | null
   content: { key: string; value: string }[]
-  settings: {}
+  settings: object
   isPublic: boolean
 
   constructor(
@@ -11,7 +11,7 @@ export class Preset {
     name: string | null = null,
     description: string | null = null,
     content: { key: string; value: string }[] = [],
-    settings: {},
+    settings: object,
     isPublic: boolean = false,
   ) {
     this.id = id
