@@ -14,7 +14,7 @@ import {
 } from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
 import { api } from '@/api'
-import type { Form } from '@/types/modal/character'
+import type { AddCharacterForm } from '@/types/modal/character'
 
 const show = defineModel<boolean>('show', {
   default: false,
@@ -25,7 +25,7 @@ const message = useMessage()
 const emit = defineEmits(['cancel', 'confirm'])
 const fileList = ref([] as UploadFileInfo[])
 
-const form = ref<Form>({
+const form = ref<AddCharacterForm>({
   name: '',
   description: '',
   content: [],

@@ -10,9 +10,9 @@ import {
   NDynamicInput,
   NSpace,
   NButton,
-  NTextarea,
 } from 'naive-ui'
 import { api } from '@/api'
+import type { AddPresetForm } from '@/types/modal/preset'
 
 const show = defineModel<boolean>('show', {
   default: false,
@@ -22,10 +22,11 @@ const message = useMessage()
 
 const emit = defineEmits(['cancel', 'confirm'])
 
-const form = ref({
+const form = ref<AddPresetForm>({
   name: '',
   description: '',
-  settings: [],
+  settings: {},
+  content: [],
   isPublic: false,
 })
 
@@ -34,14 +35,14 @@ const confirm = async () => {
 
   try {
     await api.addPreset(
-      form.value.name,
-      form.value.description,
+      form.value.name!,
+      form.value.description!,
+      form.value.content,
       form.value.settings,
       form.value.isPublic,
     )
     message.success('预设添加成功')
     emit('confirm', form.value)
-    resetForm()
   } catch (error) {
     message.error('添加预设失败')
     console.error(error)
@@ -49,17 +50,7 @@ const confirm = async () => {
 }
 
 const cancel = () => {
-  resetForm()
   emit('cancel')
-}
-
-const resetForm = () => {
-  form.value = {
-    name: '',
-    description: '',
-    settings: [],
-    isPublic: false,
-  }
 }
 
 const validate = () => {
@@ -84,8 +75,9 @@ const validate = () => {
         <n-input v-model:value="form.name" placeholder="输入预设名称" />
       </n-form-item>
       <n-form-item label="描述">
-        <n-textarea
+        <n-input
           v-model:value="form.description"
+          type="textarea"
           placeholder="输入预设描述"
         />
       </n-form-item>
@@ -94,7 +86,7 @@ const validate = () => {
       </n-form-item>
       <n-form-item label="设置">
         <n-dynamic-input
-          v-model:value="form.settings"
+          v-model:value="form.content"
           preset="pair"
           key-placeholder="参数名"
           value-placeholder="参数值"

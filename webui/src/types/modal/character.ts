@@ -1,4 +1,4 @@
-export type Form = {
+export type AddCharacterForm = {
   name: string
   description: string
   content: { key: string; value: string }[]
