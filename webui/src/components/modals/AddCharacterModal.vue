@@ -27,7 +27,7 @@ const fileList = ref([] as UploadFileInfo[])
 
 const form = ref<AddCharacterForm>({
   name: '',
-  description: '',
+  description: null,
   content: [],
   isPublic: false,
   settings: {},
@@ -42,6 +42,7 @@ const confirm = async () => {
     form.value.content,
     {},
     form.value.isPublic,
+    form.value.avatar,
   )
   emit('confirm', form.value)
 }

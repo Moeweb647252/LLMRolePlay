@@ -3,3 +3,7 @@ export type Options = SelectBaseOption[]
 
 export * from './participant'
 export * from './chat'
+export * from './preset'
+export * from './template'
+export * from './user'
+export * from './character'

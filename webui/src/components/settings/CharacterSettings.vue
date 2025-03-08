@@ -1,88 +1,15 @@
 <script setup lang="ts">
 import { api } from '@/api'
 import { Character } from '@/types/character'
-import { useMessage, useModal, type UploadFileInfo } from 'naive-ui'
+import { useMessage, useModal } from 'naive-ui'
 import { ref } from 'vue'
-import SettingsInput from '../SettingsInput.vue'
-import SettingsSwitch from '../SettingsSwitch.vue'
+import { NButton, NList, NListItem, NSpace } from 'naive-ui'
 const characters = ref(await api.getCharacters())
 const message = useMessage()
 const model = useModal()
-
-const addCharacterForm = ref({
-  visible: false,
-  name: '',
-  description: '',
-  settings: {},
-  content: [],
-  isPublic: false,
-  avatarFileList: [] as UploadFileInfo[],
-})
-
-const addCharacter = async () => {
-  let data: typeof addCharacterForm.value = JSON.parse(
-    JSON.stringify(addCharacterForm.value),
-  )
-  addCharacterForm.value = {
-    name: '',
-    description: '',
-    settings: {},
-    content: [],
-    visible: false,
-    isPublic: false,
-    avatarFileList: [],
-  }
-  let fileId = null
-  if (data.avatarFileList.length > 0) {
-    const buffer = await data.avatarFileList[0].file?.arrayBuffer()
-    if (buffer) {
-      fileId = await api.uploadFile(buffer)
-    }
-  }
-  let id = await api.addCharacter(
-    data.name,
-    data.description,
-    data.content,
-    {},
-    data.isPublic,
-  )
-  characters.value.push(
-    new Character(
-      id,
-      data.name,
-      data.content,
-      {},
-      data.description,
-      data.isPublic,
-      fileId,
-    ),
-  )
-  message.success('添加成功')
-}
-
-const cancelAddCharacter = () => {
-  addCharacterForm.value = {
-    name: '',
-    description: '',
-    settings: {},
-    content: [],
-    visible: false,
-    isPublic: false,
-    avatarFileList: [],
-  }
-}
-
-const editCharacterForm = ref({
-  visible: false,
-  character: null as Character | null,
-})
-
-const editCharacter = (character: Character) => {
-  editCharacterForm.value = {
-    visible: true,
-    character,
-  }
-}
+import AddCharacterModal from '../modals/AddCharacterModal.vue'
+import EditCharacterModal from '../modals/EditCharacterModal.vue'
+import type { EditCharacterForm } from '@/types/modal'
 
 const deleteCharacter = async (character: Character) => {
   model.create({
@@ -97,31 +24,54 @@ const deleteCharacter = async (character: Character) => {
         characters.value.splice(characters.value.indexOf(character), 1)
         message.success('删除成功')
       } catch (e) {
+        console.log(e)
         message.error('删除失败')
       }
     },
   })
 }
 
-const uploadAvatar = async () => {
-  return true
+const showAddModal = ref(false)
+const showEditModal = ref(false)
+const editingCharacter = ref<EditCharacterForm | null>(null)
+
+const add = () => {
+  showAddModal.value = true
 }
+
+const edit = (character: Character) => {
+  editingCharacter.value = {
+    id: character.id!,
+    name: character.name,
+    description: character.description,
+    content: character.content,
+    isPublic: character.isPublic,
+    settings: character.settings,
+    avatar: character.avatar,
+  }
+  showEditModal.value = true
+}
+
+const onAddConfirm = async () => {
+  showAddModal.value = false
+  characters.value = await api.getCharacters()
+}
+
+const onEditConfirm = async () => {}
 </script>
 <template>
   <div style="padding: 2em">
     <div class="header">
       <h3>角色</h3>
-      <n-button type="primary" @click="addCharacterForm.visible = true">
-        添加
-      </n-button>
+      <n-button type="primary" @click="add"> 添加 </n-button>
     </div>
     <div>
       <n-list>
-        <n-list-item v-for="character in characters" :key="character.id">
+        <n-list-item v-for="character in characters" :key="character.id!">
           {{ character.name }}
           <template #suffix>
             <n-space :wrap="false">
-              <n-button type="primary" @click="editCharacter(character)">
+              <n-button type="primary" @click="edit(character)">
                 编辑
               </n-button>
               <n-button type="error" @click="deleteCharacter(character)">
@@ -133,68 +83,15 @@ const uploadAvatar = async () => {
       </n-list>
     </div>
   </div>
-  <n-modal
-    v-model:show="editCharacterForm.visible"
-    title="编辑角色"
-    size="medium"
-    preset="card"
-    style="width: fit-content; min-width: 25em"
-  >
-    <n-form label-placement="left">
-      <n-form-item label="名称">
-        <SettingsInput
-          :value="editCharacterForm.character!.name"
-          @confirm="
-            async (name) => {
-              await api.updateCharacter(editCharacterForm.character!.id!, {
-                name: name,
-              })
-              editCharacterForm.character!.name = name
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="描述">
-        <SettingsInput
-          :value="editCharacterForm.character!.description"
-          @confirm="
-            async (description) => {
-              await api.updateCharacter(editCharacterForm.character!.id!, {
-                description: description,
-              })
-              editCharacterForm.character!.description = description
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="公开">
-        <SettingsSwitch
-          :value="editCharacterForm.character!.isPublic"
-          @confirm="
-            async (isPublic: boolean) => {
-              await api.updatePreset(editCharacterForm.character!.id!, {
-                isPublic: isPublic,
-              })
-              editCharacterForm.character!.isPublic = isPublic
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="设置">
-        <SettingsDynamicInput
-          :value="editCharacterForm.character!.content"
-          @confirm="
-            async (content: any) => {
-              await api.updateCharacter(editCharacterForm.character!.id!, {
-                content: content,
-              })
-              editCharacterForm.character!.content = content
-            }
-          "
-        />
-      </n-form-item>
-    </n-form>
-  </n-modal>
+  <AddCharacterModal
+    v-model:show="showAddModal"
+    @confirm="onAddConfirm"
+  ></AddCharacterModal>
+  <EditCharacterModal
+    v-model:show="showEditModal"
+    :character="editingCharacter!"
+    @confirm="onEditConfirm"
+  ></EditCharacterModal>
 </template>
 
 <style scoped>

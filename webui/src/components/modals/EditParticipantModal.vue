@@ -10,7 +10,7 @@ const props = defineProps<{
   presets: Options
   characters: Options
   templates: Options
-  participant: EditParticipantForm | null
+  participant: EditParticipantForm
 }>()
 
 const form = toRef(props, 'participant')

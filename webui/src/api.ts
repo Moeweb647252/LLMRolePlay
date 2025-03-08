@@ -78,10 +78,11 @@ export class Api {
 
   async addCharacter(
     name: string,
-    description: string,
+    description: string | null,
     content: { key: string; value: string }[],
     settings: object,
     isPublic: boolean = false,
+    avatar: number | null = null,
   ): Promise<number> {
     const data = await this.request('createCharacter', {
       name: name,
@@ -89,6 +90,7 @@ export class Api {
       content: JSON.stringify(content),
       settings: JSON.stringify(settings),
       isPublic: isPublic,
+      avatar: avatar,
     })
     return data.id
   }
@@ -124,6 +126,7 @@ export class Api {
       content?: { key: string; value: string }[]
       settings?: object
       isPublic?: boolean
+      avatar?: number
     } = {},
   ): Promise<void> {
     await this.request('updateCharacter', {
@@ -134,6 +137,7 @@ export class Api {
         options.settings != null ? JSON.stringify(options.settings) : null,
       content: options.content != null ? JSON.stringify(options.content) : null,
       isPublic: options.isPublic ?? null,
+      avatar: options.avatar ?? null,
     })
   }
 
@@ -158,7 +162,7 @@ export class Api {
     name: string,
     description: string,
     content: { key: string; value: string }[],
-    settings: object,
+    settings: object | null,
     isPublic: boolean = false,
   ): Promise<number> {
     const data = await this.request('createPreset', {

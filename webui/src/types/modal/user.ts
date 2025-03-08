@@ -4,3 +4,10 @@ export interface AddUserForm {
   email: string | null
   role: string
 }
+
+export interface EditUserForm {
+  id: number
+  username: string
+  email: string | null
+  role: string
+}

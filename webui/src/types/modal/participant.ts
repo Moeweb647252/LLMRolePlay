@@ -1,6 +1,6 @@
 export type AddParticipantForm = {
   name: string
-  settings: object
+  settings: object | null
   model: null | number
   presets: number[]
   character: null | number
@@ -10,7 +10,7 @@ export type AddParticipantForm = {
 export type EditParticipantForm = {
   id: number
   name: string
-  settings: object
+  settings: object | null
   model: null | number
   presets: number[]
   character: null | number

@@ -1,17 +1,17 @@
 export class Preset {
-  id: number | null
-  name: string | null
+  id: number
+  name: string
   description: string | null
   content: { key: string; value: string }[]
-  settings: object
+  settings: object | null
   isPublic: boolean
 
   constructor(
-    id: number | null = null,
-    name: string | null = null,
+    id: number,
+    name: string,
     description: string | null = null,
     content: { key: string; value: string }[] = [],
-    settings: object,
+    settings: object | null,
     isPublic: boolean = false,
   ) {
     this.id = id

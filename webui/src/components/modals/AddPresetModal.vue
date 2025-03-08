@@ -25,7 +25,7 @@ const emit = defineEmits(['cancel', 'confirm'])
 const form = ref<AddPresetForm>({
   name: '',
   description: '',
-  settings: {},
+  settings: null,
   content: [],
   isPublic: false,
 })

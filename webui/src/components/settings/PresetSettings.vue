@@ -3,68 +3,14 @@ import { api } from '@/api'
 import { Preset } from '@/types/preset'
 import { useMessage, useModal } from 'naive-ui'
 import { ref } from 'vue'
-import SettingsInput from '../SettingsInput.vue'
-import SettingsSwitch from '../SettingsSwitch.vue'
-import SettingsDynamicInput from '../SettingsDynamicInput.vue'
+import { NButton, NList, NListItem, NSpace } from 'naive-ui'
+import AddPresetModal from '../modals/AddPresetModal.vue'
+import EditPresetModal from '../modals/EditPresetModal.vue'
+import type { EditPresetForm } from '@/types/modal'
 
 const presets = ref(await api.getPresets())
 const message = useMessage()
 const model = useModal()
-
-const addPresetForm = ref({
-  visible: false,
-  name: '',
-  description: '',
-  content: [],
-  settings: {},
-  isPublic: false,
-})
-
-const addPreset = async () => {
-  let data = JSON.parse(JSON.stringify(addPresetForm.value))
-  addPresetForm.value = {
-    name: '',
-    description: '',
-    content: [],
-    settings: {},
-    visible: false,
-    isPublic: false,
-  }
-  let id = await api.addPreset(
-    data.name,
-    data.description,
-    data.content,
-    data.settings,
-    data.isPublic,
-  )
-  presets.value.push(
-    new Preset(id, data.name, data.description, data.content, data.settings, data.isPublic),
-  )
-  message.success('添加成功')
-}
-
-const cancelAddPreset = () => {
-  addPresetForm.value = {
-    name: '',
-    description: '',
-    content: [],
-    settings: {},
-    visible: false,
-    isPublic: false,
-  }
-}
-
-const editPresetForm = ref({
-  visible: false,
-  preset: null as Preset | null,
-})
-
-const editPreset = (preset: Preset) => {
-  editPresetForm.value = {
-    visible: true,
-    preset,
-  }
-}
 
 const deletePreset = async (preset: Preset) => {
   model.create({
@@ -79,48 +25,66 @@ const deletePreset = async (preset: Preset) => {
         presets.value.splice(presets.value.indexOf(preset), 1)
         message.success('删除成功')
       } catch (e) {
+        console.log(e)
         message.error('删除失败')
       }
     },
   })
 }
+
+const showAddModal = ref(false)
+const showEditModal = ref(false)
+const editingPreset = ref<EditPresetForm | null>(null)
+
+const add = () => {
+  showAddModal.value = true
+}
+
+const edit = (preset: Preset) => {
+  editingPreset.value = {
+    id: preset.id!,
+    name: preset.name,
+    description: preset.description,
+    content: preset.content,
+    isPublic: preset.isPublic,
+    settings: preset.settings,
+  }
+  showEditModal.value = true
+}
+
+const sharePreset = (preset: Preset) => {
+  // 实现分享预设的功能
+  message.info(`分享预设: ${preset.name}`)
+}
+
+const onAddConfirm = async () => {
+  showAddModal.value = false
+  presets.value = await api.getPresets()
+}
+
+const onEditConfirm = async () => {
+  showEditModal.value = false
+  presets.value = await api.getPresets()
+}
 </script>
+
 <template>
   <div style="padding: 2em">
     <div class="header">
       <h3>预设</h3>
-      <n-button
-        type="primary"
-        @click="addPresetForm.visible = true"
-      >
-        添加
-      </n-button>
+      <n-button type="primary" @click="add"> 添加 </n-button>
     </div>
     <div>
       <n-list>
-        <n-list-item
-          v-for="preset in presets"
-          :key="preset.id"
-        >
+        <n-list-item v-for="preset in presets" :key="preset.id!">
           {{ preset.name }}
           <template #suffix>
             <n-space :wrap="false">
-              <n-button
-                type="primary"
-                @click=""
-              >
+              <n-button type="primary" @click="sharePreset(preset)">
                 分享
               </n-button>
-              <n-button
-                type="primary"
-                @click="editPreset(preset)"
-              >
-                编辑
-              </n-button>
-              <n-button
-                type="error"
-                @click="deletePreset(preset)"
-              >
+              <n-button type="primary" @click="edit(preset)"> 编辑 </n-button>
+              <n-button type="error" @click="deletePreset(preset)">
                 删除
               </n-button>
             </n-space>
@@ -129,108 +93,17 @@ const deletePreset = async (preset: Preset) => {
       </n-list>
     </div>
   </div>
-  <n-modal
-    v-model:show="addPresetForm.visible"
-    title="添加预设"
-    size="medium"
-    preset="card"
-    style="width: fit-content; min-width: 25em"
-  >
-    <n-form label-placement="left">
-      <n-form-item label="名称">
-        <n-input v-model:value="addPresetForm.name" />
-      </n-form-item>
-      <n-form-item label="描述">
-        <n-input v-model:value="addPresetForm.description" />
-      </n-form-item>
-      <n-form-item label="公开">
-        <n-switch v-model:value="addPresetForm.isPublic" />
-      </n-form-item>
-      <n-form-item label="设置">
-        <n-dynamic-input
-          v-model:value="addPresetForm.content"
-          preset="pair"
-          key-placeholder="设置名"
-          value-placeholder="值"
-        />
-      </n-form-item>
-    </n-form>
-    <template #footer>
-      <n-space justify="end">
-        <n-button @click="cancelAddPreset">
-          取消
-        </n-button>
-        <n-button
-          type="primary"
-          @click="addPreset"
-        >
-          保存
-        </n-button>
-      </n-space>
-    </template>
-  </n-modal>
-  <n-modal
-    v-model:show="editPresetForm.visible"
-    title="编辑预设"
-    size="medium"
-    preset="card"
-    style="width: fit-content; min-width: 25em"
-  >
-    <n-form label-placement="left">
-      <n-form-item label="名称">
-        <SettingsInput
-          :value="editPresetForm.preset!.name"
-          @confirm="
-            async (name) => {
-              await api.updatePreset(editPresetForm.preset!.id!, {
-                name: name,
-              })
-              editPresetForm.preset!.name = name
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="描述">
-        <SettingsInput
-          :value="editPresetForm.preset!.description"
-          @confirm="
-            async (description) => {
-              await api.updatePreset(editPresetForm.preset!.id!, {
-                description: description,
-              })
-              editPresetForm.preset!.description = description
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="公开">
-        <SettingsSwitch
-          :value="editPresetForm.preset!.isPublic"
-          @confirm="
-            async (isPublic) => {
-              await api.updatePreset(editPresetForm.preset!.id!, {
-                isPublic: isPublic,
-              })
-              editPresetForm.preset!.isPublic = isPublic
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="设置">
-        <SettingsDynamicInput
-          :value="editPresetForm.preset!.content"
-          @confirm="
-            async (content: any) => {
-              await api.updatePreset(editPresetForm.preset!.id!, {
-                content: content,
-              })
-              editPresetForm.preset!.content = content
-            }
-          "
-        />
-      </n-form-item>
-    </n-form>
-  </n-modal>
+
+  <AddPresetModal
+    v-model:show="showAddModal"
+    @confirm="onAddConfirm"
+  ></AddPresetModal>
+
+  <EditPresetModal
+    v-model:show="showEditModal"
+    :preset="editingPreset!"
+    @confirm="onEditConfirm"
+  ></EditPresetModal>
 </template>
 
 <style scoped>

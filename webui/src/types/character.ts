@@ -1,17 +1,17 @@
 export class Character {
-  id: number | null
-  name: string | null
+  id: number
+  name: string
   content: { key: string; value: string }[]
-  settings: Record<string, any>
+  settings: object | null
   description: string | null
   isPublic: boolean
   avatar: number | null
 
   constructor(
-    id: number | null = null,
-    name: string | null = null,
+    id: number,
+    name: string,
     content: { key: string; value: string }[] = [],
-    settings: Record<string, any> = {},
+    settings: object | null = null,
     description: string | null = null,
     isPublic: boolean = false,
     avatar: number | null = null,
