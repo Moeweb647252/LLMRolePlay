@@ -1,28 +1,26 @@
 export class Model {
-  id: number | null
-  name: string | null
-  modelName: string | null
+  id: number
+  name: string
+  modelName: string
   description: string | null
   isPublic: boolean
   settings: {
     temperature: number | null
     top_p: number | null
     max_tokens: number | null
-    [key: string]: any | null
   }
   provider: Provider | null
 
   constructor(
-    id: number | null = null,
-    name: string | null = null,
-    modelName: string | null = null,
+    id: number,
+    name: string,
+    modelName: string,
     description: string | null = null,
     isPublic: boolean = false,
     settings: {
       temperature: number | null
       top_p: number | null
       max_tokens: number | null
-      [key: string]: any | null
     } = {
       temperature: null,
       top_p: null,
@@ -41,28 +39,28 @@ export class Model {
 }
 
 export class Provider {
-  id: number | null
-  name: string | null
-  url: string | null
-  apiKey: string | null
+  id: number
+  name: string
+  baseUrl: string
+  apiKey: string
   description: string | null
-  settings: { key: string; value: string }[]
-  type: 'openai' | 'google' | 'azure' | null
+  settings: object | null
+  type: 'openai' | 'google' | 'azure'
   models: Model[]
 
   constructor(
-    id: number | null = null,
-    name: string | null = null,
-    url: string | null = null,
-    apiKey: string | null = null,
+    id: number,
+    name: string,
+    baseUrl: string,
+    apiKey: string,
     description: string | null = null,
-    settings: { key: string; value: string }[] = [],
-    type: 'openai' | 'google' | 'azure' | null = null,
+    settings: object | null = null,
+    type: 'openai' | 'google' | 'azure',
     models: Model[] = [],
   ) {
     this.id = id
     this.name = name
-    this.url = url
+    this.baseUrl = baseUrl
     this.apiKey = apiKey
     this.description = description
     this.settings = settings

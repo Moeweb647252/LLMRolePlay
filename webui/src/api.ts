@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { sha256 } from 'js-sha256'
 import { useSettingsStore } from './stores/settings'
 import axios from 'axios'
-import { useRouter } from 'vue-router'
 import { Preset } from './types/preset'
 import { Character } from './types/character'
 import { Model } from './types/provider'
@@ -28,7 +28,6 @@ export class Api {
     body: object,
     method: string = 'POST',
   ): Promise<any> {
-    const router = useRouter()
     const token = this.store!.user?.token
     if (!token && path !== 'login') {
       throw new NoTokenError()
@@ -720,8 +719,7 @@ export const generate = async (
   const source = new EventSourcePolyfill(`/api/completion/${participantId}`, {
     headers: headers,
   })
-  let id
-  source.onerror = (event) => {
+  source.onerror = () => {
     source.close()
   }
   return await new Promise((resolve) => {

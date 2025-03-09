@@ -1,5 +1,5 @@
 export interface AddTemplateForm {
-  name: string
+  name: string | null
   description: string | null
   content: string | null
   settings: object | null

@@ -26,7 +26,7 @@ const emit = defineEmits(['cancel', 'confirm'])
 const fileList = ref([] as UploadFileInfo[])
 
 const form = ref<AddCharacterForm>({
-  name: '',
+  name: null,
   description: null,
   content: [],
   isPublic: false,
@@ -37,7 +37,7 @@ const form = ref<AddCharacterForm>({
 const confirm = async () => {
   if (!validate()) return
   api.addCharacter(
-    form.value.name,
+    form.value.name!,
     form.value.description,
     form.value.content,
     {},

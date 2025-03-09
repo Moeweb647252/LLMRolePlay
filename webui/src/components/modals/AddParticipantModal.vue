@@ -28,7 +28,7 @@ const message = useMessage()
 const emit = defineEmits(['cancel', 'confirm'])
 
 const form = ref<AddParticipantForm>({
-  name: '',
+  name: null,
   settings: {},
   model: null,
   presets: [],

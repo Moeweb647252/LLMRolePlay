@@ -1,5 +1,5 @@
 export type AddParticipantForm = {
-  name: string
+  name: string | null
   settings: object | null
   model: null | number
   presets: number[]

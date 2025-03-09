@@ -1,5 +1,5 @@
 export type AddCharacterForm = {
-  name: string
+  name: string | null
   description: string | null
   content: { key: string; value: string }[]
   settings: object | null

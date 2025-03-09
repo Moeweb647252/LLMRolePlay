@@ -46,7 +46,7 @@ const renderParticipantTags = (
 }
 
 const form = ref<AddChatForm>({
-  name: '',
+  name: null,
   description: null,
   settings: {},
   participants: [],
@@ -62,7 +62,7 @@ const startAddParticipant = () => {
 
 const confirm = () => {
   if (!validate()) return
-  api.addChat(form.value.name, form.value.description, form.value.participants)
+  api.addChat(form.value.name!, form.value.description, form.value.participants)
   emit('confirm', form.value)
 }
 

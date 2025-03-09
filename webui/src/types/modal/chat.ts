@@ -1,7 +1,7 @@
 import type { AddParticipantForm, EditParticipantForm } from './participant'
 
 export type AddChatForm = {
-  name: string
+  name: string | null
   description: string | null
   settings: object | null
   participants: AddParticipantForm[]

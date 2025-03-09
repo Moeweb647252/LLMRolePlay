@@ -23,8 +23,8 @@ const message = useMessage()
 const emit = defineEmits(['cancel', 'confirm'])
 
 const form = ref<AddPresetForm>({
-  name: '',
-  description: '',
+  name: null,
+  description: null,
   settings: null,
   content: [],
   isPublic: false,

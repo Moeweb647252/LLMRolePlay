@@ -9,7 +9,7 @@ const message = useMessage()
 const model = useModal()
 import AddCharacterModal from '../modals/AddCharacterModal.vue'
 import EditCharacterModal from '../modals/EditCharacterModal.vue'
-import type { EditCharacterForm } from '@/types/modal'
+import type { EditCharacterForm } from '@/types/modal/index'
 
 const deleteCharacter = async (character: Character) => {
   model.create({
@@ -32,14 +32,18 @@ const deleteCharacter = async (character: Character) => {
 }
 
 const showAddModal = ref(false)
+const addModalKey = ref(0)
 const showEditModal = ref(false)
+const editModalKey = ref(0)
 const editingCharacter = ref<EditCharacterForm | null>(null)
 
 const add = () => {
+  addModalKey.value++
   showAddModal.value = true
 }
 
 const edit = (character: Character) => {
+  editModalKey.value++
   editingCharacter.value = {
     id: character.id!,
     name: character.name,
