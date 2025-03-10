@@ -19,6 +19,5 @@ export default tseslint.config(
       'vue/component-options-name-casing': ['error', 'PascalCase'],
       'vue/no-undef-components': 'error',
     },
-  }
+  },
 )
-

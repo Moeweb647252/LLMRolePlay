@@ -235,15 +235,15 @@ export class Api {
 
   async addProvider(
     name: string,
-    url: string,
+    description: string | null,
+    type: string,
+    baseUrl: string,
     apiKey: string,
-    description: string,
-    settings: object,
-    type: 'openai' | 'google' | 'azure',
+    settings: object | null,
   ): Promise<number> {
     const resp = await this.request('createProvider', {
       name: name,
-      baseUrl: url,
+      baseUrl: baseUrl,
       apiKey: apiKey,
       description: description,
       settings: JSON.stringify(settings),
@@ -314,7 +314,7 @@ export class Api {
   async addModel(
     name: string,
     modelName: string,
-    description: string,
+    description: string | null,
     providerId: number,
     settings: object,
   ): Promise<number> {
