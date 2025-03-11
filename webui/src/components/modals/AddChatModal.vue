@@ -79,50 +79,50 @@ const emit = defineEmits(['cancel', 'confirm'])
 </script>
 
 <template>
-  <n-modal
+  <NModal
     v-model:show="show"
     preset="card"
     title="添加聊天"
     size="medium"
     style="width: fit-content; min-width: 25em"
   >
-    <n-form label-placement="left">
-      <n-form-item label="名称">
-        <n-input v-model:value="form.name" />
-      </n-form-item>
-      <n-form-item label="描述">
-        <n-input v-model:value="form.description" />
-      </n-form-item>
-      <n-form-item label="参与者">
-        <n-dynamic-tags
+    <NForm label-placement="left">
+      <NFormItem label="名称">
+        <NInput v-model:value="form.name" />
+      </NFormItem>
+      <NFormItem label="描述">
+        <NInput v-model:value="form.description" />
+      </NFormItem>
+      <NFormItem label="参与者">
+        <NDynamicTags
           v-model:value="form.participants as any[]"
           :render-tag="renderParticipantTags as any"
         >
           <template #trigger>
-            <n-button
+            <NButton
               size="small"
               type="primary"
               dashed
               @click="startAddParticipant"
             >
               <template #icon>
-                <n-icon>
+                <NIcon>
                   <MdAdd />
-                </n-icon>
+                </NIcon>
               </template>
               添加参与者
-            </n-button>
+            </NButton>
           </template>
-        </n-dynamic-tags>
-      </n-form-item>
-    </n-form>
+        </NDynamicTags>
+      </NFormItem>
+    </NForm>
     <template #footer>
-      <n-space justify="end">
-        <n-button @click="emit('cancel')"> 取消 </n-button>
-        <n-button type="primary" @click="confirm"> 保存 </n-button>
-      </n-space>
+      <NSpace justify="end">
+        <NButton @click="emit('cancel')"> 取消 </NButton>
+        <NButton type="primary" @click="confirm"> 保存 </NButton>
+      </NSpace>
     </template>
-  </n-modal>
+  </NModal>
   <AddParticipantModal
     :models="models"
     :characters="characters"

@@ -27,7 +27,9 @@ const addTemplate = async () => {
     isPublic: false,
   }
   let id = await api.addTemplate(data.name, data.content, data.description)
-  templates.value.push(new Template(id, data.name, data.content, data.description, data.isPublic))
+  templates.value.push(
+    new Template(id, data.name, data.content, data.description, data.isPublic),
+  )
   message.success('添加成功')
 }
 
@@ -76,32 +78,20 @@ const deleteTemplate = async (template: Template) => {
   <div style="padding: 2em">
     <div class="header">
       <h3>模板</h3>
-      <n-button
-        type="primary"
-        @click="addTemplateForm.visible = true"
-      >
+      <n-button type="primary" @click="addTemplateForm.visible = true">
         添加
       </n-button>
     </div>
     <div>
       <n-list>
-        <n-list-item
-          v-for="template in templates"
-          :key="template.id"
-        >
+        <n-list-item v-for="template in templates" :key="template.id">
           {{ template.name }}
           <template #suffix>
             <n-space :wrap="false">
-              <n-button
-                type="primary"
-                @click="editTemplate(template)"
-              >
+              <n-button type="primary" @click="editTemplate(template)">
                 编辑
               </n-button>
-              <n-button
-                type="error"
-                @click="deleteTemplate(template)"
-              >
+              <n-button type="error" @click="deleteTemplate(template)">
                 删除
               </n-button>
             </n-space>
@@ -128,23 +118,13 @@ const deleteTemplate = async (template: Template) => {
         <n-switch v-model:value="addTemplateForm.isPublic" />
       </n-form-item>
       <n-form-item label="内容">
-        <n-input
-          v-model:value="addTemplateForm.content"
-          type="textarea"
-        />
+        <n-input v-model:value="addTemplateForm.content" type="textarea" />
       </n-form-item>
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="cancelAddTemplate">
-          取消
-        </n-button>
-        <n-button
-          type="primary"
-          @click="addTemplate"
-        >
-          保存
-        </n-button>
+        <n-button @click="cancelAddTemplate"> 取消 </n-button>
+        <n-button type="primary" @click="addTemplate"> 保存 </n-button>
       </n-space>
     </template>
   </n-modal>
@@ -177,7 +157,8 @@ const deleteTemplate = async (template: Template) => {
               await api.updateTemplate(editTemplateForm.template!.id!, {
                 description: editTemplateForm.template!.description!,
               })
-              editTemplateForm.template!.description = editTemplateForm.template!.description!
+              editTemplateForm.template!.description =
+                editTemplateForm.template!.description!
             }
           "
         />

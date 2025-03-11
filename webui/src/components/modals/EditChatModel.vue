@@ -96,15 +96,15 @@ const emit = defineEmits(['confirm'])
 </script>
 
 <template>
-  <n-modal
+  <NModal
     v-model:show="show"
     title="编辑聊天"
     preset="card"
     style="width: fit-content; min-width: 25em"
     size="medium"
   >
-    <n-form v-if="form" label-placement="left">
-      <n-form-item label="名称">
+    <NForm v-if="form" label-placement="left">
+      <NFormItem label="名称">
         <SettingsInput
           :value="form.name"
           @confirm="
@@ -117,8 +117,8 @@ const emit = defineEmits(['confirm'])
             }
           "
         />
-      </n-form-item>
-      <n-form-item label="描述">
+      </NFormItem>
+      <NFormItem label="描述">
         <SettingsInput
           :value="form!.description"
           @confirm="
@@ -132,31 +132,31 @@ const emit = defineEmits(['confirm'])
             }
           "
         />
-      </n-form-item>
-      <n-form-item label="参与者">
-        <n-dynamic-tags
+      </NFormItem>
+      <NFormItem label="参与者">
+        <NDynamicTags
           v-model:value="form!.participants as any[]"
           :render-tag="renderParticipantTags as any"
         >
           <template #trigger>
-            <n-button
+            <NButton
               size="small"
               type="primary"
               dashed
               @click="startAddParticipant"
             >
               <template #icon>
-                <n-icon>
+                <NIcon>
                   <MdAdd />
-                </n-icon>
+                </NIcon>
               </template>
               添加参与者
-            </n-button>
+            </NButton>
           </template>
-        </n-dynamic-tags>
-      </n-form-item>
-    </n-form>
-  </n-modal>
+        </NDynamicTags>
+      </NFormItem>
+    </NForm>
+  </NModal>
   <AddParticipantModal
     :characters="characters"
     :models="models"

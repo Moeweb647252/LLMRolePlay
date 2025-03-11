@@ -37,29 +37,29 @@ const cancel = () => {
 
 <template>
   <div v-if="editing">
-    <n-input-group>
-      <n-input
+    <NInputGroup>
+      <NInput
         v-if="props.type == 'text' || props.type == null"
         v-model:value="editingValue as string"
       />
-      <n-select
+      <NSelect
         v-if="props.type == 'select'"
         v-model:value="editingValue as SelectInput"
         style="min-width: 10em"
         :multiple="multiple"
         :options="props.options"
       />
-      <n-input
+      <NInput
         v-if="props.type == 'textarea'"
         v-model:value="editingValue as string"
         type="textarea"
       />
-      <n-button @click="confirm"> 确定 </n-button>
-      <n-button @click="cancel"> 取消 </n-button>
-    </n-input-group>
+      <NButton @click="confirm"> 确定 </NButton>
+      <NButton @click="cancel"> 取消 </NButton>
+    </NInputGroup>
   </div>
   <div v-else>
-    <n-space :wrap="false" align="center">
+    <NSpace :wrap="false" align="center">
       <div v-if="props.multiple">
         {{
           (value as SelectInput)
@@ -70,13 +70,13 @@ const cancel = () => {
       <div v-else>
         {{ options?.find((o) => o.value == value)?.label || value }}
       </div>
-      <n-button quaternary circle @click="startEditing">
+      <NButton quaternary circle @click="startEditing">
         <template #icon>
-          <n-icon>
+          <NIcon>
             <MdCreate />
-          </n-icon>
+          </NIcon>
         </template>
-      </n-button>
-    </n-space>
+      </NButton>
+    </NSpace>
   </div>
 </template>

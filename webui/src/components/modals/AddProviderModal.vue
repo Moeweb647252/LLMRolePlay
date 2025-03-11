@@ -124,49 +124,49 @@ const cancel = () => {}
 </script>
 
 <template>
-  <n-modal
+  <NModal
     v-model:show="show"
     title="添加提供者"
     size="medium"
     preset="card"
     style="width: fit-content; min-width: 25em"
   >
-    <n-form>
-      <n-form-item label="名称">
-        <n-input v-model:value="form.name" />
-      </n-form-item>
-      <n-form-item label="描述">
-        <n-input v-model:value="form.description" />
-      </n-form-item>
-      <n-form-item label="类型">
-        <n-select v-model:value="form.type" :options="types" />
-      </n-form-item>
-      <n-form-item label="是否公开">
-        <n-switch v-model:value="form.isPublic" />
-      </n-form-item>
-      <n-form-item label="模型">
-        <n-dynamic-tags
+    <NForm>
+      <NFormItem label="名称">
+        <NInput v-model:value="form.name" />
+      </NFormItem>
+      <NFormItem label="描述">
+        <NInput v-model:value="form.description" />
+      </NFormItem>
+      <NFormItem label="类型">
+        <NSelect v-model:value="form.type" :options="types" />
+      </NFormItem>
+      <NFormItem label="是否公开">
+        <NSwitch v-model:value="form.isPublic" />
+      </NFormItem>
+      <NFormItem label="模型">
+        <NDynamicTags
           v-model:value="form.models as any[]"
           :render-tag="renderModelTag as any"
         >
           <template #trigger>
-            <n-button size="small" type="primary" dashed>
+            <NButton size="small" type="primary" dashed>
               <template #icon>
-                <n-icon>
+                <NIcon>
                   <MdAdd />
-                </n-icon>
+                </NIcon>
               </template>
               添加模型
-            </n-button>
+            </NButton>
           </template>
-        </n-dynamic-tags>
-      </n-form-item>
-      <n-form-item>
-        <n-space justify="end">
-          <n-button @click="cancel">取消</n-button>
-          <n-button type="primary" @click="confirm">确定</n-button>
-        </n-space>
-      </n-form-item>
-    </n-form>
-  </n-modal>
+        </NDynamicTags>
+      </NFormItem>
+      <NFormItem>
+        <NSpace justify="end">
+          <NButton @click="cancel">取消</NButton>
+          <NButton type="primary" @click="confirm">确定</NButton>
+        </NSpace>
+      </NFormItem>
+    </NForm>
+  </NModal>
 </template>

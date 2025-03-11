@@ -43,24 +43,24 @@ const cancel = () => {
 </script>
 
 <template>
-  <n-modal v-model:show="show" title="添加模板" size="medium">
-    <n-form>
-      <n-form-item label="名称">
-        <n-input v-model:value="form.name" />
-      </n-form-item>
-      <n-form-item label="描述">
-        <n-input v-model:value="form.description" />
-      </n-form-item>
-      <n-form-item label="内容">
-        <n-input v-model:value="form.content" />
-      </n-form-item>
-      <n-form-item label="是否公开">
-        <n-switch v-model:value="form.isPublic" />
-      </n-form-item>
-      <n-form-item>
-        <n-button type="primary" @click="confirm">确定</n-button>
-        <n-button @click="cancel">取消</n-button>
-      </n-form-item>
-    </n-form>
-  </n-modal>
+  <NModal v-model:show="show" title="添加模板" size="medium">
+    <NForm>
+      <NFormItem label="名称">
+        <NInput v-model:value="form.name" />
+      </NFormItem>
+      <NFormItem label="描述">
+        <NInput v-model:value="form.description" />
+      </NFormItem>
+      <NFormItem label="内容">
+        <NInput v-model:value="form.content" />
+      </NFormItem>
+      <NFormItem label="是否公开">
+        <NSwitch v-model:value="form.isPublic" />
+      </NFormItem>
+      <NFormItem>
+        <NButton type="primary" @click="confirm">确定</NButton>
+        <NButton @click="cancel">取消</NButton>
+      </NFormItem>
+    </NForm>
+  </NModal>
 </template>

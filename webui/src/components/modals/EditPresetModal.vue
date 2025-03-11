@@ -20,15 +20,15 @@ const emit = defineEmits(['confirm'])
 </script>
 
 <template>
-  <n-modal
+  <NModal
     v-model:show="show"
     title="编辑预设"
     preset="card"
     style="width: fit-content; min-width: 25em"
     size="medium"
   >
-    <n-form v-if="form" label-placement="left">
-      <n-form-item label="名称">
+    <NForm v-if="form" label-placement="left">
+      <NFormItem label="名称">
         <SettingsInput
           :value="form!.name"
           @confirm="
@@ -41,8 +41,8 @@ const emit = defineEmits(['confirm'])
             }
           "
         />
-      </n-form-item>
-      <n-form-item label="描述">
+      </NFormItem>
+      <NFormItem label="描述">
         <SettingsInput
           :value="form!.description"
           @confirm="
@@ -55,8 +55,8 @@ const emit = defineEmits(['confirm'])
             }
           "
         />
-      </n-form-item>
-      <n-form-item label="公开">
+      </NFormItem>
+      <NFormItem label="公开">
         <SettingsSwitch
           :value="form!.isPublic"
           @confirm="
@@ -69,8 +69,8 @@ const emit = defineEmits(['confirm'])
             }
           "
         />
-      </n-form-item>
-      <n-form-item label="设置">
+      </NFormItem>
+      <NFormItem label="设置">
         <SettingsDynamicInput
           :value="form!.content"
           @confirm="
@@ -83,12 +83,12 @@ const emit = defineEmits(['confirm'])
             }
           "
         />
-      </n-form-item>
-    </n-form>
+      </NFormItem>
+    </NForm>
     <template #footer>
-      <n-space justify="end">
-        <n-button @click="show = false">关闭</n-button>
-      </n-space>
+      <NSpace justify="end">
+        <NButton @click="show = false">关闭</NButton>
+      </NSpace>
     </template>
-  </n-modal>
+  </NModal>
 </template>

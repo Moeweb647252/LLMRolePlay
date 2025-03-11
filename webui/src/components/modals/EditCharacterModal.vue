@@ -47,15 +47,15 @@ const uploadAvatar = async ({ file }: UploadCustomRequestOptions) => {
 </script>
 
 <template>
-  <n-modal
+  <NModal
     v-model:show="show"
     title="编辑角色"
     preset="card"
     style="width: fit-content; min-width: 25em"
     size="medium"
   >
-    <n-form v-if="form" label-placement="left">
-      <n-form-item label="名称">
+    <NForm v-if="form" label-placement="left">
+      <NFormItem label="名称">
         <SettingsInput
           :value="form!.name"
           @confirm="
@@ -68,8 +68,8 @@ const uploadAvatar = async ({ file }: UploadCustomRequestOptions) => {
             }
           "
         />
-      </n-form-item>
-      <n-form-item label="描述">
+      </NFormItem>
+      <NFormItem label="描述">
         <SettingsInput
           :value="form!.description"
           @confirm="
@@ -82,8 +82,8 @@ const uploadAvatar = async ({ file }: UploadCustomRequestOptions) => {
             }
           "
         />
-      </n-form-item>
-      <n-form-item label="公开">
+      </NFormItem>
+      <NFormItem label="公开">
         <SettingsSwitch
           :value="form!.isPublic"
           @confirm="
@@ -96,18 +96,18 @@ const uploadAvatar = async ({ file }: UploadCustomRequestOptions) => {
             }
           "
         />
-      </n-form-item>
-      <n-form-item label="头像">
-        <n-upload
+      </NFormItem>
+      <NFormItem label="头像">
+        <NUpload
           action=""
           :max="1"
           accept="image/*"
           :custom-request="uploadAvatar"
         >
-          <n-button>上传头像</n-button>
-        </n-upload>
-      </n-form-item>
-      <n-form-item label="内容">
+          <NButton>上传头像</NButton>
+        </NUpload>
+      </NFormItem>
+      <NFormItem label="内容">
         <SettingsDynamicInput
           :value="form!.content"
           @confirm="
@@ -120,7 +120,7 @@ const uploadAvatar = async ({ file }: UploadCustomRequestOptions) => {
             }
           "
         />
-      </n-form-item>
-    </n-form>
-  </n-modal>
+      </NFormItem>
+    </NForm>
+  </NModal>
 </template>

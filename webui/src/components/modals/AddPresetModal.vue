@@ -63,41 +63,41 @@ const validate = () => {
 </script>
 
 <template>
-  <n-modal
+  <NModal
     v-model:show="show"
     title="添加预设"
     size="medium"
     preset="card"
     style="width: fit-content; min-width: 25em"
   >
-    <n-form label-placement="left">
-      <n-form-item label="名称">
-        <n-input v-model:value="form.name" placeholder="输入预设名称" />
-      </n-form-item>
-      <n-form-item label="描述">
-        <n-input
+    <NForm label-placement="left">
+      <NFormItem label="名称">
+        <NInput v-model:value="form.name" placeholder="输入预设名称" />
+      </NFormItem>
+      <NFormItem label="描述">
+        <NInput
           v-model:value="form.description"
           type="textarea"
           placeholder="输入预设描述"
         />
-      </n-form-item>
-      <n-form-item label="公开">
-        <n-switch v-model:value="form.isPublic" />
-      </n-form-item>
-      <n-form-item label="设置">
-        <n-dynamic-input
+      </NFormItem>
+      <NFormItem label="公开">
+        <NSwitch v-model:value="form.isPublic" />
+      </NFormItem>
+      <NFormItem label="设置">
+        <NDynamicInput
           v-model:value="form.content"
           preset="pair"
           key-placeholder="参数名"
           value-placeholder="参数值"
         />
-      </n-form-item>
-    </n-form>
+      </NFormItem>
+    </NForm>
     <template #footer>
-      <n-space justify="end">
-        <n-button @click="cancel">取消</n-button>
-        <n-button type="primary" @click="confirm">保存</n-button>
-      </n-space>
+      <NSpace justify="end">
+        <NButton @click="cancel">取消</NButton>
+        <NButton type="primary" @click="confirm">保存</NButton>
+      </NSpace>
     </template>
-  </n-modal>
+  </NModal>
 </template>

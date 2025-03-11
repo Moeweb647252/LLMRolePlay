@@ -32,7 +32,12 @@ const addUser = async () => {
     password: '',
     group: '1',
   }
-  let id = await api.addUser(data.username, data.email, data.password, data.group)
+  let id = await api.addUser(
+    data.username,
+    data.email,
+    data.password,
+    data.group,
+  )
   users.value.push({
     id,
     username: data.username,
@@ -95,46 +100,20 @@ onMounted(async () => {
   <div style="padding: 2em">
     <div class="header">
       <h3>用户</h3>
-      <n-button
-        type="primary"
-        @click="addUserForm.visible = true"
-      >
+      <n-button type="primary" @click="addUserForm.visible = true">
         添加
       </n-button>
     </div>
     <div>
       <n-list>
-        <n-list-item
-          v-for="user in users"
-          :key="user.id"
-        >
+        <n-list-item v-for="user in users" :key="user.id">
           {{ user.username }}
-          <n-tag
-            v-if="user.group == '2'"
-            type="success"
-          >
-            管理员
-          </n-tag>
-          <n-tag
-            v-if="user.group == '1'"
-            type="info"
-          >
-            用户
-          </n-tag>
+          <n-tag v-if="user.group == '2'" type="success"> 管理员 </n-tag>
+          <n-tag v-if="user.group == '1'" type="info"> 用户 </n-tag>
           <template #suffix>
             <n-space :wrap="false">
-              <n-button
-                type="primary"
-                @click="editUser(user)"
-              >
-                编辑
-              </n-button>
-              <n-button
-                type="error"
-                @click="deleteUser(user)"
-              >
-                删除
-              </n-button>
+              <n-button type="primary" @click="editUser(user)"> 编辑 </n-button>
+              <n-button type="error" @click="deleteUser(user)"> 删除 </n-button>
             </n-space>
           </template>
         </n-list-item>
@@ -167,15 +146,8 @@ onMounted(async () => {
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="cancelAddUser">
-          取消
-        </n-button>
-        <n-button
-          type="primary"
-          @click="addUser"
-        >
-          保存
-        </n-button>
+        <n-button @click="cancelAddUser"> 取消 </n-button>
+        <n-button type="primary" @click="addUser"> 保存 </n-button>
       </n-space>
     </template>
   </n-modal>

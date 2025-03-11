@@ -23,15 +23,15 @@ const userTypeOptions = [
 </script>
 
 <template>
-  <n-modal
+  <NModal
     v-model:show="show"
     title="编辑用户"
     preset="card"
     style="width: fit-content; min-width: 25em"
     size="medium"
   >
-    <n-form v-if="form" label-placement="left">
-      <n-form-item label="用户名">
+    <NForm v-if="form" label-placement="left">
+      <NFormItem label="用户名">
         <SettingsInput
           :value="form!.username"
           @confirm="
@@ -44,8 +44,8 @@ const userTypeOptions = [
             }
           "
         />
-      </n-form-item>
-      <n-form-item label="邮箱">
+      </NFormItem>
+      <NFormItem label="邮箱">
         <SettingsInput
           :value="form!.email"
           @confirm="
@@ -58,8 +58,8 @@ const userTypeOptions = [
             }
           "
         />
-      </n-form-item>
-      <n-form-item label="角色">
+      </NFormItem>
+      <NFormItem label="角色">
         <SettingsInput
           type="select"
           :options="userTypeOptions"
@@ -74,7 +74,7 @@ const userTypeOptions = [
             }
           "
         />
-      </n-form-item>
-    </n-form>
-  </n-modal>
+      </NFormItem>
+    </NForm>
+  </NModal>
 </template>

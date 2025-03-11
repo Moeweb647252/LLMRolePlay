@@ -61,31 +61,17 @@ const cancel = () => {
         />
       </template>
     </n-dynamic-input>
-    <n-button @click="confirm">
-      确定
-    </n-button>
-    <n-button @click="cancel">
-      取消
-    </n-button>
+    <n-button @click="confirm"> 确定 </n-button>
+    <n-button @click="cancel"> 取消 </n-button>
   </div>
   <div v-else>
-    <n-space
-      :wrap="false"
-      align="center"
-    >
+    <n-space :wrap="false" align="center">
       <n-list>
-        <n-list-item
-          v-for="(item, index) in value"
-          :key="index"
-        >
+        <n-list-item v-for="(item, index) in value" :key="index">
           {{ item.name ?? '' }}
         </n-list-item>
       </n-list>
-      <n-button
-        quaternary
-        circle
-        @click="startEditing"
-      >
+      <n-button quaternary circle @click="startEditing">
         <template #icon>
           <n-icon>
             <MdCreate />

@@ -52,7 +52,7 @@ const validate = () => {
 </script>
 
 <template>
-  <n-modal
+  <NModal
     v-model:show="show"
     title="添加模型"
     size="medium"
@@ -60,55 +60,55 @@ const validate = () => {
     style="width: fit-content; min-width: 25em"
     @cancel="emit('cancel')"
   >
-    <n-form label-placement="left">
-      <n-form-item label="名称" required>
-        <n-input v-model:value="form.name" placeholder="请输入模型名称" />
-      </n-form-item>
-      <n-form-item label="描述">
-        <n-input
+    <NForm label-placement="left">
+      <NFormItem label="名称" required>
+        <NInput v-model:value="form.name" placeholder="请输入模型名称" />
+      </NFormItem>
+      <NFormItem label="描述">
+        <NInput
           v-model:value="form.description"
           type="textarea"
           placeholder="请输入模型描述"
         />
-      </n-form-item>
-      <n-form-item label="模型名称" required>
-        <n-input
+      </NFormItem>
+      <NFormItem label="模型名称" required>
+        <NInput
           v-model:value="form.modelName"
           placeholder="请输入模型的技术名称"
         />
-      </n-form-item>
-      <n-form-item label="是否公开">
-        <n-switch v-model:value="form.isPublic" />
-      </n-form-item>
-      <n-form-item label="温度">
-        <n-input-number
+      </NFormItem>
+      <NFormItem label="是否公开">
+        <NSwitch v-model:value="form.isPublic" />
+      </NFormItem>
+      <NFormItem label="温度">
+        <NInputNumber
           v-model:value="form.settings.temperature"
           :min="0"
           :max="2"
           :step="0.1"
         />
-      </n-form-item>
-      <n-form-item label="Top P">
-        <n-input-number
+      </NFormItem>
+      <NFormItem label="Top P">
+        <NInputNumber
           v-model:value="form.settings.top_p"
           :min="0"
           :max="1"
           :step="0.05"
         />
-      </n-form-item>
-      <n-form-item label="最大Token数">
-        <n-input-number
+      </NFormItem>
+      <NFormItem label="最大Token数">
+        <NInputNumber
           v-model:value="form.settings.max_tokens"
           :min="1"
           :step="100"
         />
-      </n-form-item>
-    </n-form>
+      </NFormItem>
+    </NForm>
     <template #footer>
-      <n-space justify="end">
-        <n-button @click="emit('cancel')"> 取消 </n-button>
-        <n-button type="primary" @click="confirm"> 保存 </n-button>
-      </n-space>
+      <NSpace justify="end">
+        <NButton @click="emit('cancel')"> 取消 </NButton>
+        <NButton type="primary" @click="confirm"> 保存 </NButton>
+      </NSpace>
     </template>
-  </n-modal>
+  </NModal>
 </template>

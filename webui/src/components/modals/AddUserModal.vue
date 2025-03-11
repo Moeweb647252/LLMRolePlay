@@ -54,30 +54,30 @@ const confirm = async () => {
 </script>
 
 <template>
-  <n-modal v-model:show="show" title="添加模板">
-    <n-form>
-      <n-form-item label="用户名">
-        <n-input v-model:value="form.username" />
-      </n-form-item>
-      <n-form-item label="密码">
-        <n-input v-model:value="form.password" />
-      </n-form-item>
-      <n-form-item label="邮箱">
-        <n-input v-model:value="form.email" />
-      </n-form-item>
-      <n-form-item label="组">
-        <n-select
+  <NModal v-model:show="show" title="添加模板">
+    <NForm>
+      <NFormItem label="用户名">
+        <NInput v-model:value="form.username" />
+      </NFormItem>
+      <NFormItem label="密码">
+        <NInput v-model:value="form.password" />
+      </NFormItem>
+      <NFormItem label="邮箱">
+        <NInput v-model:value="form.email" />
+      </NFormItem>
+      <NFormItem label="组">
+        <NSelect
           v-model:value="form.role"
           :options="[
             { label: '管理员', value: 'admin' },
             { label: '用户', value: 'user' },
           ]"
         />
-      </n-form-item>
-    </n-form>
+      </NFormItem>
+    </NForm>
     <template #footer>
-      <n-button @click="cancel">取消</n-button>
-      <n-button type="primary" @click="confirm">确定</n-button>
+      <NButton @click="cancel">取消</NButton>
+      <NButton type="primary" @click="confirm">确定</NButton>
     </template>
-  </n-modal>
+  </NModal>
 </template>

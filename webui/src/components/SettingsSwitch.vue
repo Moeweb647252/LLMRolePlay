@@ -31,24 +31,13 @@ const cancel = () => {
 <template>
   <div v-if="editing">
     <n-switch v-model:value="editingValue" />
-    <n-button @click="confirm">
-      确定
-    </n-button>
-    <n-button @click="cancel">
-      取消
-    </n-button>
+    <n-button @click="confirm"> 确定 </n-button>
+    <n-button @click="cancel"> 取消 </n-button>
   </div>
   <div v-else>
-    <n-space
-      :wrap="false"
-      align="center"
-    >
+    <n-space :wrap="false" align="center">
       {{ value ? '是' : '否' }}
-      <n-button
-        quaternary
-        circle
-        @click="startEditing"
-      >
+      <n-button quaternary circle @click="startEditing">
         <template #icon>
           <n-icon>
             <MdCreate />

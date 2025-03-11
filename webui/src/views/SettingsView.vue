@@ -16,7 +16,9 @@ const links = [
     { name: '模板', path: '/main/settings/template' },
     { name: 'Provider', path: '/main/settings/provider' },
   ],
-  ...(settings.user?.group == '2' ? [{ name: '用户', path: '/main/settings/user' }] : []),
+  ...(settings.user?.group == '2'
+    ? [{ name: '用户', path: '/main/settings/user' }]
+    : []),
 ]
 
 const checkScreenSize = () => {
@@ -39,20 +41,13 @@ const toggleSider = () => {
 </script>
 
 <template>
-  <div
-    v-if="isMobile"
-    class="menu-toggle"
-    @click="toggleSider"
-  >
+  <div v-if="isMobile" class="menu-toggle" @click="toggleSider">
     <n-icon size="24">
       <component :is="collapsed ? MenuOutlined : CloseOutlined" />
     </n-icon>
   </div>
 
-  <n-layout
-    has-sider
-    style="height: 100%"
-  >
+  <n-layout has-sider style="height: 100%">
     <n-layout-sider
       :collapsed="collapsed"
       :collapsed-width="0"

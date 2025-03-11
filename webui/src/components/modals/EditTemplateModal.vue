@@ -19,15 +19,15 @@ const emit = defineEmits(['confirm'])
 </script>
 
 <template>
-  <n-modal
+  <NModal
     v-model:show="show"
     title="编辑模板"
     preset="card"
     style="width: fit-content; min-width: 25em"
     size="medium"
   >
-    <n-form v-if="form" label-placement="left">
-      <n-form-item label="名称">
+    <NForm v-if="form" label-placement="left">
+      <NFormItem label="名称">
         <SettingsInput
           :value="form.name"
           @confirm="
@@ -40,8 +40,8 @@ const emit = defineEmits(['confirm'])
             }
           "
         />
-      </n-form-item>
-      <n-form-item label="描述">
+      </NFormItem>
+      <NFormItem label="描述">
         <SettingsInput
           :value="form.description"
           @confirm="
@@ -54,8 +54,8 @@ const emit = defineEmits(['confirm'])
             }
           "
         />
-      </n-form-item>
-      <n-form-item label="公开">
+      </NFormItem>
+      <NFormItem label="公开">
         <SettingsSwitch
           :value="form.isPublic"
           @confirm="
@@ -68,8 +68,8 @@ const emit = defineEmits(['confirm'])
             }
           "
         />
-      </n-form-item>
-      <n-form-item label="内容">
+      </NFormItem>
+      <NFormItem label="内容">
         <SettingsInput
           :value="form.content"
           type="textarea"
@@ -83,7 +83,7 @@ const emit = defineEmits(['confirm'])
             }
           "
         />
-      </n-form-item>
-    </n-form>
-  </n-modal>
+      </NFormItem>
+    </NForm>
+  </NModal>
 </template>

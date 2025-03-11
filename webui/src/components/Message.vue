@@ -94,10 +94,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div
-    v-if="action.length"
-    class="action"
-  >
+  <div v-if="action.length" class="action">
     <n-alert :show-icon="false">
       {{ action }}
     </n-alert>
@@ -119,24 +116,14 @@ onMounted(() => {
       </div>
       <div class="actions">
         <n-space size="small">
-          <n-button
-            size="small"
-            strong
-            secondary
-            circle
-          >
+          <n-button size="small" strong secondary circle>
             <template #icon>
               <n-icon>
                 <MdCreate />
               </n-icon>
             </template>
           </n-button>
-          <n-button
-            size="small"
-            strong
-            secondary
-            circle
-          >
+          <n-button size="small" strong secondary circle>
             <template #icon>
               <n-icon>
                 <MdClipboard />
@@ -156,13 +143,7 @@ onMounted(() => {
               </n-icon>
             </template>
           </n-button>
-          <n-button
-            v-if="reloadable"
-            size="small"
-            strong
-            secondary
-            circle
-          >
+          <n-button v-if="reloadable" size="small" strong secondary circle>
             <template #icon>
               <n-icon>
                 <MdSync />

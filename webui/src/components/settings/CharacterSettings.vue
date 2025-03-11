@@ -67,24 +67,22 @@ const onEditConfirm = async () => {}
   <div style="padding: 2em">
     <div class="header">
       <h3>角色</h3>
-      <n-button type="primary" @click="add"> 添加 </n-button>
+      <NButton type="primary" @click="add"> 添加 </NButton>
     </div>
     <div>
-      <n-list>
-        <n-list-item v-for="character in characters" :key="character.id!">
+      <NList>
+        <NListItem v-for="character in characters" :key="character.id!">
           {{ character.name }}
           <template #suffix>
-            <n-space :wrap="false">
-              <n-button type="primary" @click="edit(character)">
-                编辑
-              </n-button>
-              <n-button type="error" @click="deleteCharacter(character)">
+            <NSpace :wrap="false">
+              <NButton type="primary" @click="edit(character)"> 编辑 </NButton>
+              <NButton type="error" @click="deleteCharacter(character)">
                 删除
-              </n-button>
-            </n-space>
+              </NButton>
+            </NSpace>
           </template>
-        </n-list-item>
-      </n-list>
+        </NListItem>
+      </NList>
     </div>
   </div>
   <AddCharacterModal

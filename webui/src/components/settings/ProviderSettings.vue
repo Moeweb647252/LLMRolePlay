@@ -303,9 +303,9 @@ const startEditModel = (model: Model) => {
   <div style="padding: 2em">
     <div class="header">
       <h3>Providers</h3>
-      <n-button type="primary" @click="addProviderForm.visible = true">
+      <NButton type="primary" @click="addProviderForm.visible = true">
         添加
-      </n-button>
+      </NButton>
     </div>
     <div>
       <n-list>
@@ -318,12 +318,12 @@ const startEditModel = (model: Model) => {
 
           <template #suffix>
             <n-space :wrap="false">
-              <n-button type="primary" @click="startEditProvider(provider)">
+              <NButton type="primary" @click="startEditProvider(provider)">
                 编辑
-              </n-button>
-              <n-button type="error" @click="deleteProvider(provider)">
+              </NButton>
+              <NButton type="error" @click="deleteProvider(provider)">
                 删除
-              </n-button>
+              </NButton>
             </n-space>
           </template>
         </n-list-item>
@@ -356,7 +356,7 @@ const startEditModel = (model: Model) => {
       <n-form-item label="API Key">
         <n-input v-model:value="addProviderForm.apiKey" />
       </n-form-item>
-      <n-dynamic-tags
+      <NDynamicTags
         v-model:value="addProviderForm.models as any"
         :render-tag="
           (a: any, b: any) =>
@@ -371,26 +371,26 @@ const startEditModel = (model: Model) => {
         "
       >
         <template #trigger>
-          <n-button
+          <NButton
             size="small"
             type="primary"
             dashed
             @click="addProviderAddModel"
           >
             <template #icon>
-              <n-icon>
+              <NIcon>
                 <MdAdd />
-              </n-icon>
+              </NIcon>
             </template>
             添加模型
-          </n-button>
+          </NButton>
         </template>
-      </n-dynamic-tags>
+      </NDynamicTags>
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button @click="addProviderForm.visible = false"> 取消 </n-button>
-        <n-button type="primary" @click="addProvider"> 添加 </n-button>
+        <NButton @click="addProviderForm.visible = false"> 取消 </NButton>
+        <NButton type="primary" @click="addProvider"> 添加 </NButton>
       </n-space>
     </template>
   </n-modal>
@@ -432,8 +432,8 @@ const startEditModel = (model: Model) => {
     </n-form>
     <template #footer>
       <n-space justify="end">
-        <n-button type="primary" @click="addModelConfirm"> 添加 </n-button>
-        <n-button @click="addModelForm.visible = false"> 取消 </n-button>
+        <NButton type="primary" @click="addModelConfirm"> 添加 </NButton>
+        <NButton @click="addModelForm.visible = false"> 取消 </NButton>
       </n-space>
     </template>
   </n-modal>
@@ -513,7 +513,7 @@ const startEditModel = (model: Model) => {
         />
       </n-form-item>
       <n-form-item label="模型">
-        <n-dynamic-tags
+        <NDynamicTags
           v-model:value="editProviderForm.provider!.models as any"
           tag-class="model-tag"
           :render-tag="
@@ -522,21 +522,21 @@ const startEditModel = (model: Model) => {
           "
         >
           <template #trigger>
-            <n-button
+            <NButton
               size="small"
               type="primary"
               dashed
               @click="editProviderAddModel"
             >
               <template #icon>
-                <n-icon>
+                <NIcon>
                   <MdAdd />
-                </n-icon>
+                </NIcon>
               </template>
               添加模型
-            </n-button>
+            </NButton>
           </template>
-        </n-dynamic-tags>
+        </NDynamicTags>
       </n-form-item>
     </n-form>
   </n-modal>

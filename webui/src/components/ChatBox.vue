@@ -109,7 +109,7 @@ onMounted(async () => {
     <div style="height: calc(100% - 2em); padding-top: 2em; overflow: hidden">
       <div class="chat-box">
         <div class="messages">
-          <n-scrollbar
+          <NScrollbar
             ref="messageScroll"
             style="height: 100%; width: calc(100% - 2em)"
           >
@@ -127,7 +127,7 @@ onMounted(async () => {
               "
               @delete="deleteMessage(i)"
             />
-          </n-scrollbar>
+          </NScrollbar>
         </div>
         <div class="input">
           <n-grid style="width: 100%" x-gap="12" :cols="2">
