@@ -62,9 +62,17 @@ const onAddConfirm = async () => {
   presets.value = await api.getPresets()
 }
 
-const onEditConfirm = async () => {
+const onEditConfirm = async (form: EditPresetForm) => {
   showEditModal.value = false
-  presets.value = await api.getPresets()
+  presets.value
+    .filter((p) => p.id === form.id)
+    .forEach((p) => {
+      p.name = form.name
+      p.description = form.description
+      p.content = form.content
+      p.isPublic = form.isPublic
+      p.settings = form.settings
+    })
 }
 </script>
 

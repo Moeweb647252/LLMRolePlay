@@ -1,8 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json;
 
 namespace LLMRolePlay.Models
 {
@@ -135,7 +135,7 @@ namespace LLMRolePlay.Models
 
       string ret = Template.Content;
       string character = string.Join("\n",
-          JsonConvert.DeserializeObject<List<ContentItem>>(Character.Content)?
+          JsonSerializer.Deserialize<List<ContentItem>>(Character.Content)?
           .Select(s => $"{s.Key}: {s.Value}") ?? []
         );
       ret += "\nYour Character:\n";
@@ -150,7 +150,7 @@ namespace LLMRolePlay.Models
       }
       string preset = string.Join("\n", (await GetPresetList(db)).Select(preset =>
        string.Join("\n",
-          JsonConvert.DeserializeObject<List<ContentItem>>(
+          JsonSerializer.Deserialize<List<ContentItem>>(
             preset.Content ?? ""
           )?
           .Select(s => $"{s.Key}: {s.Value}") ?? []
@@ -176,7 +176,7 @@ namespace LLMRolePlay.Models
         ret += $"姓名: {participant.Name}\n";
         ret += "描述:" + participant.Character.Description + "\n";
         ret += string.Join("\n",
-          JsonConvert.DeserializeObject<List<ContentItem>>(participant.Character.Content)?
+          JsonSerializer.Deserialize<List<ContentItem>>(participant.Character.Content)?
           .Select(s => $"{s.Key}: {s.Value}") ?? []
         );
         ret += "\n\n";

@@ -1,16 +1,33 @@
 using LLMRolePlay;
+using LLMRolePlay.Config;
 using LLMRolePlay.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
+using System.Text.Json;
 
 
-var directory = Directory.GetCurrentDirectory();
-string dbPath = Path.Combine(directory, "LLMRolePlay.db");
-string connectionString = $"Data Source={dbPath}";
+Config? config = Config.Load("config.json");
+if (config == null)
+{
+  config = Config.Default();
+  var f = System.IO.File.CreateText("config.json");
+  f.Write(JsonSerializer.Serialize(config));
+  f.Flush();
+  f.Close();
+}
+
+string connectionString = config.dbConnectionString;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
-builder.Services.AddDbContext<DBContext>(options => options.UseSqlite(connectionString));
+if (config.dbType == "sqlite")
+{
+  builder.Services.AddDbContext<DBContext>(options => options.UseSqlite(connectionString));
+}
+else
+{
+  throw new Exception("Unsupported database type");
+}
 builder.Services.AddAuthentication(option =>
 {
   option.AddScheme<TokenAuthentication>("TokenAuthentication", null);

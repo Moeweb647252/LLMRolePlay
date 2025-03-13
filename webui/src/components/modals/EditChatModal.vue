@@ -12,7 +12,7 @@ import {
 } from 'naive-ui'
 import { MdAdd } from '@vicons/ionicons4'
 import SettingsInput from '../SettingsInput.vue'
-import { ref, h } from 'vue'
+import { ref, h, toRef } from 'vue'
 import type { EditChatForm, EditParticipantForm, Options } from '@/types/modal'
 import { api } from '@/api'
 import EditParticipantModal from './EditParticipantModal.vue'
@@ -21,11 +21,12 @@ import AddParticipantModal from './AddParticipantModal.vue'
 const modal = useModal()
 const message = useMessage()
 
-defineProps<{
+const props = defineProps<{
   models: Options
   presets: Options
   characters: Options
   templates: Options
+  form: EditChatForm
 }>()
 
 const renderParticipantTags = (participant: EditParticipantForm) => {
@@ -90,7 +91,7 @@ const onAddParticipantConfirm = (participant: EditParticipantForm) => {
 const showEditParticipantModal = ref(false)
 const showAddParticipantModal = ref(false)
 
-const form = ref(null as EditChatForm | null)
+const form = toRef(props, 'form')
 
 const emit = defineEmits(['confirm'])
 </script>

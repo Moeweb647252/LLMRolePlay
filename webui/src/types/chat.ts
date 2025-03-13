@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Character } from './character'
 import { Preset } from './preset'
 import { Model } from './provider'
@@ -42,10 +43,12 @@ export interface Message {
 export class Chat {
   id: number | null
   name: string | null
+  description: string | null
   settings: ChatSettings
   participants: {
     id: number
     name: string
+    model: number
     presets: {
       id: number
       name: string
@@ -64,10 +67,12 @@ export class Chat {
     id: number | null = null,
     name: string | null = null,
     participants: any[] = [],
+    description: string | null = null,
     settings: ChatSettings = { nameOfUser: null, currentParticipantId: null },
   ) {
     this.id = id
     this.name = name
+    this.description = description
     this.participants = participants
     this.settings = settings
   }

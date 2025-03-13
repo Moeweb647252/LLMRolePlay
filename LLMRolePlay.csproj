@@ -13,16 +13,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.2" />
-    <Compile Remove="webui/**"></Compile>
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <Watch Remove="webui/**" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="9.0.2" />
     <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="9.0.2" />
-    <PackageReference Include="Scalar.AspNetCore" Version="2.0.14" />
+    <Compile Remove="webui/**"></Compile>
+    <Watch Remove="webui/**" />
     <EmbeddedResource Include="webui/dist/**" />
   </ItemGroup>
 

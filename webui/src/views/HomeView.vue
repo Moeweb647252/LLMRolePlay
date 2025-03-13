@@ -4,14 +4,30 @@ import ChatBox from '@/components/ChatBox.vue'
 import { type Character } from '@/types/character'
 import { useSettingsStore } from '@/stores/settings'
 import { IosMenu, MdAdd, MdContact, MdCreate, MdClose } from '@vicons/ionicons4'
-import { NTag, useMessage, type UploadFileInfo, useModal } from 'naive-ui'
-import { computed, h, onMounted, ref } from 'vue'
+import { useMessage, useModal } from 'naive-ui'
+import {
+  NButton,
+  NDropdown,
+  NIcon,
+  NLayout,
+  NLayoutContent,
+  NLayoutHeader,
+  NLayoutSider,
+  NList,
+  NListItem,
+  NSpace,
+  NSpin,
+  NScrollbar,
+} from 'naive-ui'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { Model, Provider } from '@/types/provider'
 import { Preset } from '@/types/preset'
 import { Template } from '@/types/template'
-import { Chat, FullChat, Participant } from '@/types/chat'
-import SettingsInput from '@/components/SettingsInput.vue'
+import { Chat } from '@/types/chat'
+import AddChatModal from '@/components/modals/AddChatModal.vue'
+import EditChatModal from '@/components/modals/EditChatModal.vue'
+import type { EditChatForm } from '@/types/modal'
 
 const settings = useSettingsStore()
 const router = useRouter()
@@ -20,56 +36,37 @@ const message = useMessage()
 const modal = useModal()
 
 const providers = ref([] as Provider[])
-const presets = ref([] as Preset[])
-const characters = ref([] as Character[])
-const templates = ref([] as Template[])
+const userPresets = ref([] as Preset[])
+const userCharacters = ref([] as Character[])
+const userTemplates = ref([] as Template[])
 const publicPresets = ref([] as Preset[])
 const publicCharacters = ref([] as Character[])
 const publicTemplates = ref([] as Template[])
 const publicModels = ref([] as Model[])
 const chats = ref(await api.getChats())
 
+const presets = computed(() => {
+  return userPresets.value.concat(publicPresets.value)
+})
+const characters = computed(() => {
+  return userCharacters.value.concat(publicCharacters.value)
+})
+const templates = computed(() => {
+  return userTemplates.value.concat(publicTemplates.value)
+})
+
 const currentChat = ref(null as Chat | null)
 const chatBoxKey = ref(0)
+const modalsShow = reactive({
+  addChat: false,
+  editChat: false,
+  editingChat: null as EditChatForm | null,
+})
 
-const renderAddChatParticipant = (participant: Participant, index: number) => {
-  return h(
-    NTag,
-    {
-      closable: true,
-      onClose: () => {
-        addChatForm.value.participants.splice(index, 1)
-      },
-      onClick: () => {},
-    },
-    {
-      default: () => participant.name,
-    },
-  )
-}
-
-const renderEditChatParticipant = (participant: Participant, index: number) => {
-  return h(
-    NTag,
-    {
-      closable: true,
-      onClose: async () => {
-        await deleteParticipant(participant, () => {
-          editChatForm.value.chat!.participants.splice(
-            editChatForm.value.chat!.participants.indexOf(participant),
-            1,
-          )
-        })
-      },
-      onClick: () => {
-        editChatEditParticipant(participant)
-      },
-    },
-    {
-      default: () => participant.name,
-    },
-  )
-}
+const modalsKey = reactive({
+  addChat: 0,
+  editChat: 0,
+})
 
 if (!settings.user) {
   router.push('/login')
@@ -88,124 +85,10 @@ const onDropdownSelect = (key: string) => {
   }
 }
 
-const addChatForm = ref({
-  visible: false,
-  name: '',
-  description: '',
-  settings: [],
-  participants: [] as any[],
-})
-
-const startAddChat = async () => {
-  addChatForm.value = {
-    visible: true,
-    name: '',
-    description: '',
-    settings: [],
-    participants: [],
-  }
-  addChatForm.value.visible = true
-  providers.value = await api.getProviders()
-  presets.value = await api.getPresets()
-  characters.value = await api.getCharacters()
-  templates.value = await api.getTemplates()
-  publicPresets.value = await api.getPublicPresets()
-  publicCharacters.value = await api.getPublicCharacters()
-  publicTemplates.value = await api.getPublicTemplates()
-  publicModels.value = await api.getPublicModels()
-}
-
-const addParticipantForm = ref({
-  visible: false,
-  name: '',
-  settings: {},
-  model: null as null | Model,
-  presets: [] as Preset[],
-  character: null as null | Character,
-  template: null as null | Template,
-  avatarFileList: [] as UploadFileInfo[],
-  onConfirm: () => {},
-})
-
-const addChatAddParticipant = () => {
-  addParticipantForm.value = {
-    visible: true,
-    name: '',
-    settings: {},
-    model: null,
-    presets: [],
-    character: null,
-    template: null,
-    avatarFileList: [] as UploadFileInfo[],
-    onConfirm: () => {
-      addChatForm.value.participants.push({
-        name: addParticipantForm.value.name,
-        settings: addParticipantForm.value.settings,
-        model: addParticipantForm.value.model,
-        presets: addParticipantForm.value.presets,
-        character: addParticipantForm.value.character,
-        template: addParticipantForm.value.template,
-      })
-      addParticipantForm.value.visible = false
-    },
-  }
-}
-
-const modelOptions = computed(() => {
-  return providers.value
-    .map((providers) => providers.models)
-    .flat()
-    .map((model) => ({
-      label: model.name + `(${model.provider!.name})`,
-      value: model,
-    }))
-})
-
-const addChat = async () => {
-  const chatId = await api.addChat(
-    addChatForm.value.name,
-    addChatForm.value.description,
-    {},
-  )
-  const participants = []
-  for (const participant of addChatForm.value.participants) {
-    const participantId = await api.addParticipant(
-      chatId,
-      participant.character.id,
-      participant.presets.map((p: any) => p.id),
-      participant.template.id,
-      participant.model.id,
-      participant.name,
-      {},
-    )
-    participants.push({
-      id: participantId,
-      name: participant.name,
-      settings: participant.settings,
-      model: {
-        id: participant.model.id,
-        name: participant.model.name,
-      },
-      presets: participant.presets.map((p: any) => {
-        return {
-          id: p.id,
-          name: p.name,
-        }
-      }),
-      character: {
-        id: participant.character.id,
-        name: participant.character.name,
-      },
-      template: {
-        id: participant.template.id,
-        name: participant.template.name,
-      },
-    })
-  }
-  chats.value.push(new Chat(chatId, addChatForm.value.name, participants))
-  currentChat.value = chats.value[chats.value.length - 1]
-  addChatForm.value.visible = false
-  message.success('添加成功')
+const setChat = (chat: Chat) => {
+  settings.currentChatId = chat.id
+  currentChat.value = chat
+  chatBoxKey.value++
 }
 
 const deleteChat = async (chat: Chat) => {
@@ -218,112 +101,48 @@ const deleteChat = async (chat: Chat) => {
     onPositiveClick: async () => {
       try {
         await api.deleteChat(chat.id!)
-        chats.value.splice(chats.value.indexOf(chat), 1)
+        chats.value = chats.value.filter((c) => c.id !== chat.id)
+        if (settings.currentChatId === chat.id) {
+          settings.currentChatId = null
+          currentChat.value = null
+        }
         message.success('删除成功')
       } catch (e) {
+        console.log(e)
         message.error('删除失败')
       }
     },
   })
 }
 
-const setChat = (chat: Chat) => {
-  settings.currentChatId = chat.id
-  currentChat.value = chat
-  chatBoxKey.value++
+const confirmAddChat = () => {}
+const confirmEditChat = () => {}
+
+const startAddChat = () => {
+  modalsShow.addChat = true
+  modalsKey.addChat++
 }
 
-const editChatForm = ref({
-  visible: false,
-  chat: null as FullChat | null,
-})
-
-const editChatAddParticipant = () => {
-  addParticipantForm.value = {
-    visible: true,
-    name: '',
-    settings: {},
-    model: null,
-    presets: [],
-    character: null,
-    template: null,
-    avatarFileList: [] as UploadFileInfo[],
-    onConfirm: async () => {
-      let id = await api.addParticipant(
-        editChatForm.value.chat!.id!,
-        addParticipantForm.value.character!.id!,
-        addParticipantForm.value.presets!.map((p: any) => p.id),
-        addParticipantForm.value.template!.id!,
-        addParticipantForm.value.model!.id!,
-        addParticipantForm.value.name,
-        {},
-      )
-      editChatForm.value.chat!.participants.push(
-        new Participant(
-          id,
-          addParticipantForm.value.name,
-          addParticipantForm.value.model!,
-          addParticipantForm.value.presets!,
-          addParticipantForm.value.character!,
-          addParticipantForm.value.template!,
-          {},
-        ),
-      )
-      addParticipantForm.value.visible = false
-    },
-  }
-}
-
-const deleteParticipant = async (
-  participant: Participant,
-  onDeleted: () => void,
-) => {
-  modal.create({
-    title: '删除参与者',
-    content: `确定删除参与者 ${participant.name} ?`,
-    preset: 'dialog',
-    positiveText: '确定',
-    negativeText: '取消',
-    onPositiveClick: async () => {
-      try {
-        await api.deleteParticipant(participant.id!)
-        onDeleted()
-        message.success('删除成功')
-      } catch (e) {
-        message.error('删除失败')
+const startEditChat = (chat: Chat) => {
+  modalsShow.editingChat = {
+    name: chat.name!,
+    description: chat.description,
+    id: chat.id!,
+    settings: chat.settings,
+    participants: chat.participants.map((p) => {
+      return {
+        id: p.id,
+        name: p.name,
+        model: p.model,
+        presets: p.presets.map((p) => p.id),
+        character: p.character.id,
+        template: p.template.id,
+        settings: null,
       }
-    },
-  })
-}
-
-const startEditChat = async (chat: Chat) => {
-  editChatForm.value = {
-    visible: true,
-    chat: await api.getFullChat(chat.id!),
+    }),
   }
-  providers.value = await api.getProviders()
-  presets.value = await api.getPresets()
-  characters.value = await api.getCharacters()
-  templates.value = await api.getTemplates()
-}
-
-const editParticipantForm = ref({
-  visible: false,
-  participant: null as Participant | null,
-})
-
-const addChatEditParticipant = (participant: Participant) => {
-  editParticipantForm.value = {
-    visible: true,
-    participant: participant,
-  }
-}
-
-const editChatEditParticipant = (participant: Participant) => {
-  editParticipantForm.value = {
-    visible: true,
-    participant: participant,
-  }
+  modalsShow.editChat = true
+  modalsKey.editChat++
 }
 
 onMounted(async () => {
@@ -336,8 +155,8 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <n-layout :has-sider="showSider" class="full bfc">
-    <n-layout-sider v-if="showSider" width="200" theme="dark" class="bfc">
+  <NLayout :has-sider="showSider" class="full bfc">
+    <NLayoutSider v-if="showSider" width="200" class="bfc">
       <div class="sider bfc">
         <div
           style="
@@ -351,27 +170,27 @@ onMounted(async () => {
           <h2>LLMRolePlay</h2>
         </div>
         <div style="margin: 2px 4px; height: 2.5em">
-          <n-button
+          <NButton
             type="default"
             style="width: 100%; height: 100%"
             @click="startAddChat"
           >
             <template #icon>
-              <n-icon>
+              <NIcon>
                 <MdAdd />
-              </n-icon>
+              </NIcon>
             </template>
-          </n-button>
+          </NButton>
         </div>
-        <n-scrollbar style="height: 100%" content-style="margin: 0 4px">
-          <n-list :show-divider="false">
-            <n-list-item
+        <NScrollbar style="height: 100%" content-style="margin: 0 4px">
+          <NList :show-divider="false">
+            <NListItem
               v-for="(chat, index) in chats"
               :key="index"
               style="height: 2.5em; margin-left: 1em; margin-right: 1em"
               class="chat-list-item"
             >
-              <n-space
+              <NSpace
                 style="width: 100%"
                 align="center"
                 justify="space-between"
@@ -379,40 +198,40 @@ onMounted(async () => {
                 <div @click="setChat(chat)">
                   {{ chat.name }}
                 </div>
-                <n-space>
-                  <n-button
+                <NSpace>
+                  <NButton
                     text
                     size="small"
                     class="chat-button"
                     @click="startEditChat(chat)"
                   >
                     <template #icon>
-                      <n-icon>
+                      <NIcon>
                         <MdCreate />
-                      </n-icon>
+                      </NIcon>
                     </template>
-                  </n-button>
-                  <n-button
+                  </NButton>
+                  <NButton
                     text
                     size="small"
                     class="chat-button"
                     @click="deleteChat(chat)"
                   >
                     <template #icon>
-                      <n-icon>
+                      <NIcon>
                         <MdClose />
-                      </n-icon>
+                      </NIcon>
                     </template>
-                  </n-button>
-                </n-space>
-              </n-space>
-            </n-list-item>
-          </n-list>
-        </n-scrollbar>
+                  </NButton>
+                </NSpace>
+              </NSpace>
+            </NListItem>
+          </NList>
+        </NScrollbar>
       </div>
-    </n-layout-sider>
-    <n-layout class="full bfc">
-      <n-layout-header
+    </NLayoutSider>
+    <NLayout class="full bfc">
+      <NLayoutHeader
         style="
           display: flex;
           align-items: center;
@@ -422,23 +241,23 @@ onMounted(async () => {
           margin-left: 0.5em;
         "
       >
-        <n-button
+        <NButton
           type="default"
           strong
           secondary
           @click="showSider = !showSider"
         >
-          <n-icon size="2em">
+          <NIcon size="2em">
             <IosMenu />
-          </n-icon>
-        </n-button>
-        <n-dropdown :options="dropdownOptions" @select="onDropdownSelect">
-          <n-icon size="2.5em" style="padding-right: 0.5em">
+          </NIcon>
+        </NButton>
+        <NDropdown :options="dropdownOptions" @select="onDropdownSelect">
+          <NIcon size="2.5em" style="padding-right: 0.5em">
             <MdContact />
-          </n-icon>
-        </n-dropdown>
-      </n-layout-header>
-      <n-layout-content class="bfc" style="height: calc(100% - 3.5em)">
+          </NIcon>
+        </NDropdown>
+      </NLayoutHeader>
+      <NLayoutContent class="bfc" style="height: calc(100% - 3.5em)">
         <Suspense>
           <ChatBox v-if="currentChat" :key="chatBoxKey" :chat="currentChat" />
           <template #fallback>
@@ -451,311 +270,35 @@ onMounted(async () => {
                 justify-content: center;
               "
             >
-              <n-spin tip="Loading..." />
+              <NSpin tip="Loading..." />
             </div>
           </template>
         </Suspense>
-      </n-layout-content>
-    </n-layout>
-  </n-layout>
-  <n-modal
-    v-model:show="addChatForm.visible"
-    preset="card"
-    title="添加聊天"
-    size="medium"
-    style="width: fit-content; min-width: 25em"
-  >
-    <n-form label-placement="left">
-      <n-form-item label="名称">
-        <n-input v-model:value="addChatForm.name" />
-      </n-form-item>
-      <n-form-item label="描述">
-        <n-input v-model:value="addChatForm.description" />
-      </n-form-item>
-      <n-form-item label="参与者">
-        <n-dynamic-tags
-          v-model:value="addChatForm.participants"
-          :render-tag="renderAddChatParticipant"
-        >
-          <template #trigger>
-            <n-button
-              size="small"
-              type="primary"
-              dashed
-              @click="addChatAddParticipant"
-            >
-              <template #icon>
-                <n-icon>
-                  <MdAdd />
-                </n-icon>
-              </template>
-              添加参与者
-            </n-button>
-          </template>
-        </n-dynamic-tags>
-      </n-form-item>
-    </n-form>
-    <template #footer>
-      <n-space justify="end">
-        <n-button @click="addChatForm.visible = false"> 取消 </n-button>
-        <n-button type="primary" @click="addChat"> 保存 </n-button>
-      </n-space>
-    </template>
-  </n-modal>
-  <n-modal
-    v-model:show="addParticipantForm.visible"
-    title="添加参与者"
-    size="medium"
-    preset="card"
-    style="width: fit-content; min-width: 25em"
-  >
-    <n-form label-placement="left">
-      <n-form-item label="姓名">
-        <n-input v-model:value="addParticipantForm.name" />
-      </n-form-item>
-      <n-form-item label="模型">
-        <n-select
-          v-model:value="addParticipantForm.model"
-          filterable
-          :options="modelOptions"
-        />
-      </n-form-item>
-      <n-form-item label="预设">
-        <n-select
-          v-model:value="addParticipantForm.presets"
-          filterable
-          multiple
-          :options="
-            presets.map((p: Preset) => {
-              return {
-                label: p.name,
-                value: p,
-              }
-            })
-          "
-        />
-      </n-form-item>
-      <n-form-item label="角色">
-        <n-select
-          v-model:value="addParticipantForm.character"
-          filterable
-          :options="
-            characters.map((c: Character) => {
-              return {
-                label: c.name,
-                value: c,
-              }
-            })
-          "
-        />
-      </n-form-item>
-      <n-form-item label="模板">
-        <n-select
-          v-model:value="addParticipantForm.template"
-          filterable
-          :options="
-            templates.map((t: Template) => {
-              return {
-                label: t.name,
-                value: t,
-              }
-            })
-          "
-        />
-      </n-form-item>
-    </n-form>
-    <template #footer>
-      <n-space justify="end">
-        <n-button @click="addParticipantForm.visible = false"> 取消 </n-button>
-        <n-button type="primary" @click="addParticipantForm.onConfirm">
-          保存
-        </n-button>
-      </n-space>
-    </template>
-  </n-modal>
-  <n-modal
-    v-model:show="editChatForm.visible"
-    title="编辑聊天"
-    preset="card"
-    style="width: fit-content; min-width: 25em"
-    size="medium"
-  >
-    <n-form label-placement="left">
-      <n-form-item label="名称">
-        <SettingsInput
-          :value="editChatForm.chat!.name!"
-          @confirm="
-            async (name) => {
-              await api.updateChat(editChatForm.chat!.id!, {
-                name: name,
-              })
-              editChatForm.chat!.name = name
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="描述">
-        <SettingsInput
-          :value="editChatForm.chat!.description!"
-          @confirm="
-            async (description) => {
-              console.log(description)
-              await api.updateChat(editChatForm.chat!.id!, {
-                description: description,
-              })
-              editChatForm.chat!.description = description
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="参与者">
-        <n-dynamic-tags
-          v-model:value="editChatForm.chat!.participants!"
-          :render-tag="renderEditChatParticipant"
-        >
-          <template #trigger>
-            <n-button
-              size="small"
-              type="primary"
-              dashed
-              @click="editChatAddParticipant"
-            >
-              <template #icon>
-                <n-icon>
-                  <MdAdd />
-                </n-icon>
-              </template>
-              添加参与者
-            </n-button>
-          </template>
-        </n-dynamic-tags>
-      </n-form-item>
-    </n-form>
-  </n-modal>
-  <n-modal
-    v-model:show="editParticipantForm.visible"
-    title="编辑参与者"
-    preset="card"
-    style="width: fit-content; min-width: 25em"
-    size="medium"
-  >
-    <n-form label-placement="left">
-      <n-form-item label="姓名">
-        <SettingsInput
-          :value="editParticipantForm.participant!.name"
-          @confirm="
-            async (name) => {
-              await api.updateParticipant(
-                editParticipantForm.participant!.id!,
-                {
-                  name: editParticipantForm.participant!.name!,
-                },
-              )
-              editParticipantForm.participant!.name = name
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="模型">
-        <SettingsInput
-          type="select"
-          :options="modelOptions"
-          :value="editParticipantForm.participant!.model!.name"
-          @confirm="
-            async (model) => {
-              await api.updateParticipant(
-                editParticipantForm.participant!.id!,
-                {
-                  modelId: model.id!,
-                },
-              )
-              editParticipantForm.participant!.model = model
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="预设">
-        <SettingsInput
-          type="select"
-          multiple
-          :options="
-            presets.map((p: Preset) => {
-              return {
-                label: p.name!,
-                value: p.id!,
-              }
-            })
-          "
-          :value="
-            editParticipantForm.participant!.presets!.map((p: Preset) => p.id!)
-          "
-          @confirm="
-            async (_presets) => {
-              await api.updateParticipant(
-                editParticipantForm.participant!.id!,
-                {
-                  presetIds: _presets,
-                },
-              )
-              editParticipantForm.participant!.presets = presets.filter(
-                (p: Preset) => _presets.includes(p.id!),
-              )
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="角色">
-        <SettingsInput
-          :value="editParticipantForm.participant!.character!.name"
-          type="select"
-          :options="
-            characters.map((c: Character) => {
-              return {
-                label: c.name!,
-                value: c,
-              }
-            })
-          "
-          @confirm="
-            async (character) => {
-              await api.updateParticipant(
-                editParticipantForm.participant!.id!,
-                {
-                  characterId: character.id!,
-                },
-              )
-              editParticipantForm.participant!.character = character
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="模板">
-        <SettingsInput
-          :value="editParticipantForm.participant!.template!.name"
-          type="select"
-          :options="
-            templates.map((t: Template) => {
-              return {
-                label: t.name!,
-                value: t,
-              }
-            })
-          "
-          @confirm="
-            async (template) => {
-              await api.updateParticipant(
-                editParticipantForm.participant!.id!,
-                {
-                  templateId: template.id!,
-                },
-              )
-              editParticipantForm.participant!.template = template
-            }
-          "
-        />
-      </n-form-item>
-    </n-form>
-  </n-modal>
+      </NLayoutContent>
+    </NLayout>
+  </NLayout>
+  <AddChatModal
+    :key="modalsKey.addChat"
+    :providers="providers"
+    :presets="presets"
+    :characters="characters"
+    :templates="templates"
+    :models="publicModels"
+    :show="modalsShow.addChat"
+    @confirm="confirmAddChat"
+  ></AddChatModal>
+  <EditChatModal
+    v-if="modalsShow.editingChat"
+    :key="modalsKey.editChat"
+    :form="modalsShow.editingChat!"
+    :providers="providers"
+    :presets="presets"
+    :characters="characters"
+    :templates="templates"
+    :models="publicModels"
+    :show="modalsShow.editChat"
+    @confirm="confirmEditChat"
+  ></EditChatModal>
 </template>
 
 <style scoped>

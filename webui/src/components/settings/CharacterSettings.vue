@@ -61,7 +61,18 @@ const onAddConfirm = async () => {
   characters.value = await api.getCharacters()
 }
 
-const onEditConfirm = async () => {}
+const onEditConfirm = async (form: EditCharacterForm) => {
+  characters.value
+    .filter((c) => c.id === form.id)
+    .forEach((c) => {
+      c.name = form.name
+      c.description = form.description
+      c.content = form.content
+      c.isPublic = form.isPublic
+      c.settings = form.settings
+      c.avatar = form.avatar
+    })
+}
 </script>
 <template>
   <div style="padding: 2em">

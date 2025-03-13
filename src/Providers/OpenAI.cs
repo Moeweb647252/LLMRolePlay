@@ -1,6 +1,4 @@
 using LLMRolePlay.Models;
-using Newtonsoft.Json;
-using System.Collections;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
@@ -65,16 +63,16 @@ namespace LLMRolePlay.Providers.OpenAI
       Participant = participant;
     }
 
-    public async IAsyncEnumerable<StreamingResponseChunk> Compeletion(List<ChatMessage> _messages)
+    public async IAsyncEnumerable<StreamingResponseChunk> Completion(List<ChatMessage> _messages)
     {
       var client = new HttpClient();
       client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Participant.Model.Provider.ApiKey}");
-      Settings? settings = JsonConvert.DeserializeObject<Settings>(Participant.Model.Settings);
+      Settings? settings = JsonSerializer.Deserialize<Settings>(Participant.Model.Settings);
       List<ChatMessage> messages = ([
         new ChatMessage { role = "system", content = await Participant.MakeSystemPrompt(_dBContext) },
       ]);
       messages = messages.Concat(_messages.ToList()).ToList();
-      var content = new StringContent(JsonConvert.SerializeObject(new CompletionRequest
+      var content = new StringContent(JsonSerializer.Serialize(new CompletionRequest
       {
         model = Participant.Model.ModelName,
         messages = messages,
@@ -101,7 +99,7 @@ namespace LLMRolePlay.Providers.OpenAI
             if (line.StartsWith("data: "))
             {
               line = line[6..];
-              var chunk = JsonConvert.DeserializeObject<StreamingResponseChunk>(line);
+              var chunk = JsonSerializer.Deserialize<StreamingResponseChunk>(line);
               if (chunk != null)
               {
                 yield return chunk;

@@ -3,12 +3,12 @@ using LLMRolePlay.Providers.OpenAI;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace LLMRolePlay.Controllers
 {
 
-  public class CompeletionRequest
+  public class CompletionRequest
   {
     public required uint participantId { get; set; }
   }
@@ -16,7 +16,7 @@ namespace LLMRolePlay.Controllers
   {
     [HttpGet("completion/{participantId}")]
     [AllowAnonymous]
-    public async Task Compeletion(uint participantId)
+    public async Task Completion(uint participantId)
     {
       string? token = Request.Headers["token"];
       if (token == null) return;
@@ -25,7 +25,7 @@ namespace LLMRolePlay.Controllers
       Participant? participant = await _dBContext.Participants.Include(p => p.Template).Include(p => p.Character).Include(p => p.Model).ThenInclude(m => m.Provider).FirstOrDefaultAsync(p => p.Id == participantId);
       if (participant == null) return;
       Chat? chat = await _dBContext.Chats.Include(c => c.Messages).FirstOrDefaultAsync(c => c.Id == participant.ChatId);
-      ChatSettings? chatSettings = JsonConvert.DeserializeObject<ChatSettings>(chat?.Settings ?? "{}");
+      ChatSettings? chatSettings = JsonSerializer.Deserialize<ChatSettings>(chat?.Settings ?? "{}");
       if (chat == null) return;
       Response.Headers.Append("Content-Type", "text/event-stream");
       Response.Headers.Append("Cache-Control", "no-cache");
@@ -34,7 +34,7 @@ namespace LLMRolePlay.Controllers
       {
         var openai = new OpenAI(participant, _dBContext);
         var content = "";
-        var stream = openai.Compeletion(await Utils.AwaitAll(chat.Messages.Select(async m =>
+        var stream = openai.Completion(await Utils.AwaitAll(chat.Messages.Select(async m =>
         {
           var participant = await _dBContext.Participants.Where(p => p.Id == m.ParticipantId).FirstOrDefaultAsync();
           return new ChatMessage
@@ -56,7 +56,7 @@ namespace LLMRolePlay.Controllers
               if (delta != null)
               {
                 content += delta;
-                await Response.WriteAsync("data: " + JsonConvert.SerializeObject(new
+                await Response.WriteAsync("data: " + JsonSerializer.Serialize(new
                 {
                   delta
                 }) + "\n\n");
@@ -77,7 +77,7 @@ namespace LLMRolePlay.Controllers
         var newMessage = new Message("assistant", content, 0, chat.Id, participant.Id);
         _dBContext.Messages.Add(newMessage);
         await _dBContext.SaveChangesAsync();
-        await Response.WriteAsync("data: " + JsonConvert.SerializeObject(new
+        await Response.WriteAsync("data: " + JsonSerializer.Serialize(new
         {
           id = newMessage.Id,
         }) + "\n\n");

@@ -363,4 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 /config.json
-lrp.db
+lrp.db*
