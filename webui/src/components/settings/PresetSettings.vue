@@ -50,6 +50,13 @@ const edit = (preset: Preset) => {
     settings: preset.settings,
   }
   showEditModal.value = true
+  onEditConfirm = (form: EditPresetForm) => {
+    preset.name = form.name
+    preset.description = form.description
+    preset.content = form.content
+    preset.isPublic = form.isPublic
+    preset.settings = form.settings
+  }
 }
 
 const sharePreset = (preset: Preset) => {
@@ -62,18 +69,7 @@ const onAddConfirm = async () => {
   presets.value = await api.getPresets()
 }
 
-const onEditConfirm = async (form: EditPresetForm) => {
-  showEditModal.value = false
-  presets.value
-    .filter((p) => p.id === form.id)
-    .forEach((p) => {
-      p.name = form.name
-      p.description = form.description
-      p.content = form.content
-      p.isPublic = form.isPublic
-      p.settings = form.settings
-    })
-}
+let onEditConfirm = (_form: EditPresetForm) => {}
 </script>
 
 <template>

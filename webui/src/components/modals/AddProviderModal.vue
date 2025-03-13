@@ -64,7 +64,6 @@ const form = ref<AddProviderForm>({
   type: 'openai',
   baseUrl: null,
   apiKey: null,
-  isPublic: false,
   models: [],
   settings: null,
 })
@@ -140,9 +139,6 @@ const cancel = () => {}
       </NFormItem>
       <NFormItem label="类型">
         <NSelect v-model:value="form.type" :options="types" />
-      </NFormItem>
-      <NFormItem label="是否公开">
-        <NSwitch v-model:value="form.isPublic" />
       </NFormItem>
       <NFormItem label="模型">
         <NDynamicTags

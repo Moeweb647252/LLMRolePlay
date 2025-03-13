@@ -45,7 +45,7 @@ export class Provider {
   apiKey: string
   description: string | null
   settings: object | null
-  type: 'openai' | 'google' | 'azure'
+  type: string
   models: Model[]
 
   constructor(
@@ -55,7 +55,7 @@ export class Provider {
     apiKey: string,
     description: string | null = null,
     settings: object | null = null,
-    type: 'openai' | 'google' | 'azure',
+    type: string,
     models: Model[] = [],
   ) {
     this.id = id

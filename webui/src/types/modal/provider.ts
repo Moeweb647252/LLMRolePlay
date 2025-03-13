@@ -7,7 +7,6 @@ export interface AddProviderForm {
   baseUrl: string | null
   apiKey: string | null
   settings: object | null
-  isPublic: boolean
   models: AddModelForm[]
 }
 
@@ -19,6 +18,5 @@ export interface EditProviderForm {
   baseUrl: string | null
   apiKey: string | null
   settings: object | null
-  isPublic: boolean
   models: EditModelForm[]
 }

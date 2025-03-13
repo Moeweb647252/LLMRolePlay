@@ -14,7 +14,7 @@ export interface EditModelForm {
   id: number
   name: string
   description: string | null
-  modelName: string | null
+  modelName: string
   isPublic: boolean
   settings: {
     temperature: number | null

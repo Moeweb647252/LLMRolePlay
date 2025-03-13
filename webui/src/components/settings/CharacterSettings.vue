@@ -54,6 +54,14 @@ const edit = (character: Character) => {
     avatar: character.avatar,
   }
   showEditModal.value = true
+  onEditConfirm = async (form: EditCharacterForm) => {
+    character.name = form.name
+    character.description = form.description
+    character.content = form.content
+    character.isPublic = form.isPublic
+    character.settings = form.settings
+    character.avatar = form.avatar
+  }
 }
 
 const onAddConfirm = async () => {
@@ -61,18 +69,7 @@ const onAddConfirm = async () => {
   characters.value = await api.getCharacters()
 }
 
-const onEditConfirm = async (form: EditCharacterForm) => {
-  characters.value
-    .filter((c) => c.id === form.id)
-    .forEach((c) => {
-      c.name = form.name
-      c.description = form.description
-      c.content = form.content
-      c.isPublic = form.isPublic
-      c.settings = form.settings
-      c.avatar = form.avatar
-    })
-}
+let onEditConfirm = async (_form: EditCharacterForm) => {}
 </script>
 <template>
   <div style="padding: 2em">
