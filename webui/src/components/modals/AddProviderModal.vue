@@ -9,7 +9,6 @@ import {
   NSpace,
   NButton,
   NSelect,
-  NSwitch,
   NDynamicTags,
   NIcon,
   NTag,

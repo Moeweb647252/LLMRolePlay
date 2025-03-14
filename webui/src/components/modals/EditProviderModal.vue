@@ -22,7 +22,26 @@ const renderModelTags = (model: EditModelForm) => {
     {
       closable: true,
       onClose: () => {
-        form.value.models.splice(form.value.models.indexOf(model), 1)
+        modal.create({
+          title: '删除模型',
+          content: `确定删除模型 ${model.name} ?`,
+          preset: 'dialog',
+          positiveText: '确定',
+          negativeText: '取消',
+          onPositiveClick: async () => {
+            try {
+              await api.deleteModel(model.id!)
+              form.value!.models.splice(form.value!.models.indexOf(model), 1)
+              message.success('删除成功')
+            } catch (e) {
+              console.log(e)
+              message.error('删除失败')
+            }
+          },
+          onNegativeClick: () => {
+            console.log('取消删除')
+          },
+        })
       },
       onClick: () => {},
     },
@@ -44,6 +63,14 @@ const show = defineModel('show', {
   type: Boolean,
   default: false,
 })
+
+const validate = () => {
+  if (!form.value.name) {
+    message.error('名称不能为空')
+    return false
+  }
+  return true
+}
 </script>
 
 <template>
@@ -74,7 +101,7 @@ const show = defineModel('show', {
         />
       </NFormItem>
       <NFormItem label="模型">
-        <NDynamicTags></NDynamicTags>
+        <NDynamicTags :render-tag="renderModelTags as any"> </NDynamicTags>
       </NFormItem>
     </NForm>
   </NModal>
