@@ -3,57 +3,14 @@ import { api } from '@/api'
 import { Template } from '@/types/template'
 import { useMessage, useModal } from 'naive-ui'
 import { ref } from 'vue'
-import SettingsInput from '../SettingsInput.vue'
+import { NButton, NList, NListItem, NSpace } from 'naive-ui'
+import type { AddTemplateForm, EditTemplateForm } from '@/types/modal'
+import AddTemplateModal from '@/components/modals/AddTemplate.vue'
+import EditTemplateModal from '@/components/modals/EditTemplate.vue'
 
 const templates = ref(await api.getTemplates())
 const message = useMessage()
 const model = useModal()
-
-const addTemplateForm = ref({
-  visible: false,
-  name: '',
-  description: '',
-  content: '',
-  isPublic: false,
-})
-
-const addTemplate = async () => {
-  let data = JSON.parse(JSON.stringify(addTemplateForm.value))
-  addTemplateForm.value = {
-    name: '',
-    description: '',
-    content: '',
-    visible: false,
-    isPublic: false,
-  }
-  let id = await api.addTemplate(data.name, data.content, data.description)
-  templates.value.push(
-    new Template(id, data.name, data.content, data.description, data.isPublic),
-  )
-  message.success('添加成功')
-}
-
-const cancelAddTemplate = () => {
-  addTemplateForm.value = {
-    name: '',
-    description: '',
-    content: '',
-    visible: false,
-    isPublic: false,
-  }
-}
-
-const editTemplateForm = ref({
-  visible: false,
-  template: null as Template | null,
-})
-
-const editTemplate = (template: Template) => {
-  editTemplateForm.value = {
-    visible: true,
-    template,
-  }
-}
 
 const deleteTemplate = async (template: Template) => {
   model.create({
@@ -68,130 +25,63 @@ const deleteTemplate = async (template: Template) => {
         templates.value.splice(templates.value.indexOf(template), 1)
         message.success('删除成功')
       } catch (e) {
+        console.log(e)
         message.error('删除失败')
       }
     },
   })
 }
+
+const editShow = ref(false)
+const addShow = ref(false)
+const editKey = ref(0)
+const addKey = ref(0)
+const editing = ref<EditTemplateForm | null>(null)
+
+const onAddConfirm = async (form: AddTemplateForm) => {}
+
+let onEditConfirm = (_form: EditTemplateForm) => {}
+
+const startEdit = (template: Template) => {}
 </script>
 <template>
   <div style="padding: 2em">
     <div class="header">
       <h3>模板</h3>
-      <n-button type="primary" @click="addTemplateForm.visible = true">
+      <NButton type="primary" @click="addTemplateForm.visible = true">
         添加
-      </n-button>
+      </NButton>
     </div>
     <div>
-      <n-list>
-        <n-list-item v-for="template in templates" :key="template.id">
+      <NList>
+        <NListItem v-for="template in templates" :key="template.id">
           {{ template.name }}
           <template #suffix>
-            <n-space :wrap="false">
-              <n-button type="primary" @click="editTemplate(template)">
+            <NSpace :wrap="false">
+              <NButton type="primary" @click="startEdit(template)">
                 编辑
-              </n-button>
-              <n-button type="error" @click="deleteTemplate(template)">
+              </NButton>
+              <NButton type="error" @click="deleteTemplate(template)">
                 删除
-              </n-button>
-            </n-space>
+              </NButton>
+            </NSpace>
           </template>
-        </n-list-item>
-      </n-list>
+        </NListItem>
+      </NList>
     </div>
   </div>
-  <n-modal
-    v-model:show="addTemplateForm.visible"
-    title="添加模板"
-    size="medium"
-    preset="card"
-    style="width: fit-content; min-width: 25em"
-  >
-    <n-form label-placement="left">
-      <n-form-item label="名称">
-        <n-input v-model:value="addTemplateForm.name" />
-      </n-form-item>
-      <n-form-item label="描述">
-        <n-input v-model:value="addTemplateForm.description" />
-      </n-form-item>
-      <n-form-item label="公开">
-        <n-switch v-model:value="addTemplateForm.isPublic" />
-      </n-form-item>
-      <n-form-item label="内容">
-        <n-input v-model:value="addTemplateForm.content" type="textarea" />
-      </n-form-item>
-    </n-form>
-    <template #footer>
-      <n-space justify="end">
-        <n-button @click="cancelAddTemplate"> 取消 </n-button>
-        <n-button type="primary" @click="addTemplate"> 保存 </n-button>
-      </n-space>
-    </template>
-  </n-modal>
-  <n-modal
-    v-model:show="editTemplateForm.visible"
-    title="编辑模板"
-    size="medium"
-    preset="card"
-    style="width: fit-content; min-width: 25em"
-  >
-    <n-form label-placement="left">
-      <n-form-item label="名称">
-        <SettingsInput
-          :value="editTemplateForm.template!.name"
-          @confirm="
-            async () => {
-              await api.updateTemplate(editTemplateForm.template!.id!, {
-                name: editTemplateForm.template!.name!,
-              })
-              editTemplateForm.template!.name = editTemplateForm.template!.name!
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="描述">
-        <SettingsInput
-          :value="editTemplateForm.template!.description"
-          @confirm="
-            async () => {
-              await api.updateTemplate(editTemplateForm.template!.id!, {
-                description: editTemplateForm.template!.description!,
-              })
-              editTemplateForm.template!.description =
-                editTemplateForm.template!.description!
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="公开">
-        <SettingsSwitch
-          :value="editTemplateForm.template!.isPublic"
-          @confirm="
-            async (isPublic: boolean) => {
-              await api.updateTemplate(editTemplateForm.template!.id!, {
-                isPublic: isPublic,
-              })
-              editTemplateForm.template!.isPublic = isPublic
-            }
-          "
-        />
-      </n-form-item>
-      <n-form-item label="内容">
-        <SettingsInput
-          :value="editTemplateForm.template!.content"
-          type="textarea"
-          @confirm="
-            async (content: any) => {
-              await api.updateTemplate(editTemplateForm.template!.id!, {
-                content,
-              })
-              editTemplateForm.template!.content = content
-            }
-          "
-        />
-      </n-form-item>
-    </n-form>
-  </n-modal>
+  <AddTemplateModal
+    :key="addKey"
+    v-model:visible="addShow"
+    @confirm="onAddConfirm"
+  />
+  <EditTemplateModal
+    v-if="editing"
+    :key="editKey"
+    v-model:visible="editShow"
+    :value="editing"
+    @confirm="onEditConfirm"
+  />
 </template>
 
 <style scoped>

@@ -7,7 +7,7 @@ import { api } from '@/api'
 import SettingsSwitch from '../SettingsSwitch.vue'
 
 const props = defineProps<{
-  form: EditModelForm
+  value: EditModelForm
 }>()
 
 const show = defineModel<boolean>('show', {
@@ -15,7 +15,7 @@ const show = defineModel<boolean>('show', {
 })
 const emit = defineEmits(['cancel', 'confirm'])
 
-const form = toRef(props, 'form')
+const form = toRef(props, 'value')
 
 const cancel = () => {
   emit('cancel')

@@ -1,17 +1,26 @@
 <script setup lang="ts">
-import type { EditModelForm, EditProviderForm } from '@/types/modal'
+import type {
+  AddModelForm,
+  EditModelForm,
+  EditProviderForm,
+} from '@/types/modal'
 import {
   NDynamicTags,
   NForm,
   NFormItem,
   NModal,
   NTag,
+  NButton,
   useMessage,
   useModal,
+  NIcon,
 } from 'naive-ui'
-import { h, toRef } from 'vue'
+import { h, ref, toRef } from 'vue'
 import SettingsInput from '../SettingsInput.vue'
 import { api } from '@/api'
+import { MdAdd } from '@vicons/ionicons4'
+import AddModelModal from './AddModelModal.vue'
+import EditModelModal from './EditModelModal.vue'
 
 const message = useMessage()
 const modal = useModal()
@@ -43,7 +52,11 @@ const renderModelTags = (model: EditModelForm) => {
           },
         })
       },
-      onClick: () => {},
+      onClick: () => {
+        editingModel.value = model
+        editModelKey.value += 1
+        editModelShow.value = true
+      },
     },
     {
       default: () => model,
@@ -52,10 +65,10 @@ const renderModelTags = (model: EditModelForm) => {
 }
 
 const props = defineProps<{
-  form: EditProviderForm
+  value: EditProviderForm
 }>()
 
-const form = toRef(props, 'form')
+const form = toRef(props, 'value')
 
 const emit = defineEmits(['confirm'])
 
@@ -64,12 +77,34 @@ const show = defineModel('show', {
   default: false,
 })
 
-const validate = () => {
-  if (!form.value.name) {
-    message.error('名称不能为空')
-    return false
-  }
-  return true
+const addModelShow = ref(false)
+const addModelKey = ref(0)
+const editModelShow = ref(false)
+const editModelKey = ref(0)
+const editingModel = ref<EditModelForm | null>(null)
+
+const startAddModel = () => {
+  addModelKey.value += 1
+  addModelShow.value = true
+}
+
+const onConfirmAddModel = async (model: AddModelForm) => {
+  let id = await api.addModel(
+    model.name!,
+    model.modelName!,
+    model.description,
+    form.value.id,
+    model.isPublic,
+    model.settings,
+  )
+  form.value.models.push({
+    name: model.name!,
+    modelName: model.modelName!,
+    description: model.description,
+    settings: model.settings,
+    isPublic: model.isPublic,
+    id,
+  })
 }
 </script>
 
@@ -101,8 +136,30 @@ const validate = () => {
         />
       </NFormItem>
       <NFormItem label="模型">
-        <NDynamicTags :render-tag="renderModelTags as any"> </NDynamicTags>
+        <NDynamicTags :render-tag="renderModelTags as any">
+          <template #trigger>
+            <NButton size="small" type="primary" dashed @click="startAddModel">
+              <template #icon>
+                <NIcon>
+                  <MdAdd />
+                </NIcon>
+              </template>
+              添加模型
+            </NButton>
+          </template>
+        </NDynamicTags>
       </NFormItem>
     </NForm>
   </NModal>
+  <AddModelModal
+    :key="addModelKey"
+    v-model:show="addModelShow"
+    @confirm="onConfirmAddModel"
+  />
+  <EditModelModal
+    v-if="editingModel"
+    :key="editModelKey"
+    v-model:show="editModelShow"
+    :value="editingModel"
+  />
 </template>

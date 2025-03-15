@@ -6,10 +6,10 @@ import type { EditUserForm } from '@/types/modal/user'
 import { api } from '@/api'
 
 const props = defineProps<{
-  user: EditUserForm
+  value: EditUserForm
 }>()
 
-const form = toRef(props, 'user')
+const form = toRef(props, 'value')
 const show = defineModel('show', {
   type: Boolean,
   default: false,

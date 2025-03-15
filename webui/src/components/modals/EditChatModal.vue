@@ -26,7 +26,7 @@ const props = defineProps<{
   presets: Options
   characters: Options
   templates: Options
-  form: EditChatForm
+  value: EditChatForm
 }>()
 
 const renderParticipantTags = (participant: EditParticipantForm) => {
@@ -91,7 +91,7 @@ const onAddParticipantConfirm = (participant: EditParticipantForm) => {
 const showEditParticipantModal = ref(false)
 const showAddParticipantModal = ref(false)
 
-const form = toRef(props, 'form')
+const form = toRef(props, 'value')
 
 const emit = defineEmits(['confirm'])
 </script>
@@ -170,7 +170,7 @@ const emit = defineEmits(['confirm'])
     :models="models"
     :presets="presets"
     :templates="templates"
-    :participant="editingParticipant!"
+    :value="editingParticipant!"
     @confirm="
       (value) => {
         editingParticipant = value

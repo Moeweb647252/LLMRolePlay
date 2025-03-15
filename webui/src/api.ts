@@ -79,7 +79,7 @@ export class Api {
     name: string,
     description: string | null,
     content: { key: string; value: string }[],
-    settings: object,
+    settings: object | null,
     isPublic: boolean = false,
     avatar: number | null = null,
   ): Promise<number> {
@@ -316,6 +316,7 @@ export class Api {
     modelName: string,
     description: string | null,
     providerId: number,
+    isPublic: boolean = false,
     settings: object,
   ): Promise<number> {
     const data = await this.request('createModel', {
@@ -324,7 +325,7 @@ export class Api {
       description: description,
       providerId: providerId,
       settings: JSON.stringify(settings),
-      isPublic: false,
+      isPublic: isPublic,
     })
     return data.id
   }

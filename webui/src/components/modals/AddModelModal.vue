@@ -12,7 +12,6 @@ import {
   NSwitch,
 } from 'naive-ui'
 import type { AddModelForm } from '@/types/modal'
-
 const show = defineModel<boolean>('show', {
   default: false,
 })

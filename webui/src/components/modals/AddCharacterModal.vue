@@ -13,7 +13,6 @@ import {
   NButton,
 } from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
-import { api } from '@/api'
 import type { AddCharacterForm } from '@/types/modal/character'
 
 const show = defineModel<boolean>('show', {
@@ -34,16 +33,8 @@ const form = ref<AddCharacterForm>({
   avatar: null,
 })
 
-const confirm = async () => {
+const confirm = () => {
   if (!validate()) return
-  api.addCharacter(
-    form.value.name!,
-    form.value.description,
-    form.value.content,
-    {},
-    form.value.isPublic,
-    form.value.avatar,
-  )
   emit('confirm', form.value)
 }
 

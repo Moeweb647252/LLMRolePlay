@@ -105,7 +105,7 @@ let onEditConfirm = (_form: EditProviderForm) => {}
     v-if="editingProvider"
     :key="editModalKey"
     v-model:show="showEditModal"
-    :form="editingProvider!"
+    :value="editingProvider!"
     @confirm="onEditConfirm"
   ></EditProviderModal>
 </template>

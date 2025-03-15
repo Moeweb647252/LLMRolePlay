@@ -7,10 +7,10 @@ import type { EditTemplateForm } from '@/types/modal'
 import { api } from '@/api'
 
 const props = defineProps<{
-  template: EditTemplateForm
+  value: EditTemplateForm
 }>()
 
-const form = toRef(props, 'template')
+const form = toRef(props, 'value')
 const show = defineModel('show', {
   type: Boolean,
   default: false,

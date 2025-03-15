@@ -8,10 +8,10 @@ import { api } from '@/api'
 import type { EditPresetForm } from '@/types/modal'
 
 const props = defineProps<{
-  preset: EditPresetForm | null
+  value: EditPresetForm | null
 }>()
 
-const form = toRef(props, 'preset')
+const form = toRef(props, 'value')
 const show = defineModel('show', {
   type: Boolean,
   default: false,

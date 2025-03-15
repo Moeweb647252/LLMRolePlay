@@ -9,7 +9,7 @@ const message = useMessage()
 const model = useModal()
 import AddCharacterModal from '../modals/AddCharacterModal.vue'
 import EditCharacterModal from '../modals/EditCharacterModal.vue'
-import type { EditCharacterForm } from '@/types/modal/index'
+import type { AddCharacterForm, EditCharacterForm } from '@/types/modal/index'
 
 const deleteCharacter = async (character: Character) => {
   model.create({
@@ -64,9 +64,31 @@ const edit = (character: Character) => {
   }
 }
 
-const onAddConfirm = async () => {
+const onAddConfirm = async (value: AddCharacterForm) => {
   showAddModal.value = false
-  characters.value = await api.getCharacters()
+  try {
+    let id = await api.addCharacter(
+      value.name!,
+      value.description,
+      value.content,
+      value.settings,
+      value.isPublic,
+      value.avatar,
+    )
+    characters.value.push({
+      id: id,
+      name: value.name!,
+      description: value.description,
+      content: value.content,
+      isPublic: value.isPublic,
+      settings: value.settings,
+      avatar: value.avatar,
+    })
+    message.success('添加成功')
+  } catch (e) {
+    console.log(e)
+    message.error('添加失败')
+  }
 }
 
 let onEditConfirm = async (_form: EditCharacterForm) => {}
@@ -99,7 +121,7 @@ let onEditConfirm = async (_form: EditCharacterForm) => {}
   ></AddCharacterModal>
   <EditCharacterModal
     v-model:show="showEditModal"
-    :character="editingCharacter!"
+    :value="editingCharacter!"
     @confirm="onEditConfirm"
   ></EditCharacterModal>
 </template>

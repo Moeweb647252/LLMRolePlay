@@ -3,7 +3,6 @@ import { useMessage } from 'naive-ui'
 import { NModal, NForm, NFormItem, NInput, NSelect, NButton } from 'naive-ui'
 import { ref } from 'vue'
 import type { AddUserForm } from '@/types/modal/user'
-import { api } from '@/api'
 
 const message = useMessage()
 
@@ -42,12 +41,6 @@ const cancel = () => {
 
 const confirm = async () => {
   if (validate()) {
-    await api.addUser(
-      form.value.username!,
-      form.value.email!,
-      form.value.password!,
-      form.value.role!,
-    )
     emit('confirm', form.value)
   }
 }

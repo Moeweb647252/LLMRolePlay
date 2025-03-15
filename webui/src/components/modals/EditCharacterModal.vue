@@ -15,10 +15,10 @@ import type { EditCharacterForm } from '@/types/modal/character'
 import { api } from '@/api'
 
 const props = defineProps<{
-  character: EditCharacterForm
+  value: EditCharacterForm
 }>()
 
-const form = toRef(props, 'character')
+const form = toRef(props, 'value')
 const show = defineModel('show', {
   type: Boolean,
   default: false,

@@ -11,7 +11,6 @@ import {
   NSpace,
   NButton,
 } from 'naive-ui'
-import { api } from '@/api'
 import type { AddPresetForm } from '@/types/modal/preset'
 
 const show = defineModel<boolean>('show', {
@@ -32,21 +31,7 @@ const form = ref<AddPresetForm>({
 
 const confirm = async () => {
   if (!validate()) return
-
-  try {
-    await api.addPreset(
-      form.value.name!,
-      form.value.description!,
-      form.value.content,
-      form.value.settings,
-      form.value.isPublic,
-    )
-    message.success('预设添加成功')
-    emit('confirm', form.value)
-  } catch (error) {
-    message.error('添加预设失败')
-    console.error(error)
-  }
+  emit('confirm', form.value)
 }
 
 const cancel = () => {

@@ -16,7 +16,6 @@ import {
 import { MdAdd } from '@vicons/ionicons4'
 
 import { h, ref } from 'vue'
-import { api } from '@/api'
 
 const renderModelTag = (model: AddModelForm, index: number) => {
   return h(
@@ -91,31 +90,8 @@ const validate = () => {
 
 const confirm = async () => {
   if (!validate()) return
-  try {
-    let id = await api.addProvider(
-      form.value.name!,
-      form.value.description,
-      form.value.type,
-      form.value.baseUrl!,
-      form.value.apiKey!,
-      null,
-    )
-    for (const model of form.value.models) {
-      await api.addModel(
-        model.name!,
-        model.modelName!,
-        model.description,
-        id,
-        model.settings,
-      )
-    }
-    message.success('提供者添加成功')
-    emit('confirm', form.value)
-    show.value = false
-  } catch (e) {
-    console.log(e)
-  }
   emit('confirm', form.value)
+  show.value = false
 }
 
 const cancel = () => {}
