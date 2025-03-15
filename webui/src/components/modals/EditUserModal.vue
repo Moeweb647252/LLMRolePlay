@@ -59,17 +59,17 @@ const userTypeOptions = [
           "
         />
       </NFormItem>
-      <NFormItem label="角色">
+      <NFormItem label="组">
         <SettingsInput
           type="select"
           :options="userTypeOptions"
-          :value="form!.role"
+          :value="form!.group"
           @confirm="
-            async (role) => {
+            async (group) => {
               await api.updateUser(form!.id, {
-                group: parseInt(role),
+                group: parseInt(group),
               })
-              form!.role = role
+              form!.group = group
               emit('confirm', form)
             }
           "

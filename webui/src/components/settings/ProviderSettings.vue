@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { Provider } from '@/types/provider'
-import { ref } from 'vue'
+import { Model, Provider } from '@/types/provider'
+import { reactive, ref } from 'vue'
 import { useMessage, useModal } from 'naive-ui'
 import { NButton, NList, NListItem, NSpace, NThing } from 'naive-ui'
 import AddProviderModal from '../modals/AddProviderModal.vue'
 import EditProviderModal from '../modals/EditProviderModal.vue'
 import { api } from '@/api'
-import type { EditProviderForm } from '@/types/modal'
+import type { AddProviderForm, EditProviderForm } from '@/types/modal'
 
 const providers = ref(await api.getProviders())
 const message = useMessage()
@@ -63,8 +63,52 @@ const edit = (provider: Provider) => {
   }
 }
 
-const onAddConfirm = async () => {
-  providers.value = await api.getProviders()
+const onAddConfirm = async (value: AddProviderForm) => {
+  showAddModal.value = false
+  try {
+    let providerId = await api.addProvider(
+      value.name!,
+      value.description,
+      value.type,
+      value.baseUrl!,
+      value.apiKey!,
+      null,
+    )
+    let newProvider = reactive({
+      id: providerId,
+      name: value.name!,
+      description: value.description,
+      type: value.type,
+      baseUrl: value.baseUrl!,
+      apiKey: value.apiKey!,
+      models: [] as Model[],
+      settings: null,
+    })
+    providers.value.push(newProvider)
+    for (const model of value.models) {
+      let id = await api.addModel(
+        model.name!,
+        model.modelName!,
+        model.description,
+        providerId,
+        model.isPublic,
+        model.settings,
+      )
+      newProvider.models.push({
+        name: model.name!,
+        modelName: model.modelName!,
+        description: model.description,
+        isPublic: model.isPublic,
+        settings: model.settings,
+        provider: newProvider,
+        id,
+      })
+    }
+    message.success('Provider添加成功.')
+  } catch (error) {
+    console.error(error)
+    message.error('Provider添加失败.')
+  }
 }
 
 let onEditConfirm = (_form: EditProviderForm) => {}

@@ -3,8 +3,19 @@ import { onMounted, reactive, ref, useTemplateRef, watch } from 'vue'
 import { IosSend } from '@vicons/ionicons4'
 import { Chat } from '@/types/chat'
 import { api, generate } from '@/api'
-import type { Message } from '@/types/chat'
+import type { Message as MessageT } from '@/types/chat'
 import { NScrollbar } from 'naive-ui'
+import Message from './Message.vue'
+import {
+  NFlex,
+  NGrid,
+  NInput,
+  NButton,
+  NInputGroup,
+  NSelect,
+  NGridItem,
+  NIcon,
+} from 'naive-ui'
 
 const participantIndex = ref(0)
 
@@ -12,7 +23,7 @@ const props = defineProps<{
   chat: Chat
 }>()
 
-const messages = reactive<Message[]>(await api.getMessages(props.chat.id!))
+const messages = reactive<MessageT[]>(await api.getMessages(props.chat.id!))
 const input = ref('')
 const generating = ref(false)
 const messageScroll = useTemplateRef('messageScroll')
@@ -62,7 +73,7 @@ const generateMessage = async () => {
   })
 }
 
-const deleteMessage = async (message: Message) => {
+const deleteMessage = async (message: MessageT) => {
   await api.deleteMessage(message.id!)
   messages.splice(messages.indexOf(message), 1)
   participantIndex.value -= 1
@@ -77,7 +88,8 @@ onMounted(async () => {
     () => {
       messageScroll.value!.scrollTo(
         0,
-        messageScroll.value?.scrollbarInstRef?.containerRef?.scrollHeight!,
+        messageScroll.value?.scrollbarInstRef?.containerRef
+          ?.scrollHeight as number,
       )
     },
     {
@@ -98,13 +110,13 @@ onMounted(async () => {
 <template>
   <div class="container">
     <div style="height: 4em">
-      <n-flex
+      <NFlex
         align="center"
         justify="space-between"
         style="height: 100%; width: 100%"
       >
         <h2>{{ props.chat.name }}</h2>
-      </n-flex>
+      </NFlex>
     </div>
     <div style="height: calc(100% - 2em); padding-top: 2em; overflow: hidden">
       <div class="chat-box">
@@ -115,14 +127,14 @@ onMounted(async () => {
           >
             <Message
               v-for="(i, index) in messages"
-              :key="i.id"
+              :key="i.id!"
               class="message"
               :content="i.content"
               :reloadable="index == messages.length - 1"
               :name="
                 i.participantId
                   ? chat.participants.find((c) => c.id === i.participantId)
-                      ?.name
+                      ?.name!
                   : '你'
               "
               @delete="deleteMessage(i)"
@@ -130,9 +142,9 @@ onMounted(async () => {
           </NScrollbar>
         </div>
         <div class="input">
-          <n-grid style="width: 100%" x-gap="12" :cols="2">
-            <n-gi>
-              <n-input
+          <NGrid style="width: 100%" x-gap="12" :cols="2">
+            <NGridItem>
+              <NInput
                 v-model:value="input"
                 type="textarea"
                 placeholder="Input Message"
@@ -143,7 +155,7 @@ onMounted(async () => {
                 }"
               >
                 <template #suffix>
-                  <n-button
+                  <NButton
                     :disabled="generating"
                     type="primary"
                     size="small"
@@ -152,17 +164,17 @@ onMounted(async () => {
                     @click="addMessage"
                   >
                     <template #icon>
-                      <n-icon>
+                      <NIcon>
                         <IosSend />
-                      </n-icon>
+                      </NIcon>
                     </template>
-                  </n-button>
+                  </NButton>
                 </template>
-              </n-input>
-            </n-gi>
-            <n-gi>
-              <n-input-group>
-                <n-select
+              </NInput>
+            </NGridItem>
+            <NGridItem>
+              <NInputGroup>
+                <NSelect
                   v-model:value="participantIndex"
                   :options="
                     chat.participants.map((c, index) => {
@@ -173,7 +185,7 @@ onMounted(async () => {
                     })
                   "
                 />
-                <n-button
+                <NButton
                   :disabled="generating"
                   type="primary"
                   strong
@@ -181,10 +193,10 @@ onMounted(async () => {
                   @click="generateMessage"
                 >
                   生成
-                </n-button>
-              </n-input-group>
-            </n-gi>
-          </n-grid>
+                </NButton>
+              </NInputGroup>
+            </NGridItem>
+          </NGrid>
         </div>
       </div>
     </div>

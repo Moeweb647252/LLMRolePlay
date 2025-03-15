@@ -14,7 +14,7 @@ const form = ref<AddUserForm>({
   username: null,
   password: null,
   email: null,
-  role: 'user',
+  group: 1,
 })
 
 const emit = defineEmits(['cancel', 'confirm'])
@@ -60,10 +60,10 @@ const confirm = async () => {
       </NFormItem>
       <NFormItem label="组">
         <NSelect
-          v-model:value="form.role"
+          v-model:value="form.group"
           :options="[
-            { label: '管理员', value: 'admin' },
-            { label: '用户', value: 'user' },
+            { label: '管理员', value: 2 },
+            { label: '用户', value: 1 },
           ]"
         />
       </NFormItem>

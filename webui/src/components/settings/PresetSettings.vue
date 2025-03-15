@@ -105,7 +105,7 @@ let onEditConfirm = (_form: EditPresetForm) => {}
 
   <EditPresetModal
     v-model:show="showEditModal"
-    :preset="editingPreset!"
+    :value="editingPreset!"
     @confirm="onEditConfirm"
   ></EditPresetModal>
 </template>

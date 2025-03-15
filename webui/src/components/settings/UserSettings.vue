@@ -2,73 +2,14 @@
 import { api } from '@/api'
 import { User } from '@/types/user'
 import { useMessage, useModal } from 'naive-ui'
-import { onMounted, ref } from 'vue'
-import SettingsInput from '../SettingsInput.vue'
+import { ref } from 'vue'
+import { NButton, NList, NListItem, NSpace, NTag } from 'naive-ui'
+import type { AddUserForm, EditUserForm } from '@/types/modal'
+import AddUserModal from '../modals/AddUserModal.vue'
 
+const users = ref(await api.getUsers())
 const message = useMessage()
 const model = useModal()
-
-const users = ref<User[]>([])
-
-const userTypeOptions = [
-  { label: '用户', value: '1' },
-  { label: '管理员', value: '2' },
-]
-
-const addUserForm = ref({
-  visible: false,
-  username: '',
-  email: '',
-  password: '',
-  group: '1',
-})
-
-const addUser = async () => {
-  let data = JSON.parse(JSON.stringify(addUserForm.value))
-  addUserForm.value = {
-    visible: false,
-    username: '',
-    email: '',
-    password: '',
-    group: '1',
-  }
-  let id = await api.addUser(
-    data.username,
-    data.email,
-    data.password,
-    data.group,
-  )
-  users.value.push({
-    id,
-    username: data.username,
-    email: data.email,
-    token: '',
-    group: data.group,
-  })
-  message.success('添加成功')
-}
-
-const cancelAddUser = () => {
-  addUserForm.value = {
-    visible: false,
-    username: '',
-    email: '',
-    password: '',
-    group: '1',
-  }
-}
-
-const editUserForm = ref({
-  visible: false,
-  user: null as User | null,
-})
-
-const editUser = (user: User) => {
-  editUserForm.value = {
-    visible: true,
-    user,
-  }
-}
 
 const deleteUser = async (user: User) => {
   await api.deleteUser(user.id!)
@@ -86,95 +27,90 @@ const deleteUser = async (user: User) => {
         users.value.splice(users.value.indexOf(user), 1)
         message.success('删除成功')
       } catch (e) {
+        console.log(e)
         message.error('删除失败')
       }
     },
   })
 }
 
-onMounted(async () => {
-  users.value = await api.getUsers()
-})
+const addShow = ref(false)
+const addKey = ref(0)
+const editShow = ref(false)
+const editKey = ref(0)
+const editing = ref<EditUserForm | null>(null)
+
+const onConfirmAdd = async (form: AddUserForm) => {
+  let id = await api.addUser(
+    form.username!,
+    form.email!,
+    form.password!,
+    form.group!,
+  )
+  let newUser = new User(id, form.username!, form.email!, null, form.group!)
+  users.value.push(newUser)
+  message.success('添加成功')
+}
+
+let onConfirmEdit = (_form: EditUserForm) => {}
+
+const startAdd = () => {
+  addKey.value++
+  addShow.value = true
+}
+
+const startEdit = (user: User) => {
+  editKey.value++
+  editing.value = {
+    id: user.id!,
+    email: user.email,
+    username: user.username,
+    group: user.group,
+    // Add other fields as necessary
+  }
+  editShow.value = true
+  onConfirmEdit = async (form: EditUserForm) => {
+    user.username = form.username
+    user.email = form.email
+    user.group = form.group
+  }
+}
 </script>
 <template>
   <div style="padding: 2em">
     <div class="header">
       <h3>用户</h3>
-      <n-button type="primary" @click="addUserForm.visible = true">
-        添加
-      </n-button>
+      <NButton type="primary" @click="startAdd"> 添加 </NButton>
     </div>
     <div>
-      <n-list>
-        <n-list-item v-for="user in users" :key="user.id">
+      <NList>
+        <NListItem v-for="user in users" :key="user.id!">
           {{ user.username }}
-          <n-tag v-if="user.group == '2'" type="success"> 管理员 </n-tag>
-          <n-tag v-if="user.group == '1'" type="info"> 用户 </n-tag>
+          <NTag v-if="user.group == 2" type="success"> 管理员 </NTag>
+          <NTag v-if="user.group == 1" type="info"> 用户 </NTag>
           <template #suffix>
-            <n-space :wrap="false">
-              <n-button type="primary" @click="editUser(user)"> 编辑 </n-button>
-              <n-button type="error" @click="deleteUser(user)"> 删除 </n-button>
-            </n-space>
+            <NSpace :wrap="false">
+              <NButton type="primary" @click="startEdit(user)"> 编辑 </NButton>
+              <NButton type="error" @click="deleteUser(user)"> 删除 </NButton>
+            </NSpace>
           </template>
-        </n-list-item>
-      </n-list>
+        </NListItem>
+      </NList>
     </div>
   </div>
-  <n-modal
-    v-model:show="addUserForm.visible"
-    title="添加用户"
-    size="medium"
-    preset="card"
-    style="width: fit-content; min-width: 25em"
-  >
-    <n-form label-placement="left">
-      <n-form-item label="用户名">
-        <n-input v-model:value="addUserForm.username" />
-      </n-form-item>
-      <n-form-item label="邮箱">
-        <n-input v-model:value="addUserForm.email" />
-      </n-form-item>
-      <n-form-item label="密码">
-        <n-input v-model:value="addUserForm.password" />
-      </n-form-item>
-      <n-form-item label="组">
-        <n-select
-          v-model:value="addUserForm.group"
-          :options="userTypeOptions"
-        />
-      </n-form-item>
-    </n-form>
-    <template #footer>
-      <n-space justify="end">
-        <n-button @click="cancelAddUser"> 取消 </n-button>
-        <n-button type="primary" @click="addUser"> 保存 </n-button>
-      </n-space>
-    </template>
-  </n-modal>
-  <n-modal
-    v-model:show="editUserForm.visible"
-    title="编辑用户"
-    size="medium"
-    preset="card"
-    style="width: fit-content; min-width: 25em"
-  >
-    <n-form label-placement="left">
-      <n-form-item label="用户名">
-        <SettingsInput :value="editUserForm.user!.username" />
-      </n-form-item>
-      <n-form-item label="邮箱">
-        <SettingsInput :value="editUserForm.user!.email" />
-      </n-form-item>
-      <n-form-item label="组">
-        <SettingsInput
-          type="select"
-          :value="editUserForm.user!.group"
-          :options="userTypeOptions"
-          @confirm="async () => {}"
-        />
-      </n-form-item>
-    </n-form>
-  </n-modal>
+  <AddUserModal
+    v-if="addShow"
+    :key="addKey"
+    @confirm="onConfirmAdd"
+    @close="addShow = false"
+  />
+  <AddUserModal
+    v-if="editShow"
+    :key="editKey"
+    :user="editing"
+    @confirm="onConfirmEdit"
+    @close="editShow = false"
+  />
 </template>
 
 <style scoped>

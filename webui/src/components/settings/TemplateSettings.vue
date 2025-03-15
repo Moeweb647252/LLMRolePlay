@@ -5,8 +5,8 @@ import { useMessage, useModal } from 'naive-ui'
 import { ref } from 'vue'
 import { NButton, NList, NListItem, NSpace } from 'naive-ui'
 import type { AddTemplateForm, EditTemplateForm } from '@/types/modal'
-import AddTemplateModal from '@/components/modals/AddTemplate.vue'
-import EditTemplateModal from '@/components/modals/EditTemplate.vue'
+import AddTemplateModal from '@/components/modals/AddTemplateModal.vue'
+import EditTemplateModal from '@/components/modals/EditTemplateModal.vue'
 
 const templates = ref(await api.getTemplates())
 const message = useMessage()
@@ -38,23 +38,62 @@ const editKey = ref(0)
 const addKey = ref(0)
 const editing = ref<EditTemplateForm | null>(null)
 
-const onAddConfirm = async (form: AddTemplateForm) => {}
+const onAddConfirm = async (form: AddTemplateForm) => {
+  let id = await api.addTemplate(
+    form.name!,
+    form.content!,
+    form.description,
+    form.isPublic,
+    form.settings,
+  )
+  let newTemplate = {
+    id: id,
+    name: form.name!,
+    description: form.description,
+    content: form.content!,
+    isPublic: form.isPublic,
+    settings: form.settings,
+  }
+  templates.value.push(newTemplate)
+  message.success('添加成功')
+}
 
 let onEditConfirm = (_form: EditTemplateForm) => {}
 
-const startEdit = (template: Template) => {}
+const startAdd = () => {
+  addKey.value++
+  addShow.value = true
+}
+
+const startEdit = (template: Template) => {
+  editing.value = {
+    id: template.id!,
+    name: template.name!,
+    description: template.description,
+    content: template.content,
+    isPublic: template.isPublic,
+    settings: template.settings,
+  }
+  editKey.value++
+  editShow.value = true
+  onEditConfirm = (form: EditTemplateForm) => {
+    template.name = form.name
+    template.description = form.description
+    template.content = form.content
+    template.isPublic = form.isPublic
+    template.settings = form.settings
+  }
+}
 </script>
 <template>
   <div style="padding: 2em">
     <div class="header">
       <h3>模板</h3>
-      <NButton type="primary" @click="addTemplateForm.visible = true">
-        添加
-      </NButton>
+      <NButton type="primary" @click="startAdd"> 添加 </NButton>
     </div>
     <div>
       <NList>
-        <NListItem v-for="template in templates" :key="template.id">
+        <NListItem v-for="template in templates" :key="template.id!">
           {{ template.name }}
           <template #suffix>
             <NSpace :wrap="false">

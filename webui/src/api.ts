@@ -384,7 +384,7 @@ export class Api {
         user.username,
         user.email,
         user.token,
-        user.group.toString(),
+        user.group,
       )
     })
   }
@@ -415,13 +415,13 @@ export class Api {
     username: string,
     email: string,
     password: string,
-    group: string,
+    group: 1 | 2,
   ): Promise<number> {
     const data = await this.request('createUser', {
       username: username,
       email: email,
       password: sha256(password),
-      group: parseInt(group),
+      group: group,
     })
     return data.id
   }
@@ -489,6 +489,7 @@ export class Api {
             participant.template.name,
             participant.template.content,
             participant.template.description,
+            JSON.parse(participant.template.settings),
             participant.template.isPublic,
           ),
         )
@@ -541,6 +542,7 @@ export class Api {
         template.name,
         template.content,
         template.description,
+        JSON.parse(template.settings),
         template.isPublic,
       )
     })
@@ -573,14 +575,16 @@ export class Api {
   async addTemplate(
     name: string,
     content: string,
-    description: string,
+    description: string | null,
     isPublic: boolean = false,
+    settings: object | null,
   ): Promise<number> {
     const data = await this.request('createTemplate', {
       name: name,
       content: content,
       description: description,
       isPublic: isPublic,
+      settings: JSON.stringify(settings),
     })
     return data.id
   }

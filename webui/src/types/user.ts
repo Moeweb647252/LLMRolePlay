@@ -2,15 +2,15 @@ export class User {
   id: number | null
   username: string
   email: string
-  token: string
-  group: '1' | '2'
+  token: string | null
+  group: 1 | 2
 
   constructor(
     id: number | null = null,
     username: string = '',
     email: string = '',
-    token: string = '',
-    group: '1' | '2' = '1',
+    token: string | null = null,
+    group: 1 | 2,
   ) {
     this.id = id
     this.username = username
