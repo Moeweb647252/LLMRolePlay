@@ -33,7 +33,9 @@ const deletePreset = async (preset: Preset) => {
 }
 
 const showAddModal = ref(false)
+const addModalKey = ref(0)
 const showEditModal = ref(false)
+const editModalKey = ref(0)
 const editingPreset = ref<EditPresetForm | null>(null)
 
 const add = () => {
@@ -99,11 +101,13 @@ let onEditConfirm = (_form: EditPresetForm) => {}
   </div>
 
   <AddPresetModal
+    :key="addModalKey"
     v-model:show="showAddModal"
     @confirm="onAddConfirm"
   ></AddPresetModal>
 
   <EditPresetModal
+    :key="editModalKey"
     v-model:show="showEditModal"
     :value="editingPreset!"
     @confirm="onEditConfirm"

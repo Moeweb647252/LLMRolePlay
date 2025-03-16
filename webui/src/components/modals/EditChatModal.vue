@@ -13,7 +13,12 @@ import {
 import { MdAdd } from '@vicons/ionicons4'
 import SettingsInput from '../SettingsInput.vue'
 import { ref, h, toRef } from 'vue'
-import type { EditChatForm, EditParticipantForm, Options } from '@/types/modal'
+import type {
+  AddParticipantForm,
+  EditChatForm,
+  EditParticipantForm,
+  Options,
+} from '@/types/modal'
 import { api } from '@/api'
 import EditParticipantModal from './EditParticipantModal.vue'
 import AddParticipantModal from './AddParticipantModal.vue'
@@ -85,8 +90,21 @@ const onEditParticipantConfirm = () => {
     form.value!.participants.indexOf(editingParticipant.value!)
   ] = editingParticipant.value!
 }
-const onAddParticipantConfirm = (participant: EditParticipantForm) => {
-  form.value!.participants.push(participant)
+const onAddParticipantConfirm = async (participant: AddParticipantForm) => {
+  let pId = await api.addParticipant(
+    form.value!.id!,
+    participant.character!,
+    participant.presets,
+    participant.template!,
+    participant.model!,
+    participant.name!,
+    participant.settings,
+  )
+  let newParticipant = {
+    id: pId,
+    ...participant,
+  }
+  form.value!.participants.push(newParticipant as EditParticipantForm)
 }
 const showEditParticipantModal = ref(false)
 const showAddParticipantModal = ref(false)

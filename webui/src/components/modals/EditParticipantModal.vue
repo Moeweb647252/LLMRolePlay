@@ -4,6 +4,7 @@ import SettingsInput from '../SettingsInput.vue'
 import { toRef } from 'vue'
 import type { EditParticipantForm, Options } from '@/types/modal'
 import { api } from '@/api'
+import SettingsDynamicSelect from '../SettingsDynamicSelect.vue'
 
 const props = defineProps<{
   models: Options
@@ -61,7 +62,7 @@ const emit = defineEmits(['confirm'])
         />
       </NFormItem>
       <NFormItem label="预设">
-        <SettingsInput
+        <SettingsDynamicSelect
           type="select"
           multiple
           :options="presets"

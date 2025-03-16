@@ -1,12 +1,11 @@
 {
-    "eslint.workingDirectories": [
-        "./webui"
-    ],
-    "cSpell.words": [
-      "Newtonsoft",
-      "Npgsql",
-      "Persistedstate",
-      "Sider",
-      "webui"
-    ]
+  "eslint.workingDirectories": ["./webui"],
+  "cSpell.words": [
+    "Newtonsoft",
+    "Npgsql",
+    "Persistedstate",
+    "reloadable",
+    "Sider",
+    "webui"
+  ]
 }

@@ -12,6 +12,8 @@ import {
   NButton,
 } from 'naive-ui'
 import type { AddPresetForm } from '@/types/modal/preset'
+import { api } from '@/api'
+import type { Preset } from '@/types/preset'
 
 const show = defineModel<boolean>('show', {
   default: false,
@@ -19,7 +21,10 @@ const show = defineModel<boolean>('show', {
 
 const message = useMessage()
 
-const emit = defineEmits(['cancel', 'confirm'])
+const emit = defineEmits<{
+  cancel: []
+  confirm: [Preset]
+}>()
 
 const form = ref<AddPresetForm>({
   name: null,
@@ -31,7 +36,27 @@ const form = ref<AddPresetForm>({
 
 const confirm = async () => {
   if (!validate()) return
-  emit('confirm', form.value)
+  try {
+    let id = await api.addPreset(
+      form.value.name!,
+      form.value.description,
+      form.value.content,
+      form.value.settings,
+      form.value.isPublic,
+    )
+    message.success('添加成功')
+    emit('confirm', {
+      id: id,
+      name: form.value.name!,
+      description: form.value.description,
+      content: form.value.content,
+      isPublic: form.value.isPublic,
+      settings: form.value.settings,
+    })
+  } catch (e) {
+    console.log(e)
+  }
+  show.value = false
 }
 
 const cancel = () => {

@@ -159,7 +159,7 @@ export class Api {
 
   async addPreset(
     name: string,
-    description: string,
+    description: string | null,
     content: { key: string; value: string }[],
     settings: object | null,
     isPublic: boolean = false,
@@ -611,7 +611,7 @@ export class Api {
     templateId: number,
     modelId: number,
     name: string,
-    settings: object,
+    settings: object | null,
   ): Promise<number> {
     const data = await this.request('createParticipant', {
       chatId: chatId,
@@ -664,7 +664,7 @@ export class Api {
   async addChat(
     name: string,
     description: string | null,
-    settings: object,
+    settings: object | null,
   ): Promise<number> {
     const data = await this.request('createChat', {
       name: name,

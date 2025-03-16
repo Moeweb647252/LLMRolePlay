@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useMessage } from 'naive-ui'
 import { useRouter } from 'vue-router'
 import { api } from '@/api'
+import { NCard, NForm, NFormItem, NInput, NButton } from 'naive-ui'
 
 const message = useMessage()
 const router = useRouter()
@@ -23,23 +24,23 @@ const login = async () => {
 </script>
 <template>
   <div class="container">
-    <n-card style="width: fit-content">
-      <n-form>
-        <n-form-item label="Email">
-          <n-input v-model:value="email" placeholder="Enter your email" />
-        </n-form-item>
-        <n-form-item label="Password">
-          <n-input
+    <NCard style="width: fit-content">
+      <NForm>
+        <NFormItem label="Email">
+          <NInput v-model:value="email" placeholder="Enter your email" />
+        </NFormItem>
+        <NFormItem label="Password">
+          <NInput
             v-model:value="password"
             type="password"
             placeholder="Enter your password"
           />
-        </n-form-item>
-        <n-form-item>
-          <n-button type="primary" @click="login"> Login </n-button>
-        </n-form-item>
-      </n-form>
-    </n-card>
+        </NFormItem>
+        <NFormItem>
+          <NButton type="primary" @click="login"> Login </NButton>
+        </NFormItem>
+      </NForm>
+    </NCard>
   </div>
 </template>
 

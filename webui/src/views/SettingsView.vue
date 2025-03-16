@@ -2,6 +2,8 @@
 import { useSettingsStore } from '@/stores/settings'
 import { ref, onMounted, onUnmounted } from 'vue'
 import { MenuOutlined, CloseOutlined } from '@vicons/material'
+import { RouterLink, RouterView } from 'vue-router'
+import { NLayout, NLayoutSider, NLayoutContent, NIcon } from 'naive-ui'
 
 const settings = useSettingsStore()
 const collapsed = ref(false)
@@ -16,7 +18,7 @@ const links = [
     { name: '模板', path: '/main/settings/template' },
     { name: 'Provider', path: '/main/settings/provider' },
   ],
-  ...(settings.user?.group == '2'
+  ...(settings.user?.group == 2
     ? [{ name: '用户', path: '/main/settings/user' }]
     : []),
 ]
@@ -42,13 +44,13 @@ const toggleSider = () => {
 
 <template>
   <div v-if="isMobile" class="menu-toggle" @click="toggleSider">
-    <n-icon size="24">
+    <NIcon size="24">
       <component :is="collapsed ? MenuOutlined : CloseOutlined" />
-    </n-icon>
+    </NIcon>
   </div>
 
-  <n-layout has-sider style="height: 100%">
-    <n-layout-sider
+  <NLayout has-sider style="height: 100%">
+    <NLayoutSider
       :collapsed="collapsed"
       :collapsed-width="0"
       :width="200"
@@ -62,6 +64,7 @@ const toggleSider = () => {
       <div class="sider">
         <RouterLink
           v-for="link in links"
+          :key="link.path"
           :to="link.path"
           active-class="link-active"
           class="link"
@@ -70,11 +73,11 @@ const toggleSider = () => {
           {{ link.name }}
         </RouterLink>
       </div>
-    </n-layout-sider>
-    <n-layout-content>
+    </NLayoutSider>
+    <NLayoutContent>
       <RouterView style="padding: 2em" />
-    </n-layout-content>
-  </n-layout>
+    </NLayoutContent>
+  </NLayout>
 </template>
 
 <style scoped>

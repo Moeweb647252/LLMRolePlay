@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { MdCreate } from '@vicons/ionicons4'
 import { ref } from 'vue'
+import { NButton, NIcon, NSpace, NInputGroup, NInputNumber } from 'naive-ui'
 
 let editingValue = ref(null as number | null)
 let editing = ref(false)
@@ -17,7 +18,6 @@ const startEditing = () => {
 }
 
 const confirm = () => {
-  editingValue.value = parseFloat(editingValue.value as any)
   value.value = editingValue.value
   emit('confirm', editingValue.value)
   editing.value = false
@@ -31,22 +31,22 @@ const cancel = () => {
 
 <template>
   <div v-if="editing">
-    <n-input-group>
-      <n-input v-model:value="editingValue" type="number" />
-      <n-button @click="confirm"> 确定 </n-button>
-      <n-button @click="cancel"> 取消 </n-button>
-    </n-input-group>
+    <NInputGroup>
+      <NInputNumber v-model:value="editingValue" :show-button="false" />
+      <NButton @click="confirm"> 确定 </NButton>
+      <NButton @click="cancel"> 取消 </NButton>
+    </NInputGroup>
   </div>
   <div v-else>
-    <n-space :wrap="false" align="center">
+    <NSpace :wrap="false" align="center">
       {{ value }}
-      <n-button quaternary circle @click="startEditing">
+      <NButton quaternary circle @click="startEditing">
         <template #icon>
-          <n-icon>
+          <NIcon>
             <MdCreate />
-          </n-icon>
+          </NIcon>
         </template>
-      </n-button>
-    </n-space>
+      </NButton>
+    </NSpace>
   </div>
 </template>

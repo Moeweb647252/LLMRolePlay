@@ -78,7 +78,7 @@ export class Chat {
   }
 }
 
-interface ChatSettings {
+export interface ChatSettings {
   nameOfUser: string | null
   currentParticipantId: number | null
 }

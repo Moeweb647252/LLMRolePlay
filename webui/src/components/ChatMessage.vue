@@ -2,22 +2,23 @@
 import { MdContact, MdCreate, MdSync, MdClipboard } from '@vicons/ionicons4'
 import { DeleteFilled } from '@vicons/material'
 import { onMounted, ref, watch } from 'vue'
+import { NAvatar, NButton, NIcon, NSpace, NAlert } from 'naive-ui'
 
 const action = ref('')
-const content = ref('')
+const text = ref('')
 const think = ref('')
 
 const props = defineProps<{
   content: string
-  direction: 'left' | 'right'
+  direction: 'left' | 'right' | null
   name: string
-  avatar: string
+  avatar: string | null
   reloadable: boolean
 }>()
 
 const emit = defineEmits(['delete'])
 
-const entities = {
+const entities: Record<string, string> = {
   '&lt;': '<',
   '&gt;': '>',
   '&amp;': '&',
@@ -33,7 +34,7 @@ onMounted(() => {
       // 初始化
       let processedContent = newContent || ''
       processedContent = processedContent.replace(/&[^;]+;/g, (match) => {
-        return (entities as any)[match] || match // 如果没有匹配到实体，保留原样
+        return entities[match] || match // 如果没有匹配到实体，保留原样
       })
       think.value = ''
       action.value = ''
@@ -64,7 +65,7 @@ onMounted(() => {
       openTagStart = processedContent.indexOf('<action>')
       if (openTagStart === -1) {
         // 没有 action 标签
-        content.value = processedContent
+        text.value = processedContent
       } else {
         const openTagEnd = openTagStart + '<action>'.length
         const closeTagStart = processedContent.indexOf('</action>')
@@ -72,22 +73,22 @@ onMounted(() => {
         if (closeTagStart !== -1) {
           // 完整的 action 标签
           action.value = processedContent.substring(openTagEnd, closeTagStart)
-          content.value =
+          text.value =
             processedContent.substring(0, openTagStart) +
             processedContent.substring(closeTagStart + '</action>'.length)
         } else {
           // 只有开始标签，没有结束标签
           action.value = processedContent.substring(openTagEnd)
-          content.value = processedContent.substring(0, openTagStart)
+          text.value = processedContent.substring(0, openTagStart)
         }
 
         // 清理可能残留的标签部分
         action.value = action.value.replace(/<\/?action[^>]*>/g, '')
-        content.value = content.value.replace(/<\/?action[^>]*>/g, '')
+        text.value = text.value.replace(/<\/?action[^>]*>/g, '')
       }
 
-      // 确保 content 中不包含任何 think 标签残留
-      content.value = content.value.replace(/<\/?think[^>]*>/g, '')
+      // 确保 text 中不包含任何 think 标签残留
+      text.value = text.value.replace(/<\/?think[^>]*>/g, '')
     },
     { immediate: true },
   )
@@ -95,62 +96,56 @@ onMounted(() => {
 </script>
 <template>
   <div v-if="action.length" class="action">
-    <n-alert :show-icon="false">
+    <NAlert :show-icon="false">
       {{ action }}
-    </n-alert>
+    </NAlert>
   </div>
   <div class="message">
     <div class="avatar">
-      <n-avatar>
-        <n-icon>
+      <NAvatar>
+        <NIcon>
           <MdContact />
-        </n-icon>
-      </n-avatar>
+        </NIcon>
+      </NAvatar>
     </div>
     <div class="main">
       <div class="header">
         {{ props.name }}
       </div>
-      <div class="content">
-        {{ content }}
+      <div class="text">
+        {{ text }}
       </div>
       <div class="actions">
-        <n-space size="small">
-          <n-button size="small" strong secondary circle>
+        <NSpace size="small">
+          <NButton size="small" strong secondary circle>
             <template #icon>
-              <n-icon>
+              <NIcon>
                 <MdCreate />
-              </n-icon>
+              </NIcon>
             </template>
-          </n-button>
-          <n-button size="small" strong secondary circle>
+          </NButton>
+          <NButton size="small" strong secondary circle>
             <template #icon>
-              <n-icon>
+              <NIcon>
                 <MdClipboard />
-              </n-icon>
+              </NIcon>
             </template>
-          </n-button>
-          <n-button
-            size="small"
-            strong
-            secondary
-            circle
-            @click="emit('delete')"
-          >
+          </NButton>
+          <NButton size="small" strong secondary circle @click="emit('delete')">
             <template #icon>
-              <n-icon>
+              <NIcon>
                 <DeleteFilled />
-              </n-icon>
+              </NIcon>
             </template>
-          </n-button>
-          <n-button v-if="reloadable" size="small" strong secondary circle>
+          </NButton>
+          <NButton v-if="reloadable" size="small" strong secondary circle>
             <template #icon>
-              <n-icon>
+              <NIcon>
                 <MdSync />
-              </n-icon>
+              </NIcon>
             </template>
-          </n-button>
-        </n-space>
+          </NButton>
+        </NSpace>
       </div>
     </div>
   </div>

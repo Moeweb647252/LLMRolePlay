@@ -9,7 +9,7 @@ const message = useMessage()
 const model = useModal()
 import AddCharacterModal from '../modals/AddCharacterModal.vue'
 import EditCharacterModal from '../modals/EditCharacterModal.vue'
-import type { AddCharacterForm, EditCharacterForm } from '@/types/modal/index'
+import type { EditCharacterForm } from '@/types/modal/index'
 
 const deleteCharacter = async (character: Character) => {
   model.create({
@@ -64,31 +64,8 @@ const edit = (character: Character) => {
   }
 }
 
-const onAddConfirm = async (value: AddCharacterForm) => {
-  showAddModal.value = false
-  try {
-    let id = await api.addCharacter(
-      value.name!,
-      value.description,
-      value.content,
-      value.settings,
-      value.isPublic,
-      value.avatar,
-    )
-    characters.value.push({
-      id: id,
-      name: value.name!,
-      description: value.description,
-      content: value.content,
-      isPublic: value.isPublic,
-      settings: value.settings,
-      avatar: value.avatar,
-    })
-    message.success('添加成功')
-  } catch (e) {
-    console.log(e)
-    message.error('添加失败')
-  }
+const onAddConfirm = async (value: Character) => {
+  characters.value.push(value)
 }
 
 let onEditConfirm = async (_form: EditCharacterForm) => {}

@@ -1,8 +1,11 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { RouterView } from 'vue-router'
+import { NMessageProvider, NModalProvider, NSpin } from 'naive-ui'
+</script>
 
 <template>
-  <n-message-provider>
-    <n-modal-provider>
+  <NMessageProvider>
+    <NModalProvider>
       <Suspense>
         <RouterView />
         <template #fallback>
@@ -15,12 +18,12 @@
               justify-content: center;
             "
           >
-            <n-spin tip="Loading..." />
+            <NSpin tip="Loading..." />
           </div>
         </template>
       </Suspense>
-    </n-modal-provider>
-  </n-message-provider>
+    </NModalProvider>
+  </NMessageProvider>
 </template>
 
 <style scoped></style>

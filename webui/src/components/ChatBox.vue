@@ -5,7 +5,7 @@ import { Chat } from '@/types/chat'
 import { api, generate } from '@/api'
 import type { Message as MessageT } from '@/types/chat'
 import { NScrollbar } from 'naive-ui'
-import Message from './Message.vue'
+import Message from './ChatMessage.vue'
 import {
   NFlex,
   NGrid,
@@ -130,6 +130,8 @@ onMounted(async () => {
               :key="i.id!"
               class="message"
               :content="i.content"
+              :avatar="null"
+              :direction="'left'"
               :reloadable="index == messages.length - 1"
               :name="
                 i.participantId

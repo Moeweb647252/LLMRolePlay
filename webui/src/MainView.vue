@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { api, NoTokenError } from './api'
 import { useRouter } from 'vue-router'
+import { RouterView } from 'vue-router'
 
 const router = useRouter()
 const inited = ref(false)

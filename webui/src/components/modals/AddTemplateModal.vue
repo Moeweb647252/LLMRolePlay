@@ -3,6 +3,8 @@ import type { AddTemplateForm } from '@/types/modal/template'
 import { NModal, NForm, NFormItem, NInput, NButton, NSwitch } from 'naive-ui'
 import { ref } from 'vue'
 import { useMessage } from 'naive-ui'
+import { api } from '@/api'
+import type { Template } from '@/types/template'
 
 const message = useMessage()
 
@@ -18,7 +20,10 @@ const form = ref<AddTemplateForm>({
   settings: {},
 })
 
-const emit = defineEmits(['cancel', 'confirm'])
+const emit = defineEmits<{
+  cancel: []
+  confirm: [Template]
+}>()
 
 const validate = () => {
   if (!form.value.name) {
@@ -32,9 +37,29 @@ const validate = () => {
   return true
 }
 
-const confirm = () => {
-  if (validate()) {
-    emit('confirm', form.value)
+const confirm = async () => {
+  if (!validate()) return
+  try {
+    let id = await api.addTemplate(
+      form.value.name!,
+      form.value.content!,
+      form.value.description,
+      form.value.isPublic,
+      form.value.settings,
+    )
+    let newTemplate = {
+      id: id,
+      name: form.value.name!,
+      description: form.value.description,
+      content: form.value.content!,
+      isPublic: form.value.isPublic,
+      settings: form.value.settings,
+    }
+    message.success('添加成功')
+    emit('confirm', newTemplate)
+  } catch (e) {
+    console.log(e)
+    message.error('添加失败')
   }
 }
 const cancel = () => {

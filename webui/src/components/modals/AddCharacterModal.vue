@@ -14,6 +14,8 @@ import {
 } from 'naive-ui'
 import type { UploadFileInfo } from 'naive-ui'
 import type { AddCharacterForm } from '@/types/modal/character'
+import { api } from '@/api'
+import type { Character } from '@/types/character'
 
 const show = defineModel<boolean>('show', {
   default: false,
@@ -21,7 +23,10 @@ const show = defineModel<boolean>('show', {
 
 const message = useMessage()
 
-const emit = defineEmits(['cancel', 'confirm'])
+const emit = defineEmits<{
+  cancel: []
+  confirm: [Character]
+}>()
 const fileList = ref([] as UploadFileInfo[])
 
 const form = ref<AddCharacterForm>({
@@ -33,9 +38,32 @@ const form = ref<AddCharacterForm>({
   avatar: null,
 })
 
-const confirm = () => {
+const confirm = async () => {
   if (!validate()) return
-  emit('confirm', form.value)
+  show.value = false
+  try {
+    let id = await api.addCharacter(
+      form.value.name!,
+      form.value.description,
+      form.value.content,
+      form.value.settings,
+      form.value.isPublic,
+      form.value.avatar,
+    )
+    message.success('添加成功')
+    emit('confirm', {
+      id: id,
+      name: form.value.name!,
+      description: form.value.description,
+      content: form.value.content,
+      isPublic: form.value.isPublic,
+      settings: form.value.settings,
+      avatar: form.value.avatar,
+    })
+  } catch (e) {
+    console.log(e)
+    message.error('添加失败')
+  }
 }
 
 const cancel = () => {

@@ -25,7 +25,10 @@ const show = defineModel<boolean>('show', {
 
 const message = useMessage()
 
-const emit = defineEmits(['cancel', 'confirm'])
+const emit = defineEmits<{
+  cancel: []
+  confirm: [AddParticipantForm]
+}>()
 
 const form = ref<AddParticipantForm>({
   name: null,

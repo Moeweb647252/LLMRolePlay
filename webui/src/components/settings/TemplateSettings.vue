@@ -4,7 +4,7 @@ import { Template } from '@/types/template'
 import { useMessage, useModal } from 'naive-ui'
 import { ref } from 'vue'
 import { NButton, NList, NListItem, NSpace } from 'naive-ui'
-import type { AddTemplateForm, EditTemplateForm } from '@/types/modal'
+import type { EditTemplateForm } from '@/types/modal'
 import AddTemplateModal from '@/components/modals/AddTemplateModal.vue'
 import EditTemplateModal from '@/components/modals/EditTemplateModal.vue'
 
@@ -38,24 +38,8 @@ const editKey = ref(0)
 const addKey = ref(0)
 const editing = ref<EditTemplateForm | null>(null)
 
-const onAddConfirm = async (form: AddTemplateForm) => {
-  let id = await api.addTemplate(
-    form.name!,
-    form.content!,
-    form.description,
-    form.isPublic,
-    form.settings,
-  )
-  let newTemplate = {
-    id: id,
-    name: form.name!,
-    description: form.description,
-    content: form.content!,
-    isPublic: form.isPublic,
-    settings: form.settings,
-  }
-  templates.value.push(newTemplate)
-  message.success('添加成功')
+const onAddConfirm = async (form: Template) => {
+  templates.value.push(form)
 }
 
 let onEditConfirm = (_form: EditTemplateForm) => {}

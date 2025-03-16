@@ -115,8 +115,10 @@ const deleteChat = async (chat: Chat) => {
   })
 }
 
-const confirmAddChat = () => {}
-const confirmEditChat = () => {}
+const onConfirmAddChat = async (chat: Chat) => {
+  chats.value.push(chat)
+}
+let onConfirmEditChat = (_form: EditChatForm) => {}
 
 const startAddChat = () => {
   modalsShow.addChat = true
@@ -143,6 +145,11 @@ const startEditChat = (chat: Chat) => {
   }
   modalsShow.editChat = true
   modalsKey.editChat++
+  onConfirmEditChat = (_form: EditChatForm) => {
+    chat.name = _form.name
+    chat.description = _form.description
+    chat.settings = _form.settings
+  }
 }
 
 onMounted(async () => {
@@ -285,19 +292,19 @@ onMounted(async () => {
     :templates="templates"
     :models="publicModels"
     :show="modalsShow.addChat"
-    @confirm="confirmAddChat"
+    @confirm="onConfirmAddChat"
   ></AddChatModal>
   <EditChatModal
     v-if="modalsShow.editingChat"
     :key="modalsKey.editChat"
-    :form="modalsShow.editingChat!"
+    :value="modalsShow.editingChat!"
     :providers="providers"
     :presets="presets"
     :characters="characters"
     :templates="templates"
     :models="publicModels"
     :show="modalsShow.editChat"
-    @confirm="confirmEditChat"
+    @confirm="onConfirmEditChat"
   ></EditChatModal>
 </template>
 

@@ -15,7 +15,10 @@ import { MdAdd } from '@vicons/ionicons4'
 import { h, ref } from 'vue'
 import AddParticipantModal from './AddParticipantModal.vue'
 import type { AddParticipantForm, AddChatForm, Options } from '@/types/modal'
-defineProps<{
+import { api } from '@/api'
+import type { Chat } from '@/types/chat'
+import type { SelectBaseOption } from 'naive-ui/es/select/src/interface'
+const props = defineProps<{
   models: Options
   presets: Options
   characters: Options
@@ -46,7 +49,10 @@ const renderParticipantTags = (
 const form = ref<AddChatForm>({
   name: null,
   description: null,
-  settings: {},
+  settings: {
+    nameOfUser: null,
+    currentParticipantId: null,
+  },
   participants: [],
 })
 const isShowAddParticipantModal = ref(false)
@@ -58,9 +64,53 @@ const startAddParticipant = () => {
   form.value.participants.push()
 }
 
-const confirm = () => {
+const mapValue = (p: SelectBaseOption) => {
+  return {
+    id: p.value as number,
+    name: p.label as string,
+  }
+}
+
+const confirm = async () => {
   if (!validate()) return
-  emit('confirm', form.value)
+  let id = await api.addChat(
+    form.value.name!,
+    form.value.description,
+    form.value.settings,
+  )
+  let newChat: Chat = {
+    id: id,
+    name: form.value.name!,
+    description: form.value.description,
+    settings: form.value.settings,
+    participants: [],
+  }
+  for (let participant of form.value.participants) {
+    let pId = await api.addParticipant(
+      id,
+      participant.character!,
+      participant.presets,
+      participant.template!,
+      participant.model!,
+      participant.name!,
+      participant.settings,
+    )
+    newChat.participants.push({
+      id: pId,
+      name: participant.name!,
+      model: participant.model!,
+      presets: props.presets
+        .filter((p) => participant.presets.includes(p.value as number))
+        .map(mapValue),
+      character: [
+        props.characters.find((c) => c.value === participant.character)!,
+      ].map(mapValue)[0],
+      template: [
+        props.templates.find((t) => t.value === participant.template)!,
+      ].map(mapValue)[0],
+    })
+  }
+  emit('confirm', newChat)
 }
 
 const validate = () => {
@@ -72,7 +122,10 @@ const validate = () => {
   return true
 }
 
-const emit = defineEmits(['cancel', 'confirm'])
+const emit = defineEmits<{
+  cancel: []
+  confirm: [Chat]
+}>()
 </script>
 
 <template>
