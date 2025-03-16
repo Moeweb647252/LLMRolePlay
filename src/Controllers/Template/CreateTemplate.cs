@@ -24,15 +24,15 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Template template = new Template(
-        name: data.name,
-        content: data.content,
-        description: data.description ?? "",
-        userId: user.Id,
-        isPublic: data.isPublic
-      );
-
-      _dBContext.Templates.Add(template);
+      Template template = new Template
+      {
+        Name = data.name,
+        Content = data.content,
+        Description = data.description,
+        IsPublic = data.isPublic,
+        UserId = user.Id
+      };
+      await _dBContext.Templates.AddAsync(template);
       await _dBContext.SaveChangesAsync();
 
       return ApiResponse.Success(new

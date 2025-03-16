@@ -1,6 +1,7 @@
 using LLMRolePlay.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LLMRolePlay.Controllers
 {
@@ -12,7 +13,7 @@ namespace LLMRolePlay.Controllers
       public required string name { get; set; }
       public required string modelName { get; set; }
       public required string settings { get; set; }
-      public required string description { get; set; }
+      public string? description { get; set; }
       public required bool isPublic { get; set; }
     }
     [HttpPost("createModel")]
@@ -25,12 +26,23 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Provider? provider = await Provider.GetProviderById(_dBContext, data.providerId);
+      Provider? provider = await _dBContext.Providers
+        .Where(p => p.Id == data.providerId)
+        .FirstOrDefaultAsync();
       if (provider == null) return ApiResponse.TokenError();
 
       if (provider.UserId != user.Id) return ApiResponse.MessageOnly(502, "provider not belongs to this user");
 
-      Model model = await Model.CreateModel(_dBContext, data.name, data.settings, data.description, data.modelName, provider.Id, data.isPublic);
+      Model model = new Model
+      {
+        ProviderId = data.providerId,
+        Name = data.name,
+        ModelName = data.modelName,
+        Settings = data.settings,
+        Description = data.description,
+        IsPublic = data.isPublic
+      };
+      await _dBContext.Models.AddAsync(model);
       await _dBContext.SaveChangesAsync();
       return ApiResponse.Success(new
       {

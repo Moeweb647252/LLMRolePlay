@@ -16,6 +16,8 @@ import {
 import { MdAdd } from '@vicons/ionicons4'
 
 import { h, ref } from 'vue'
+import { api } from '@/api'
+import type { Model, Provider } from '@/types/provider'
 
 const renderModelTag = (model: AddModelForm, index: number) => {
   return h(
@@ -66,7 +68,10 @@ const form = ref<AddProviderForm>({
   settings: null,
 })
 
-const emit = defineEmits(['cancel', 'confirm'])
+const emit = defineEmits<{
+  cancel: []
+  confirm: [Provider]
+}>()
 
 const validate = () => {
   if (!form.value.name) {
@@ -90,8 +95,51 @@ const validate = () => {
 
 const confirm = async () => {
   if (!validate()) return
-  emit('confirm', form.value)
   show.value = false
+  try {
+    let providerId = await api.addProvider(
+      form.value.name!,
+      form.value.description,
+      form.value.type,
+      form.value.baseUrl!,
+      form.value.apiKey!,
+      null,
+    )
+    let newProvider = {
+      id: providerId,
+      name: form.value.name!,
+      description: form.value.description,
+      type: form.value.type,
+      baseUrl: form.value.baseUrl!,
+      apiKey: form.value.apiKey!,
+      models: [] as Model[],
+      settings: null,
+    }
+    for (const model of form.value.models) {
+      let id = await api.addModel(
+        model.name!,
+        model.modelName!,
+        model.description,
+        providerId,
+        model.isPublic,
+        model.settings,
+      )
+      newProvider.models.push({
+        name: model.name!,
+        modelName: model.modelName!,
+        description: model.description,
+        isPublic: model.isPublic,
+        settings: model.settings,
+        provider: newProvider,
+        id,
+      })
+    }
+    emit('confirm', newProvider)
+    message.success('Provider添加成功.')
+  } catch (error) {
+    console.error(error)
+    message.error('Provider添加失败.')
+  }
 }
 
 const cancel = () => {}

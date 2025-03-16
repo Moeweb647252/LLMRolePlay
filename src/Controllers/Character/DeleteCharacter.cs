@@ -25,7 +25,7 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Character? character = await Character.GetCharacterById(_dBContext, data.characterId);
+      Character? character = await _dBContext.Characters.Where(c => c.Id == data.characterId).FirstOrDefaultAsync();
       if (character == null) return ApiResponse.MessageOnly(404, "character not found");
       if (character.UserId != user.Id) return ApiResponse.MessageOnly(403, "character does not belong to current user");
       Models.File? file = await _dBContext.Files.Where(f => f.Id == character.Avatar).FirstOrDefaultAsync();

@@ -1,6 +1,7 @@
 using LLMRolePlay.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LLMRolePlay.Controllers
 {
@@ -23,7 +24,7 @@ namespace LLMRolePlay.Controllers
       string? token = Request.Headers["token"];
       if (token == null) return ApiResponse.TokenError();
 
-      Chat? chat = await Chat.GetChatById(_dBContext, data.chatId);
+      Chat? chat = await _dBContext.Chats.Where(c => c.Id == data.chatId).FirstOrDefaultAsync();
       if (chat == null) return ApiResponse.MessageOnly(500, "chat not found");
 
       User? user = await Models.User.GetUserByToken(_dBContext, token);

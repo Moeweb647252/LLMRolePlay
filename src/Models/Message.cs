@@ -13,8 +13,8 @@ namespace LLMRolePlay.Models
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public ulong Id { get; set; }
-    public string Role { get; set; }
-    public string Content { get; set; }
+    public required string Role { get; set; }
+    public required string Content { get; set; }
     public uint? Tokens { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public uint? ParticipantId { get; set; }
@@ -24,21 +24,6 @@ namespace LLMRolePlay.Models
 
     [ForeignKey("Chat")]
     public uint ChatId { get; set; }
-    public Message(string role, string content, uint? tokens, uint chatId, uint? participantId)
-    {
-      Role = role;
-      Content = content;
-      ChatId = chatId;
-      ParticipantId = participantId;
-      Tokens = tokens;
-    }
-    public static async Task<Message> CreateMessage(DBContext db, string role, string content, uint? tokens, uint chatId, uint? participantId)
-    {
-      Message message = new Message(role, content, tokens, chatId, participantId);
-      await db.Messages.AddAsync(message);
-      await db.SaveChangesAsync();
-      return message;
-    }
     public void MarkAsModified(DBContext db)
     {
       db.Entry(this).State = EntityState.Modified;

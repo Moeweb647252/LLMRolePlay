@@ -20,10 +20,11 @@ namespace LLMRolePlay.Controllers
       byte[] data = new byte[(long)Request.ContentLength];
       await Request.Body.ReadExactlyAsync(data.AsMemory(0, (int)Request.ContentLength));
 
-      Models.File file = new Models.File(
-        data: data,
-        userId: user.Id
-      );
+      Models.File file = new Models.File
+      {
+        UserId = user.Id,
+        Data = data
+      };
 
       _dBContext.Files.Add(file);
       await _dBContext.SaveChangesAsync();

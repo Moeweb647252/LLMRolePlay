@@ -1,6 +1,7 @@
 using LLMRolePlay.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LLMRolePlay.Controllers
 {
@@ -25,7 +26,7 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Character? character = await Character.GetCharacterById(_dBContext, data.characterId);
+      Character? character = await _dBContext.Characters.Where(c => c.Id == data.characterId).FirstOrDefaultAsync();
       if (character == null) return ApiResponse.MessageOnly(500, "character not found");
 
       if (character.UserId != user.Id) return ApiResponse.MessageOnly(505, "character not belongs to current user");

@@ -30,7 +30,13 @@ namespace LLMRolePlay.Controllers
 
       if (chat.UserId != user.Id) return ApiResponse.MessageOnly(403, "chat not belongs to current user");
 
-      Message message = await Message.CreateMessage(_dBContext, data.role, data.content, null, chat.Id, null);
+      Message message = new Message
+      {
+        ChatId = data.chatId,
+        Content = data.content,
+        Role = data.role,
+      };
+      _dBContext.Messages.Add(message);
       await _dBContext.SaveChangesAsync();
 
       return ApiResponse.Success(new

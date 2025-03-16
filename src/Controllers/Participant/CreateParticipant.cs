@@ -28,11 +28,11 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Model? model = await Model.GetModelById(_dBContext, data.modelId);
+      Model? model = await _dBContext.Models.Where(m => m.Id == data.modelId).FirstOrDefaultAsync();
       if (model == null) return ApiResponse.MessageOnly(500, "model not found");
       if (model.Provider.UserId != user.Id && !model.IsPublic) return ApiResponse.MessageOnly(500, "model does not belong to user");
 
-      Character? character = await Character.GetCharacterById(_dBContext, data.characterId);
+      Character? character = await _dBContext.Characters.Where(c => c.Id == data.characterId).FirstOrDefaultAsync();
       if (character == null) return ApiResponse.MessageOnly(500, "character not found");
       if (character.UserId != user.Id && !character.IsPublic) return ApiResponse.MessageOnly(500, "character does not belong to user");
 
@@ -42,12 +42,12 @@ namespace LLMRolePlay.Controllers
 
       foreach (var presetId in data.presetIds)
       {
-        Preset? preset = await Preset.GetPresetById(_dBContext, presetId);
+        Preset? preset = await _dBContext.Presets.Where(p => p.Id == presetId).FirstOrDefaultAsync();
         if (preset == null) return ApiResponse.MessageOnly(500, "preset not found");
         if (preset.UserId != user.Id && !preset.IsPublic) return ApiResponse.MessageOnly(500, "preset does not belong to user");
       }
 
-      Chat? chat = await Chat.GetChatById(_dBContext, data.chatId);
+      Chat? chat = await _dBContext.Chats.Where(c => c.Id == data.chatId).FirstOrDefaultAsync();
       if (chat == null) return ApiResponse.MessageOnly(500, "chat not found");
       if (chat.UserId != user.Id) return ApiResponse.MessageOnly(500, "chat does not belong to user");
 

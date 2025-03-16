@@ -13,48 +13,15 @@ namespace LLMRolePlay.Models
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public uint Id { get; set; }
-    public string Name { get; set; }
-    public string Type { get; set; }
-    public string BaseUrl { get; set; }
-    public string ApiKey { get; set; }
-    public string Settings { get; set; }
-    public string Description { get; set; }
+    public required string Name { get; set; }
+    public required string Type { get; set; }
+    public required string BaseUrl { get; set; }
+    public required string ApiKey { get; set; }
+    public required string Settings { get; set; }
+    public string? Description { get; set; }
     public ICollection<Model> Models { get; } = new List<Model>();
     public uint UserId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public Provider(string name, string type, string settings, string baseUrl, string apiKey, uint userId, string description = "")
-    {
-      Name = name;
-      Type = type;
-      Settings = settings;
-      Description = description;
-      BaseUrl = baseUrl;
-      ApiKey = apiKey;
-      UserId = userId;
-    }
-    /// <summary>
-    /// 不会自动绑定到用户。Do not bind to user automically.
-    /// </summary>
-    /// <param name="db"></param>
-    /// <param name="name"></param>
-    /// <param name="type"></param>
-    /// <param name="settings"></param>
-    /// <param name="baseUrl"></param>
-    /// <param name="apiKey"></param>
-    /// <param name="description"></param>
-    /// <param name="userId"></param>
-    /// <returns></returns>
-    public static async Task<Provider> CreateProvider(DBContext db, string name, string type, string settings, string baseUrl, string apiKey, string description, uint userId)
-    {
-      Provider provider = new Provider(name, type, settings, baseUrl, apiKey, userId, description);
-      await db.Providers.AddAsync(provider);
-      await db.SaveChangesAsync();
-      return provider;
-    }
-    public static async Task<Provider?> GetProviderById(DBContext db, uint id)
-    {
-      return await db.Providers.FindAsync(id);
-    }
     public void MarkAsModified(DBContext db)
     {
       db.Entry(this).State = EntityState.Modified;

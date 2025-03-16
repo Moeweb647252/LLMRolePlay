@@ -14,22 +14,13 @@ namespace LLMRolePlay.Models
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public uint Id { get; set; }
-    public string Name { get; set; }
-    public string Content { get; set; }
-    public string Description { get; set; }
+    public required string Name { get; set; }
+    public required string Content { get; set; }
+    public string? Description { get; set; }
     public bool IsPublic { get; set; }
     public uint UserId { get; set; }
     public string? Settings { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
-    public Template(string name, string content, uint userId, string description = "", bool isPublic = false)
-    {
-      Name = name;
-      Content = content;
-      Description = description;
-      UserId = userId;
-      IsPublic = isPublic;
-    }
   }
 
 }

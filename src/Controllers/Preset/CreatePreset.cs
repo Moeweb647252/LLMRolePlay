@@ -9,7 +9,7 @@ namespace LLMRolePlay.Controllers
     public required string name { get; set; }
     public required string content { get; set; }
     public string? settings { get; set; }
-    public required string description { get; set; }
+    public string? description { get; set; }
     public bool isPublic { get; set; } = false;
   }
 
@@ -25,7 +25,16 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Preset preset = await Preset.CreatePreset(_dBContext, data.name, data.content, data.settings, data.description, user.Id, data.isPublic);
+      Preset preset = new Preset
+      {
+        Name = data.name,
+        Content = data.content,
+        Settings = data.settings,
+        Description = data.description,
+        IsPublic = data.isPublic,
+        UserId = user.Id
+      };
+      await _dBContext.Presets.AddAsync(preset);
       await _dBContext.SaveChangesAsync();
       return ApiResponse.Success(new
       {

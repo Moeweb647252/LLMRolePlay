@@ -22,8 +22,14 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Chat? chat = await Chat.CreateChat(_dBContext, data.name, data.description, data.settings, user.Id);
-      if (chat == null) return ApiResponse.MessageOnly(502, "Chat creation failed");
+      Chat chat = new Chat
+      {
+        Name = data.name,
+        Description = data.description,
+        Settings = data.settings,
+        UserId = user.Id
+      };
+      await _dBContext.Chats.AddAsync(chat);
       await _dBContext.SaveChangesAsync();
       return ApiResponse.Success(new
       {

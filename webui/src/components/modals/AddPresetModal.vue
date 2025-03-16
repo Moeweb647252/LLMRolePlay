@@ -55,6 +55,7 @@ const confirm = async () => {
     })
   } catch (e) {
     console.log(e)
+    message.error('添加失败')
   }
   show.value = false
 }

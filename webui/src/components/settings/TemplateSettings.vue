@@ -95,13 +95,13 @@ const startEdit = (template: Template) => {
   </div>
   <AddTemplateModal
     :key="addKey"
-    v-model:visible="addShow"
+    v-model:show="addShow"
     @confirm="onAddConfirm"
   />
   <EditTemplateModal
     v-if="editing"
     :key="editKey"
-    v-model:visible="editShow"
+    v-model:show="editShow"
     :value="editing"
     @confirm="onEditConfirm"
   />

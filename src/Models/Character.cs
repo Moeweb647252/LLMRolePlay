@@ -13,36 +13,15 @@ namespace LLMRolePlay.Models
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public uint Id { get; set; }
-    public string Name { get; set; }
+    public required string Name { get; set; }
     public string? Settings { get; set; }
-    public string Content { get; set; }
-    public string Description { get; set; }
+    public required string Content { get; set; }
+    public string? Description { get; set; }
     public bool IsPublic { get; set; }
     public uint UserId { get; set; }
 
     public uint? Avatar { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public Character(string name, string content, string settings, uint userId, string description = "", bool isPublic = false, uint? avatar = null)
-    {
-      Name = name;
-      Content = content;
-      Settings = settings;
-      UserId = userId;
-      Description = description;
-      IsPublic = isPublic;
-      Avatar = avatar;
-    }
-    public static async Task<Character> CreateCharacter(DBContext db, string name, string content, string settings, string description, uint userId, bool isPublic = false, uint? avatar = null)
-    {
-      Character character = new Character(name, content, settings, userId, description, isPublic, avatar);
-      await db.Characters.AddAsync(character);
-      await db.SaveChangesAsync();
-      return character;
-    }
-    public static async Task<Character?> GetCharacterById(DBContext db, uint id)
-    {
-      return await db.Characters.FindAsync(id);
-    }
     public async Task Delete(DBContext db)
     {
       db.Characters.Remove(this);

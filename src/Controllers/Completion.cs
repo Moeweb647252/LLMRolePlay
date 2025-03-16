@@ -74,7 +74,13 @@ namespace LLMRolePlay.Controllers
         }
         // Remove <think>...</think> tags from content  
         content = System.Text.RegularExpressions.Regex.Replace(content, @"<think>.*?</think>", "", System.Text.RegularExpressions.RegexOptions.Singleline);
-        var newMessage = new Message("assistant", content, 0, chat.Id, participant.Id);
+        var newMessage = new Message
+        {
+          ParticipantId = participantId,
+          Content = content,
+          CreatedAt = DateTime.UtcNow,
+          Role = "assistant"
+        };
         _dBContext.Messages.Add(newMessage);
         await _dBContext.SaveChangesAsync();
         await Response.WriteAsync("data: " + JsonSerializer.Serialize(new

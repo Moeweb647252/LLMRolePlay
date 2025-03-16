@@ -39,6 +39,7 @@ const editModalKey = ref(0)
 const editingPreset = ref<EditPresetForm | null>(null)
 
 const add = () => {
+  addModalKey.value++
   showAddModal.value = true
 }
 
@@ -66,9 +67,8 @@ const sharePreset = (preset: Preset) => {
   message.info(`分享预设: ${preset.name}`)
 }
 
-const onAddConfirm = async () => {
-  showAddModal.value = false
-  presets.value = await api.getPresets()
+const onAddConfirm = async (preset: Preset) => {
+  presets.value.push(preset)
 }
 
 let onEditConfirm = (_form: EditPresetForm) => {}

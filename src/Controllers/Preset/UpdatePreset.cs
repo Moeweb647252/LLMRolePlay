@@ -1,6 +1,7 @@
 using LLMRolePlay.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace LLMRolePlay.Controllers
 {
@@ -26,7 +27,7 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Preset? preset = await Preset.GetPresetById(_dBContext, data.presetId);
+      Preset? preset = await _dBContext.Presets.Where(p => p.Id == data.presetId).FirstOrDefaultAsync();
       if (preset == null) return ApiResponse.MessageOnly(500, "preset not found");
 
       if (preset.UserId != user.Id) return ApiResponse.MessageOnly(505, "preset not belongs to current user");
