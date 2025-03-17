@@ -40,37 +40,40 @@ const addMessage = async () => {
   messages.push(msg)
   let id = await api.addMessage(props.chat.id!, msg.content, msg.role)
   msg.id = id
-  await generateMessage()
+  await generateMessage(props.chat.participants[participantIndex.value].id!)
+  participantIndex.value++
+  if (participantIndex.value >= props.chat.participants.length) {
+    participantIndex.value = 0
+  }
 }
 
-const generateMessage = async () => {
+const generateMessage = async (participantId: number) => {
   generating.value = true
   const msg = reactive({
     id: 0,
     content: '',
     role: 'assistant',
-    participantId: props.chat.participants[participantIndex.value].id!,
+    participantId: participantId,
     createdAt: new Date().toISOString(),
   })
   messages.push(msg)
-  let id = await generate(
-    props.chat.participants[participantIndex.value].id!,
-    (delta) => {
-      msg.content += delta
-    },
-  )
+  let id = await generate(participantId, (delta) => {
+    msg.content += delta
+  })
   msg.id = id
   generating.value = false
-  participantIndex.value++
-  if (participantIndex.value >= props.chat.participants.length) {
-    participantIndex.value = 0
-  }
   let settings = JSON.parse(JSON.stringify(props.chat.settings))
   settings.currentParticipantId =
     props.chat.participants[participantIndex.value].id!
   await api.updateChat(props.chat.id!, {
     settings: settings,
   })
+}
+
+const regenerateMessage = async (message: MessageT) => {
+  await api.deleteMessage(message.id!)
+  messages.splice(messages.indexOf(message), 1)
+  await generateMessage(message.participantId!)
 }
 
 const deleteMessage = async (message: MessageT) => {
@@ -140,6 +143,7 @@ onMounted(async () => {
                   : '你'
               "
               @delete="deleteMessage(i)"
+              @regenerate="regenerateMessage(i)"
             />
           </NScrollbar>
         </div>
@@ -192,7 +196,9 @@ onMounted(async () => {
                   type="primary"
                   strong
                   secondary
-                  @click="generateMessage"
+                  @click="
+                    generateMessage(chat.participants[participantIndex].id!)
+                  "
                 >
                   生成
                 </NButton>

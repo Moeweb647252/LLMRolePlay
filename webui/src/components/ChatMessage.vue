@@ -16,7 +16,7 @@ const props = defineProps<{
   reloadable: boolean
 }>()
 
-const emit = defineEmits(['delete'])
+const emit = defineEmits(['delete', 'regenerate', 'edit'])
 
 const entities: Record<string, string> = {
   '&lt;': '<',
@@ -138,7 +138,14 @@ onMounted(() => {
               </NIcon>
             </template>
           </NButton>
-          <NButton v-if="reloadable" size="small" strong secondary circle>
+          <NButton
+            v-if="reloadable"
+            size="small"
+            strong
+            secondary
+            circle
+            @click="emit('regenerate')"
+          >
             <template #icon>
               <NIcon>
                 <MdSync />
