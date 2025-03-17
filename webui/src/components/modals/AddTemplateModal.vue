@@ -57,6 +57,7 @@ const confirm = async () => {
     }
     message.success('添加成功')
     emit('confirm', newTemplate)
+    show.value = false
   } catch (e) {
     console.log(e)
     message.error('添加失败')
@@ -68,7 +69,13 @@ const cancel = () => {
 </script>
 
 <template>
-  <NModal v-model:show="show" title="添加模板" size="medium">
+  <NModal
+    v-model:show="show"
+    title="添加模板"
+    size="medium"
+    preset="card"
+    style="width: fit-content; min-width: 25em"
+  >
     <NForm>
       <NFormItem label="名称">
         <NInput v-model:value="form.name" />
@@ -77,7 +84,7 @@ const cancel = () => {
         <NInput v-model:value="form.description" />
       </NFormItem>
       <NFormItem label="内容">
-        <NInput v-model:value="form.content" />
+        <NInput v-model:value="form.content" type="textarea" />
       </NFormItem>
       <NFormItem label="是否公开">
         <NSwitch v-model:value="form.isPublic" />

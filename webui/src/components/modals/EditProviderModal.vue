@@ -56,6 +56,13 @@ const renderModelTags = (model: EditModelForm) => {
         editingModel.value = model
         editModelKey.value += 1
         editModelShow.value = true
+        onEditModelConfirm = (form: EditModelForm) => {
+          model.name = form.name
+          model.modelName = form.modelName
+          model.isPublic = form.isPublic
+          model.description = form.description
+          model.settings = form.settings
+        }
       },
     },
     {
@@ -106,6 +113,8 @@ const onConfirmAddModel = async (model: AddModelForm) => {
     id,
   })
 }
+
+let onEditModelConfirm = (_form: EditModelForm) => {}
 </script>
 
 <template>
@@ -161,5 +170,6 @@ const onConfirmAddModel = async (model: AddModelForm) => {
     :key="editModelKey"
     v-model:show="editModelShow"
     :value="editingModel"
+    @confirm="onEditModelConfirm"
   />
 </template>

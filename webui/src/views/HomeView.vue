@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { api } from '@/api'
 import ChatBox from '@/components/ChatBox.vue'
-import { type Character } from '@/types/character'
 import { useSettingsStore } from '@/stores/settings'
 import { IosMenu, MdAdd, MdContact, MdCreate, MdClose } from '@vicons/ionicons4'
 import { useMessage, useModal } from 'naive-ui'
@@ -21,9 +20,6 @@ import {
 } from 'naive-ui'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { Model, Provider } from '@/types/provider'
-import { Preset } from '@/types/preset'
-import { Template } from '@/types/template'
 import { Chat } from '@/types/chat'
 import AddChatModal from '@/components/modals/AddChatModal.vue'
 import EditChatModal from '@/components/modals/EditChatModal.vue'
@@ -35,24 +31,51 @@ const showSider = ref(true)
 const message = useMessage()
 const modal = useModal()
 
-const providers = ref([] as Provider[])
-const userPresets = ref([] as Preset[])
-const userCharacters = ref([] as Character[])
-const userTemplates = ref([] as Template[])
-const publicPresets = ref([] as Preset[])
-const publicCharacters = ref([] as Character[])
-const publicTemplates = ref([] as Template[])
-const publicModels = ref([] as Model[])
+const providers = ref(await api.getProviders())
+const userPresets = ref(await api.getPresets())
+const userCharacters = ref(await api.getCharacters())
+const userTemplates = ref(await api.getTemplates())
+const publicPresets = ref(await api.getPublicPresets())
+const publicCharacters = ref(await api.getPublicCharacters())
+const publicTemplates = ref(await api.getPublicTemplates())
+const publicModels = ref(await api.getPublicModels())
 const chats = ref(await api.getChats())
 
 const presets = computed(() => {
-  return userPresets.value.concat(publicPresets.value)
+  return userPresets.value.concat(publicPresets.value).map((p) => {
+    return {
+      label: p.name + (p.isPublic ? '(公共)' : ''),
+      value: p.id,
+    }
+  })
 })
 const characters = computed(() => {
-  return userCharacters.value.concat(publicCharacters.value)
+  return userCharacters.value.concat(publicCharacters.value).map((c) => {
+    return {
+      label: c.name! + (c.isPublic ? '(公共)' : ''),
+      value: c.id!,
+    }
+  })
 })
 const templates = computed(() => {
-  return userTemplates.value.concat(publicTemplates.value)
+  return userTemplates.value.concat(publicTemplates.value).map((t) => {
+    return {
+      label: t.name! + (t.isPublic ? '(公共)' : ''),
+      value: t.id!,
+    }
+  })
+})
+const models = computed(() => {
+  return providers.value
+    .map((p) => p.models)
+    .flat()
+    .concat(publicModels.value)
+    .map((m) => {
+      return {
+        label: m.name + (m.provider ? `(${m.provider.name})` : '(公共)'),
+        value: m.id,
+      }
+    })
 })
 
 const currentChat = ref(null as Chat | null)
@@ -290,7 +313,7 @@ onMounted(async () => {
     :presets="presets"
     :characters="characters"
     :templates="templates"
-    :models="publicModels"
+    :models="models"
     :show="modalsShow.addChat"
     @confirm="onConfirmAddChat"
   ></AddChatModal>
@@ -302,7 +325,7 @@ onMounted(async () => {
     :presets="presets"
     :characters="characters"
     :templates="templates"
-    :models="publicModels"
+    :models="models"
     :show="modalsShow.editChat"
     @confirm="onConfirmEditChat"
   ></EditChatModal>

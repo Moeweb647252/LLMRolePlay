@@ -18,6 +18,7 @@ import { MdAdd } from '@vicons/ionicons4'
 import { h, ref } from 'vue'
 import { api } from '@/api'
 import type { Model, Provider } from '@/types/provider'
+import AddModelModal from './AddModelModal.vue'
 
 const renderModelTag = (model: AddModelForm, index: number) => {
   return h(
@@ -26,9 +27,6 @@ const renderModelTag = (model: AddModelForm, index: number) => {
       closable: true,
       onClose: () => {
         form.value.models.splice(index, 1)
-      },
-      onClick: () => {
-        console.log('click')
       },
     },
     {
@@ -72,6 +70,12 @@ const emit = defineEmits<{
   cancel: []
   confirm: [Provider]
 }>()
+
+const addModelKey = ref(0)
+const addModelShow = ref(false)
+const onAddModelConfirm = (model: AddModelForm) => {
+  form.value.models.push(model)
+}
 
 const validate = () => {
   if (!form.value.name) {
@@ -143,6 +147,11 @@ const confirm = async () => {
 }
 
 const cancel = () => {}
+
+const startAddModel = () => {
+  addModelKey.value += 1
+  addModelShow.value = true
+}
 </script>
 
 <template>
@@ -163,13 +172,19 @@ const cancel = () => {}
       <NFormItem label="类型">
         <NSelect v-model:value="form.type" :options="types" />
       </NFormItem>
+      <NFormItem label="Base URL">
+        <NInput v-model:value="form.baseUrl" />
+      </NFormItem>
+      <NFormItem label="API Key">
+        <NInput v-model:value="form.apiKey" />
+      </NFormItem>
       <NFormItem label="模型">
         <NDynamicTags
           v-model:value="form.models as any[]"
           :render-tag="renderModelTag as any"
         >
           <template #trigger>
-            <NButton size="small" type="primary" dashed>
+            <NButton size="small" type="primary" dashed @click="startAddModel">
               <template #icon>
                 <NIcon>
                   <MdAdd />
@@ -188,4 +203,9 @@ const cancel = () => {}
       </NFormItem>
     </NForm>
   </NModal>
+  <AddModelModal
+    :key="addModelKey"
+    v-model:show="addModelShow"
+    @confirm="onAddModelConfirm"
+  ></AddModelModal>
 </template>

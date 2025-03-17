@@ -23,7 +23,7 @@ namespace LLMRolePlay.Models
     public Chat Chat { get; set; } = null!;
 
     [ForeignKey("Chat")]
-    public uint ChatId { get; set; }
+    public required uint ChatId { get; set; }
     public void MarkAsModified(DBContext db)
     {
       db.Entry(this).State = EntityState.Modified;

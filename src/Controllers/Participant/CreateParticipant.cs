@@ -28,7 +28,7 @@ namespace LLMRolePlay.Controllers
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
 
-      Model? model = await _dBContext.Models.Where(m => m.Id == data.modelId).FirstOrDefaultAsync();
+      Model? model = await _dBContext.Models.Include(m => m.Provider).Where(m => m.Id == data.modelId).FirstOrDefaultAsync();
       if (model == null) return ApiResponse.MessageOnly(500, "model not found");
       if (model.Provider.UserId != user.Id && !model.IsPublic) return ApiResponse.MessageOnly(500, "model does not belong to user");
 

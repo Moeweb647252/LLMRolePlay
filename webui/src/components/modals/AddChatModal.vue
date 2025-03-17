@@ -55,13 +55,17 @@ const form = ref<AddChatForm>({
   },
   participants: [],
 })
-const isShowAddParticipantModal = ref(false)
+
 const show = defineModel<boolean>('show', {
   default: false,
 })
 
+const addParticipantShow = ref(false)
+const addParticipantKey = ref(0)
+
 const startAddParticipant = () => {
-  form.value.participants.push()
+  addParticipantKey.value += 1
+  addParticipantShow.value = true
 }
 
 const mapValue = (p: SelectBaseOption) => {
@@ -111,6 +115,7 @@ const confirm = async () => {
     })
   }
   emit('confirm', newChat)
+  show.value = false
 }
 
 const validate = () => {
@@ -126,6 +131,10 @@ const emit = defineEmits<{
   cancel: []
   confirm: [Chat]
 }>()
+
+const onAddParticipantConfirm = (value: AddParticipantForm) => {
+  form.value.participants.push(value)
+}
 </script>
 
 <template>
@@ -174,10 +183,12 @@ const emit = defineEmits<{
     </template>
   </NModal>
   <AddParticipantModal
+    :key="addParticipantKey"
+    v-model:show="addParticipantShow"
     :models="models"
     :characters="characters"
     :presets="presets"
     :templates="templates"
-    :show="isShowAddParticipantModal"
+    @confirm="onAddParticipantConfirm"
   />
 </template>

@@ -76,6 +76,7 @@ namespace LLMRolePlay.Controllers
         content = System.Text.RegularExpressions.Regex.Replace(content, @"<think>.*?</think>", "", System.Text.RegularExpressions.RegexOptions.Singleline);
         var newMessage = new Message
         {
+          ChatId = chat.Id,
           ParticipantId = participantId,
           Content = content,
           CreatedAt = DateTime.UtcNow,

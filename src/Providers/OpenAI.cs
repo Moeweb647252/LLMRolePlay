@@ -39,16 +39,16 @@ namespace LLMRolePlay.Providers.OpenAI
   public class StreamingResponseChunkChoice
   {
     public required StreamingResponseChunkChoiceDelta delta { get; set; }
-    public required string id { get; set; }
-    public required ulong created { get; set; }
-    public required string model { get; set; }
+    public ulong? index { get; set; }
+    public string? finish_reason { get; set; }
+    public ulong? logprobs { get; set; }
   }
 
   public class StreamingResponseChunk
   {
     public string? id { get; set; }
     public StreamingResponseChunkChoice[]? choices { get; set; }
-    public string? created { get; set; }
+    public ulong? created { get; set; }
     public string? model { get; set; }
   }
 

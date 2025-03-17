@@ -39,7 +39,10 @@ const deleteProvider = async (provider: Provider) => {
   })
 }
 
-const add = () => {}
+const add = () => {
+  addModalKey.value++
+  showAddModal.value = true
+}
 const edit = (provider: Provider) => {
   editModalKey.value++
   editingProvider.value = {

@@ -42,6 +42,7 @@ const form = ref<AddParticipantForm>({
 const confirm = () => {
   if (!validate()) return
   emit('confirm', form.value)
+  show.value = false
 }
 
 const validate = () => {

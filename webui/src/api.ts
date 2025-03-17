@@ -435,6 +435,7 @@ export class Api {
         chat.id,
         chat.name,
         chat.participants,
+        chat.description,
         JSON.parse(chat.settings),
       )
     })
