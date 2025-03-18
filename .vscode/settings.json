@@ -1,6 +1,7 @@
 {
   "eslint.workingDirectories": ["./webui"],
   "cSpell.words": [
+    "hoverable",
     "logprobs",
     "Newtonsoft",
     "Npgsql",

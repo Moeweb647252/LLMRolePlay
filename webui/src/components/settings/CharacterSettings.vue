@@ -69,16 +69,27 @@ const onAddConfirm = async (value: Character) => {
 }
 
 let onEditConfirm = async (_form: EditCharacterForm) => {}
+
+const imp = () => {
+  message.info('导入功能尚未实现')
+}
 </script>
 <template>
   <div style="padding: 2em">
     <div class="header">
       <h3>角色</h3>
-      <NButton type="primary" @click="add"> 添加 </NButton>
+      <NSpace>
+        <NButton type="primary" @click="add"> 添加 </NButton>
+        <NButton type="primary" @click="imp"> 导入</NButton></NSpace
+      >
     </div>
     <div>
-      <NList>
-        <NListItem v-for="character in characters" :key="character.id!">
+      <NList :hoverable="true">
+        <NListItem
+          v-for="character in characters"
+          :key="character.id!"
+          class="list-item"
+        >
           {{ character.name }}
           <template #suffix>
             <NSpace :wrap="false">
