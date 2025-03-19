@@ -281,11 +281,14 @@ onMounted(async () => {
             <IosMenu />
           </NIcon>
         </NButton>
-        <NDropdown :options="dropdownOptions" @select="onDropdownSelect">
-          <NIcon size="2.5em" style="padding-right: 0.5em">
-            <MdContact />
-          </NIcon>
-        </NDropdown>
+        <NSpace>
+          <NButton> 翻译模式 </NButton>
+          <NDropdown :options="dropdownOptions" @select="onDropdownSelect">
+            <NIcon size="2.5em" style="padding-right: 0.5em">
+              <MdContact />
+            </NIcon>
+          </NDropdown>
+        </NSpace>
       </NLayoutHeader>
       <NLayoutContent class="bfc" style="height: calc(100% - 3.5em)">
         <Suspense>
