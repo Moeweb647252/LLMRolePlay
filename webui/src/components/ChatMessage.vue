@@ -2,11 +2,13 @@
 import { MdContact, MdCreate, MdSync, MdClipboard } from '@vicons/ionicons4'
 import { DeleteFilled } from '@vicons/material'
 import { onMounted, ref, watch } from 'vue'
-import { NAvatar, NButton, NIcon, NSpace, NAlert } from 'naive-ui'
+import { NAvatar, NButton, NIcon, NSpace, NAlert, NInput } from 'naive-ui'
 
 const action = ref('')
 const text = ref('')
 const think = ref('')
+const editing = ref(false)
+const editingValue = ref('')
 
 const props = defineProps<{
   content: string
@@ -25,6 +27,16 @@ const entities: Record<string, string> = {
   '&quot;': '"',
   '&#39;': "'",
   '&#47;': '/', // 常见的斜杠实体
+}
+
+const startEdit = () => {
+  editingValue.value = props.content
+  editing.value = true
+}
+
+const onConfirmEdit = () => {
+  emit('edit', editingValue.value)
+  editing.value = false
 }
 
 onMounted(() => {
@@ -95,7 +107,7 @@ onMounted(() => {
 })
 </script>
 <template>
-  <div v-if="action.length" class="action">
+  <div v-if="action.length && !editing" class="action">
     <NAlert :show-icon="false">
       {{ action }}
     </NAlert>
@@ -112,47 +124,62 @@ onMounted(() => {
       <div class="header">
         {{ props.name }}
       </div>
-      <div class="text">
-        {{ text }}
+      <div v-if="!editing">
+        <div class="text">
+          {{ text }}
+        </div>
+        <div class="actions">
+          <NSpace size="small">
+            <NButton size="small" strong secondary circle @click="startEdit">
+              <template #icon>
+                <NIcon>
+                  <MdCreate />
+                </NIcon>
+              </template>
+            </NButton>
+            <NButton size="small" strong secondary circle>
+              <template #icon>
+                <NIcon>
+                  <MdClipboard />
+                </NIcon>
+              </template>
+            </NButton>
+            <NButton
+              size="small"
+              strong
+              secondary
+              circle
+              @click="emit('delete')"
+            >
+              <template #icon>
+                <NIcon>
+                  <DeleteFilled />
+                </NIcon>
+              </template>
+            </NButton>
+            <NButton
+              v-if="reloadable"
+              size="small"
+              strong
+              secondary
+              circle
+              @click="emit('regenerate')"
+            >
+              <template #icon>
+                <NIcon>
+                  <MdSync />
+                </NIcon>
+              </template>
+            </NButton>
+          </NSpace>
+        </div>
       </div>
-      <div class="actions">
-        <NSpace size="small">
-          <NButton size="small" strong secondary circle>
-            <template #icon>
-              <NIcon>
-                <MdCreate />
-              </NIcon>
-            </template>
-          </NButton>
-          <NButton size="small" strong secondary circle>
-            <template #icon>
-              <NIcon>
-                <MdClipboard />
-              </NIcon>
-            </template>
-          </NButton>
-          <NButton size="small" strong secondary circle @click="emit('delete')">
-            <template #icon>
-              <NIcon>
-                <DeleteFilled />
-              </NIcon>
-            </template>
-          </NButton>
-          <NButton
-            v-if="reloadable"
-            size="small"
-            strong
-            secondary
-            circle
-            @click="emit('regenerate')"
-          >
-            <template #icon>
-              <NIcon>
-                <MdSync />
-              </NIcon>
-            </template>
-          </NButton>
-        </NSpace>
+      <div v-else>
+        <NInput v-model:value="editingValue" type="textarea" autosize></NInput>
+        <NSpace
+          ><NButton @click="editing = false">取消</NButton
+          ><NButton @click="onConfirmEdit">确定</NButton></NSpace
+        >
       </div>
     </div>
   </div>

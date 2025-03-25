@@ -12,6 +12,6 @@ export type EditChatForm = {
   id: number
   name: string
   description: string | null
-  settings: ChatSettings
+  settings: ChatSettings | null
   participants: EditParticipantForm[]
 }

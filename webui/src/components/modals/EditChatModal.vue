@@ -38,6 +38,9 @@ const renderParticipantTags = (participant: EditParticipantForm) => {
   return h(
     NTag,
     {
+      style: {
+        'user-select': 'none',
+      },
       closable: true,
       onClose: () => {
         modal.create({
@@ -62,6 +65,7 @@ const renderParticipantTags = (participant: EditParticipantForm) => {
         })
       },
       onClick: () => {
+        console.log('click')
         startEditParticipant(participant)
       },
     },
@@ -74,11 +78,13 @@ const renderParticipantTags = (participant: EditParticipantForm) => {
 const editingParticipant = ref(null as EditParticipantForm | null)
 
 const startEditParticipant = (participant: EditParticipantForm) => {
+  EditParticipantModalKey.value++
   editingParticipant.value = participant
   showEditParticipantModal.value = true
 }
 
 const startAddParticipant = () => {
+  AddParticipantModalKey.value++
   showAddParticipantModal.value = true
 }
 
@@ -107,7 +113,9 @@ const onAddParticipantConfirm = async (participant: AddParticipantForm) => {
   form.value!.participants.push(newParticipant as EditParticipantForm)
 }
 const showEditParticipantModal = ref(false)
+const EditParticipantModalKey = ref(0)
 const showAddParticipantModal = ref(false)
+const AddParticipantModalKey = ref(0)
 
 const form = toRef(props, 'value')
 
@@ -177,6 +185,8 @@ const emit = defineEmits(['confirm'])
     </NForm>
   </NModal>
   <AddParticipantModal
+    :key="AddParticipantModalKey"
+    v-model:show="showAddParticipantModal"
     :characters="characters"
     :models="models"
     :presets="presets"
@@ -184,6 +194,8 @@ const emit = defineEmits(['confirm'])
     @confirm="onAddParticipantConfirm"
   />
   <EditParticipantModal
+    :key="EditParticipantModalKey"
+    v-model:show="showEditParticipantModal"
     :characters="characters"
     :models="models"
     :presets="presets"

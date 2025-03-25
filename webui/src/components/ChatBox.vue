@@ -143,6 +143,15 @@ onMounted(async () => {
                   : '你'
               "
               @delete="deleteMessage(i)"
+              @edit="
+                async (content: string) => {
+                  i.content = ''
+                  await api.updateMessage(i.id!, {
+                    content: content,
+                  })
+                  i.content = content
+                }
+              "
               @regenerate="regenerateMessage(i)"
             />
           </NScrollbar>

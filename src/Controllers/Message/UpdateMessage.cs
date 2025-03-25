@@ -22,7 +22,7 @@ namespace LLMRolePlay.Controllers
 
       User? user = await Models.User.GetUserByToken(_dBContext, token);
       if (user == null) return ApiResponse.TokenError();
-      Message? message = await _dBContext.Messages.Where(m => m.Id == data.messageId).FirstOrDefaultAsync();
+      Message? message = await _dBContext.Messages.Include(m => m.Chat).Where(m => m.Id == data.messageId).FirstOrDefaultAsync();
       if (message == null) return ApiResponse.MessageOnly(404, "message not found");
       if (message.Chat.UserId != user.Id) return ApiResponse.MessageOnly(505, "message not belongs to current user");
       message.Content = data.content;

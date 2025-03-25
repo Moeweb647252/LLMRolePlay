@@ -44,11 +44,14 @@ export class Chat {
   id: number | null
   name: string | null
   description: string | null
-  settings: ChatSettings
+  settings: ChatSettings | null
   participants: {
     id: number
     name: string
-    model: number
+    model: {
+      id: number
+      name: string
+    }
     presets: {
       id: number
       name: string

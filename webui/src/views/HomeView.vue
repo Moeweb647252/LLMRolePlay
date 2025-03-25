@@ -156,12 +156,12 @@ const startEditChat = (chat: Chat) => {
     settings: chat.settings,
     participants: chat.participants.map((p) => {
       return {
-        id: p.id,
-        name: p.name,
-        model: p.model,
+        id: p.id!,
+        name: p.name!,
+        model: p.model!.id,
         presets: p.presets.map((p) => p.id),
-        character: p.character.id,
-        template: p.template.id,
+        character: p.character!.id,
+        template: p.template!.id,
         settings: null,
       }
     }),

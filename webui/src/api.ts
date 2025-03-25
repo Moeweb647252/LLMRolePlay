@@ -700,10 +700,16 @@ export class Api {
     })
   }
 
-  async updateMessage(id: number, content: string): Promise<void> {
+  async updateMessage(
+    id: number,
+    data: {
+      content?: string
+      role?: string
+    },
+  ): Promise<void> {
     await this.request('updateMessage', {
       messageId: id,
-      content: content,
+      content: data.content ?? null,
     })
   }
 }
