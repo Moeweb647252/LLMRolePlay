@@ -282,7 +282,7 @@ onMounted(async () => {
           </NIcon>
         </NButton>
         <NSpace>
-          <NButton> 翻译模式 </NButton>
+          <NButton @click="router.push('/main/translate')"> 翻译模式 </NButton>
           <NDropdown :options="dropdownOptions" @select="onDropdownSelect">
             <NIcon size="2.5em" style="padding-right: 0.5em">
               <MdContact />
