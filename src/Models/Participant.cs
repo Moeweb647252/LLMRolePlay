@@ -134,12 +134,14 @@ namespace LLMRolePlay.Models
     {
 
       string ret = Template.Content;
-      string character = string.Join("\n",
+      string character = "";
+      character += "\nYour Character:\n";
+      character += $"姓名: {Character.Name}\n";
+      character += "描述:" + Character.Description + "\n";
+      character += string.Join("\n",
           JsonSerializer.Deserialize<List<ContentItem>>(Character.Content)?
           .Select(s => $"{s.Key}: {s.Value}") ?? []
         );
-      ret += "\nYour Character:\n";
-      ret += $"姓名: {Character.Name}\n";
       if (ret.Contains("{{ character }}"))
       {
         ret = ret.Replace("{{ character }}", character);

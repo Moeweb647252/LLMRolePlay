@@ -102,7 +102,9 @@ const confirm = async () => {
     newChat.participants.push({
       id: pId,
       name: participant.name!,
-      model: participant.model!,
+      model: [props.models.find((m) => m.value === participant.model)!].map(
+        mapValue,
+      )[0],
       presets: props.presets
         .filter((p) => participant.presets.includes(p.value as number))
         .map(mapValue),
@@ -173,6 +175,12 @@ const onAddParticipantConfirm = (value: AddParticipantForm) => {
             </NButton>
           </template>
         </NDynamicTags>
+      </NFormItem>
+      <NFormItem label="你的名字">
+        <NInput
+          v-model:value="form.settings.nameOfUser"
+          placeholder="在聊天中显示的名字"
+        />
       </NFormItem>
     </NForm>
     <template #footer>

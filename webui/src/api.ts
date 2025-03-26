@@ -5,7 +5,7 @@ import axios from 'axios'
 import { Preset } from './types/preset'
 import { Character } from './types/character'
 import { Model } from './types/provider'
-import { FullChat, type Message } from './types/chat'
+import { FullChat, type ChatSettings, type Message } from './types/chat'
 import { User } from './types/user'
 import { Chat } from './types/chat'
 import { Template } from './types/template'
@@ -504,7 +504,7 @@ export class Api {
     options: {
       name?: string
       description?: string
-      settings?: object
+      settings?: ChatSettings
     } = {},
   ): Promise<void> {
     await this.request('updateChat', {

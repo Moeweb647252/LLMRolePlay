@@ -160,6 +160,19 @@ const emit = defineEmits(['confirm'])
           "
         />
       </NFormItem>
+      <NFormItem label="你的名字">
+        <SettingsInput
+          :value="form!.settings!.nameOfUser"
+          @confirm="
+            async (name) => {
+              form!.settings!.nameOfUser = name
+              await api.updateChat(form!.id!, {
+                settings: form!.settings!,
+              })
+            }
+          "
+        />
+      </NFormItem>
       <NFormItem label="参与者">
         <NDynamicTags
           v-model:value="form!.participants as any[]"
