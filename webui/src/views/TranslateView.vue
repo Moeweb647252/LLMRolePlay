@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { api } from '@/api'
+import AddTranslatorModal from '@/components/modals/AddTranslatorModal.vue'
+import type { Translator } from '@/types/translator'
 import {
   NLayout,
   NLayoutHeader,
@@ -7,9 +10,18 @@ import {
   NCard,
   NButton,
 } from 'naive-ui'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
+const translators = ref(await api.getTranslators())
+
+const showAddModal = ref(false)
+const addModalKey = ref(0)
+
+const onConfirmAdd = async (t: Translator) => {
+  translators.value.push(t)
+}
 </script>
 
 <template>
@@ -21,9 +33,9 @@ const router = useRouter()
         align-items: center;
         justify-content: space-between;
         height: 3.5em;
-        margin-left: 0.5em;
+        padding-left: 1em;
         border-bottom: 1px solid #eaeaea;
-        margin-right: 0.5em;
+        padding-right: 1em;
       "
       ><h2>Translate</h2>
       <NButton @click="router.push('/main')">聊天模式</NButton>
@@ -56,6 +68,14 @@ const router = useRouter()
       </div>
     </NLayoutContent>
   </NLayout>
+  <AddTranslatorModal
+    :key="addModalKey"
+    v-model:show="showAddModal"
+    :models="translators"
+    :presets="translators"
+    :templates="translators"
+    @confirm="onConfirmAdd"
+  ></AddTranslatorModal>
 </template>
 
 <style scoped>

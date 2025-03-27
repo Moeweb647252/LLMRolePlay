@@ -53,7 +53,8 @@ namespace LLMRolePlay.Controllers
         TemplateId = data.templateId,
         Name = data.name,
         Description = data.description,
-        Settings = data.settings
+        Settings = data.settings,
+        UserId = user.Id
       }
       ;
       await _dBContext.Translators.AddAsync(translator);

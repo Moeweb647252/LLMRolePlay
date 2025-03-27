@@ -27,6 +27,8 @@ namespace LLMRolePlay.Models
     public uint TemplateId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
+    public required uint UserId { get; set; }
+
     public void MarkAsModified(DBContext db)
     {
       db.Entry(this).State = EntityState.Modified;

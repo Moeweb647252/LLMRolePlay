@@ -1,8 +1,20 @@
 <script lang="ts" setup>
+import { api } from '@/api'
 import type { Options } from '@/types/modal'
 import type { AddTranslatorForm } from '@/types/modal/translator'
-import { NModal, NForm, NFormItem, NSelect, NInput } from 'naive-ui'
+import { Translator } from '@/types/translator'
+import {
+  NModal,
+  NForm,
+  NFormItem,
+  NSelect,
+  NInput,
+  NButton,
+  useMessage,
+} from 'naive-ui'
 import { ref } from 'vue'
+
+const message = useMessage()
 
 const props = defineProps<{
   models: Options
@@ -21,6 +33,50 @@ const form = ref<AddTranslatorForm>({
 const show = defineModel<boolean>('show', {
   default: false,
 })
+
+const validate = () => {
+  if (!form.value.name) {
+    message.error('名称不能为空')
+    return false
+  }
+  if (!form.value.modelId) {
+    message.error('模型不能为空')
+    return false
+  }
+  if (!form.value.templateId) {
+    message.error('模板不能为空')
+    return false
+  }
+  return true
+}
+
+const confirm = async () => {
+  if (!validate()) return
+  let id = await api.addTranslator(
+    form.value.name!,
+    form.value.description,
+    form.value.modelId!,
+    form.value.presetIds,
+    form.value.templateId!,
+  )
+
+  emit(
+    'confirm',
+    new Translator(
+      id,
+      form.value.name!,
+      form.value.description,
+      form.value.modelId!,
+      form.value.presetIds,
+      form.value.templateId!,
+    ),
+  )
+}
+
+const emit = defineEmits<{
+  cancel: []
+  confirm: Translator[]
+}>()
 </script>
 
 <template>
@@ -60,6 +116,10 @@ const show = defineModel<boolean>('show', {
           />
         </NFormItem>
       </NForm>
+    </template>
+    <template #footer>
+      <NButton @click="emit('cancel')">取消</NButton>
+      <NButton type="primary" @click="confirm"> 确定 </NButton>
     </template>
   </NModal>
 </template>
