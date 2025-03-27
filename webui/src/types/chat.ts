@@ -5,21 +5,21 @@ import { Model } from './provider'
 import type { Template } from './template'
 
 export class Participant {
-  id: number | null
-  name: string | null
-  model: Model | null
+  id: number
+  name: string
+  model: Model
   presets: Preset[]
-  character: Character | null
-  template: Template | null
+  character: Character
+  template: Template
   settings: Record<string, any>
 
   constructor(
-    id: number | null = null,
-    name: string | null = null,
-    model: Model | null = null,
+    id: number,
+    name: string,
+    model: Model,
     presets: Preset[] = [],
-    character: Character | null = null,
-    template: Template | null = null,
+    character: Character,
+    template: Template,
     settings: Record<string, any> = {},
   ) {
     this.id = id
@@ -33,18 +33,18 @@ export class Participant {
 }
 
 export interface Message {
-  id: number | null
+  id: number
   content: string
   role: string
-  participantId: number | null
+  participantId: number | undefined
   createdAt: string
 }
 
 export class Chat {
-  id: number | null
-  name: string | null
+  id: number
+  name: string
   description: string | null
-  settings: ChatSettings | null
+  settings: ChatSettings
   participants: {
     id: number
     name: string
@@ -67,8 +67,8 @@ export class Chat {
   }[]
 
   constructor(
-    id: number | null = null,
-    name: string | null = null,
+    id: number,
+    name: string,
     participants: any[] = [],
     description: string | null = null,
     settings: ChatSettings = { nameOfUser: null, currentParticipantId: null },

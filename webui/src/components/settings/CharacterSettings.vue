@@ -108,8 +108,9 @@ const imp = () => {
     @confirm="onAddConfirm"
   ></AddCharacterModal>
   <EditCharacterModal
+    v-if="editingCharacter"
     v-model:show="showEditModal"
-    :value="editingCharacter!"
+    :value="editingCharacter"
     @confirm="onEditConfirm"
   ></EditCharacterModal>
 </template>

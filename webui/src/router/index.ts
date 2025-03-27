@@ -32,11 +32,8 @@ const router = createRouter({
           path: 'settings',
           name: 'settings',
           component: SettingsView,
+          redirect: '/main/settings/user',
           children: [
-            {
-              path: '',
-              redirect: '/main/settings/user',
-            },
             {
               path: 'user',
               component: UserSettings,
@@ -78,7 +75,8 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  next()
+  console.log(to.path)
+  console.log(from.path)
   const settingsStore = useSettingsStore()
   if (to.name !== 'login' && !settingsStore.user) {
     next({ name: 'login' })

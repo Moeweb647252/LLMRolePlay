@@ -75,7 +75,13 @@ const toggleSider = () => {
       </div>
     </NLayoutSider>
     <NLayoutContent>
-      <RouterView style="padding: 2em" />
+      <div style="padding: 2em">
+        <RouterView v-slot="{ Component }">
+          <Suspense>
+            <component :is="Component" />
+          </Suspense>
+        </RouterView>
+      </div>
     </NLayoutContent>
   </NLayout>
 </template>

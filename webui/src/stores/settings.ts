@@ -5,8 +5,8 @@ import { ref } from 'vue'
 export const useSettingsStore = defineStore(
   'settings',
   () => {
-    const user = ref<User | null>(null)
-    const currentChatId = ref<number | null>(null)
+    const user = ref<User>()
+    const currentChatId = ref<number>()
     return {
       user,
       currentChatId,

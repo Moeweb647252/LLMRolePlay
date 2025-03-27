@@ -68,7 +68,7 @@ export class Api {
   }
 
   async logout(): Promise<void> {
-    this.store!.user = null
+    this.store!.user = void 0
   }
 
   async check(): Promise<void> {
@@ -665,7 +665,7 @@ export class Api {
   async addChat(
     name: string,
     description: string | null,
-    settings: object | null,
+    settings: ChatSettings,
   ): Promise<number> {
     const data = await this.request('createChat', {
       name: name,

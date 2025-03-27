@@ -126,7 +126,7 @@ const deleteChat = async (chat: Chat) => {
         await api.deleteChat(chat.id!)
         chats.value = chats.value.filter((c) => c.id !== chat.id)
         if (settings.currentChatId === chat.id) {
-          settings.currentChatId = null
+          settings.currentChatId = void 0
           currentChat.value = null
         }
         message.success('删除成功')

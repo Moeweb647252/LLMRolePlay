@@ -33,7 +33,7 @@ const addMessage = async () => {
     id: 0,
     content: input.value,
     role: 'user',
-    participantId: null,
+    participantId: undefined,
     createdAt: new Date().toISOString(),
   })
   input.value = ''
@@ -65,6 +65,10 @@ const generateMessage = async (participantId: number) => {
   let settings = JSON.parse(JSON.stringify(props.chat.settings))
   settings.currentParticipantId =
     props.chat.participants[participantIndex.value].id!
+  participantIndex.value += 1
+  if (participantIndex.value >= props.chat.participants.length) {
+    participantIndex.value = 0
+  }
   await api.updateChat(props.chat.id!, {
     settings: settings,
   })
