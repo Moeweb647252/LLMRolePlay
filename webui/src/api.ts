@@ -12,6 +12,7 @@ import { Template } from './types/template'
 import { Participant } from './types/chat'
 import { Provider } from './types/provider'
 import { EventSourcePolyfill } from 'event-source-polyfill'
+import type { Translator } from './types/translator'
 
 export class NoTokenError extends Error {
   constructor() {
@@ -711,6 +712,65 @@ export class Api {
       messageId: id,
       content: data.content ?? null,
     })
+  }
+
+  async getTranslators(): Promise<Translator[]> {
+    const data: {
+      translators: any[]
+    } = await this.request('getTranslators', {})
+    return data.translators.map((translator) => {
+      return {
+        id: translator.id,
+        name: translator.name,
+        settings: JSON.parse(translator.settings),
+        description: translator.description,
+        modelId: translator.modelId,
+        presetIds: translator.presetIds,
+        templateId: translator.templateId,
+      }
+    })
+  }
+
+  async deleteTranslator(id: number): Promise<void> {
+    await this.request('deleteTranslator', {
+      translatorId: id,
+    })
+  }
+
+  async updateTranslator(
+    id: number,
+    options: {
+      name?: string
+      description?: string
+      modelId?: number
+      presetIds?: number[]
+      templateId?: number
+    } = {},
+  ): Promise<void> {
+    await this.request('updateTranslator', {
+      translatorId: id,
+      name: options.name ?? null,
+      description: options.description ?? null,
+      modelId: options.modelId ?? null,
+      presetIds: options.presetIds ?? null,
+      templateId: options.templateId ?? null,
+    })
+  }
+  async addTranslator(
+    name: string,
+    description: string | null,
+    modelId: number,
+    presetIds: number[],
+    templateId: number,
+  ): Promise<number> {
+    const data = await this.request('createTranslator', {
+      name: name,
+      description: description,
+      modelId: modelId,
+      presetIds: presetIds,
+      templateId: templateId,
+    })
+    return data.id
   }
 }
 

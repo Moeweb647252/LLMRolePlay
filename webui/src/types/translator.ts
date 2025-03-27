@@ -5,6 +5,7 @@ export class Translator {
   modelId: number | null
   presetIds: number[]
   templateId: number | null
+  settings: object
 
   constructor(
     id: number,
@@ -13,6 +14,7 @@ export class Translator {
     modelId: number | null = null,
     presetIds: number[] = [],
     templateId: number | null = null,
+    settings: object = {},
   ) {
     this.id = id
     this.name = name
@@ -20,5 +22,6 @@ export class Translator {
     this.modelId = modelId
     this.presetIds = presetIds
     this.templateId = templateId
+    this.settings = settings
   }
 }

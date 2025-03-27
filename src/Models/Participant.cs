@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace LLMRolePlay.Models
 {
@@ -13,8 +14,10 @@ namespace LLMRolePlay.Models
 
   public class ContentItem
   {
-    public string Key { get; set; } = string.Empty;
-    public string Value { get; set; } = string.Empty;
+    [JsonPropertyName("key")]
+    public required string Key { get; set; }
+    [JsonPropertyName("value")]
+    public required string Value { get; set; }
   }
 
   public class Participant

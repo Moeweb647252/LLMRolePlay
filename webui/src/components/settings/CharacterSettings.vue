@@ -104,11 +104,13 @@ const imp = () => {
     </div>
   </div>
   <AddCharacterModal
+    :key="addModalKey"
     v-model:show="showAddModal"
     @confirm="onAddConfirm"
   ></AddCharacterModal>
   <EditCharacterModal
     v-if="editingCharacter"
+    :key="editModalKey"
     v-model:show="showEditModal"
     :value="editingCharacter"
     @confirm="onEditConfirm"

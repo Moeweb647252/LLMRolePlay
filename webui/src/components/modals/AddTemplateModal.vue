@@ -15,7 +15,7 @@ const show = defineModel<boolean>('show', {
 const form = ref<AddTemplateForm>({
   name: null,
   description: null,
-  content: null,
+  content: '',
   isPublic: false,
   settings: {},
 })

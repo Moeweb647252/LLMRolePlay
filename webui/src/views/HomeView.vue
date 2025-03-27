@@ -169,9 +169,26 @@ const startEditChat = (chat: Chat) => {
   modalsShow.editChat = true
   modalsKey.editChat++
   onConfirmEditChat = (_form: EditChatForm) => {
+    console.log(_form)
     chat.name = _form.name
     chat.description = _form.description
+    chat.participants = _form.participants.map((p) => {
+      return {
+        id: p.id,
+        name: p.name,
+        model: providers.value
+          .map((p) => p.models)
+          .flat()
+          .find((m) => m.id === p.model)!,
+        presets: p.presets.map((p) => {
+          return userPresets.value.find((up) => up.id === p)!
+        })!,
+        character: userCharacters.value.find((c) => c.id === p.character)!,
+        template: userTemplates.value.find((t) => t.id === p.template)!,
+      }
+    })
     chat.settings = _form.settings
+    chatBoxKey.value++
   }
 }
 

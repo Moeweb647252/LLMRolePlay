@@ -34,7 +34,12 @@ namespace LLMRolePlay.Controllers
       {
         var openai = new OpenAI(participant, _dBContext);
         var content = "";
-        var stream = openai.Completion(await Utils.AwaitAll(chat.Messages.Select(async m =>
+        var messages = new List<ChatMessage>().Append(new ChatMessage
+        {
+          content = await participant.MakeSystemPrompt(_dBContext),
+          role = "system",
+          name = "system"
+        }).Concat(await Utils.AwaitAll(chat.Messages.Select(async m =>
         {
           var participant = await _dBContext.Participants.Where(p => p.Id == m.ParticipantId).FirstOrDefaultAsync();
           return new ChatMessage
@@ -43,7 +48,8 @@ namespace LLMRolePlay.Controllers
             role = participant?.Id == participantId ? "assistant" : "user",
             name = participant == null ? chatSettings?.NameOfUser : participant.Name,
           };
-        }).ToList())).GetAsyncEnumerator();
+        }).ToList())).ToList();
+        var stream = openai.Completion(messages).GetAsyncEnumerator();
         while (true)
         {
           var task = stream.MoveNextAsync().AsTask();
@@ -72,7 +78,6 @@ namespace LLMRolePlay.Controllers
             await Response.WriteAsync("data: {\"action\": \"keep-alive\", \"delta\": \"\"}\n\n");
           }
         }
-        // Remove <think>...</think> tags from content  
         content = System.Text.RegularExpressions.Regex.Replace(content, @"<think>.*?</think>", "", System.Text.RegularExpressions.RegexOptions.Singleline);
         var newMessage = new Message
         {

@@ -66,6 +66,7 @@ namespace LLMRolePlay.Controllers
         {
           id = chat.Id,
           name = chat.Name,
+          description = chat.Description,
           participants,
           settings = chat.Settings
         });

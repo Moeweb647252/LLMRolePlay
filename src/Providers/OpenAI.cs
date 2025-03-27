@@ -65,6 +65,7 @@ namespace LLMRolePlay.Providers.OpenAI
 
     public async IAsyncEnumerable<StreamingResponseChunk> Completion(List<ChatMessage> _messages)
     {
+      Console.WriteLine("Messages: " + JsonSerializer.Serialize(_messages, new JsonSerializerOptions { Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
       var client = new HttpClient();
       client.DefaultRequestHeaders.Add("Authorization", $"Bearer {Participant.Model.Provider.ApiKey}");
       Settings? settings = JsonSerializer.Deserialize<Settings>(Participant.Model.Settings);

@@ -95,6 +95,7 @@ const onEditParticipantConfirm = () => {
   form.value!.participants[
     form.value!.participants.indexOf(editingParticipant.value!)
   ] = editingParticipant.value!
+  emit('confirm', form.value)
 }
 const onAddParticipantConfirm = async (participant: AddParticipantForm) => {
   let pId = await api.addParticipant(
@@ -156,6 +157,7 @@ const emit = defineEmits(['confirm'])
                 })
                 form!.description = description
               }
+              emit('confirm', form)
             }
           "
         />
@@ -169,6 +171,7 @@ const emit = defineEmits(['confirm'])
               await api.updateChat(form!.id!, {
                 settings: form!.settings!,
               })
+              emit('confirm', form)
             }
           "
         />
@@ -177,6 +180,11 @@ const emit = defineEmits(['confirm'])
         <NDynamicTags
           v-model:value="form!.participants as any[]"
           :render-tag="renderParticipantTags as any"
+          @change:value="
+            () => {
+              emit('confirm', form)
+            }
+          "
         >
           <template #trigger>
             <NButton

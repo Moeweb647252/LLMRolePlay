@@ -8,7 +8,7 @@ type SelectInput = string[] | number[]
 
 type Input = string | number | SelectInput
 
-let editingValue = ref(null as Input | null)
+let editingValue = ref()
 let editing = ref(false)
 const props = defineProps<{
   value: Input | null
@@ -40,18 +40,18 @@ const cancel = () => {
     <NInputGroup>
       <NInput
         v-if="props.type == 'text' || props.type == null"
-        v-model:value="editingValue as string"
+        v-model:value="editingValue"
       />
       <NSelect
         v-if="props.type == 'select'"
-        v-model:value="editingValue as SelectInput"
+        v-model:value="editingValue"
         style="min-width: 10em"
         :multiple="multiple"
         :options="props.options"
       />
       <NInput
         v-if="props.type == 'textarea'"
-        v-model:value="editingValue as string"
+        v-model:value="editingValue"
         type="textarea"
       />
       <NButton @click="confirm"> 确定 </NButton>

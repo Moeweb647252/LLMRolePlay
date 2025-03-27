@@ -1,15 +1,15 @@
 export class Template {
-  id: number | null
-  name: string | null
-  content: string | null
+  id: number
+  name: string
+  content: string
   description: string | null
   settings: object | null
   isPublic: boolean
 
   constructor(
-    id: number | null = null,
-    name: string | null = null,
-    content: string | null = null,
+    id: number,
+    name: string,
+    content: string,
     description: string | null = null,
     settings: object | null = null,
     isPublic: boolean = false,
