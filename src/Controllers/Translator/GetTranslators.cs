@@ -21,7 +21,17 @@ namespace LLMRolePlay.Controllers
         = await _dBContext.Translators.Where(t => t.UserId == user.Id).ToListAsync();
       return ApiResponse.Success(new
       {
-        translators
+        translators = translators.Select(t => new
+        {
+          id = t.Id,
+          name = t.Name,
+          description = t.Description,
+          settings = t.Settings,
+          modelId = t.ModelId,
+          templateId = t.TemplateId,
+          presetIds = t.PresetIds.Split(",").Select(uint.Parse).ToArray(),
+          createdAt = t.CreatedAt
+        })
       });
     }
   }

@@ -58,6 +58,7 @@ const confirm = async () => {
     form.value.modelId!,
     form.value.presetIds,
     form.value.templateId!,
+    {},
   )
 
   emit(
@@ -71,16 +72,28 @@ const confirm = async () => {
       form.value.templateId!,
     ),
   )
+  show.value = false
 }
 
 const emit = defineEmits<{
   cancel: []
   confirm: Translator[]
 }>()
+
+const cancel = () => {
+  show.value = false
+  emit('cancel')
+}
 </script>
 
 <template>
-  <NModal v-model:show="show">
+  <NModal
+    v-model:show="show"
+    title="添加Translator"
+    size="medium"
+    preset="card"
+    style="width: fit-content; min-width: 25em"
+  >
     <template #header>添加翻译者</template>
     <template #default>
       <NForm>
@@ -118,7 +131,7 @@ const emit = defineEmits<{
       </NForm>
     </template>
     <template #footer>
-      <NButton @click="emit('cancel')">取消</NButton>
+      <NButton @click="cancel">取消</NButton>
       <NButton type="primary" @click="confirm"> 确定 </NButton>
     </template>
   </NModal>

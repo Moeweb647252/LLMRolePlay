@@ -762,6 +762,7 @@ export class Api {
     modelId: number,
     presetIds: number[],
     templateId: number,
+    settings: object,
   ): Promise<number> {
     const data = await this.request('createTranslator', {
       name: name,
@@ -769,8 +770,22 @@ export class Api {
       modelId: modelId,
       presetIds: presetIds,
       templateId: templateId,
+      settings: JSON.stringify(settings),
     })
     return data.id
+  }
+
+  async translate(
+    translatorId: number,
+    content: string,
+    targetLanguage: string,
+  ): Promise<string> {
+    const data = await this.request('translate', {
+      translatorId: translatorId,
+      content: content,
+      targetLanguage: targetLanguage,
+    })
+    return data.content
   }
 }
 

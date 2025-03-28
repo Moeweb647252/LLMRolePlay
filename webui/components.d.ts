@@ -26,6 +26,7 @@ declare module 'vue' {
     EditPresetModal: typeof import('./src/components/modals/EditPresetModal.vue')['default']
     EditProviderModal: typeof import('./src/components/modals/EditProviderModal.vue')['default']
     EditTemplateModal: typeof import('./src/components/modals/EditTemplateModal.vue')['default']
+    EditTranslatorModal: typeof import('./src/components/modals/EditTranslatorModal.vue')['default']
     EditUserModal: typeof import('./src/components/modals/EditUserModal.vue')['default']
     GeneralSettings: typeof import('./src/components/settings/GeneralSettings.vue')['default']
     PresetSettings: typeof import('./src/components/settings/PresetSettings.vue')['default']
@@ -38,6 +39,7 @@ declare module 'vue' {
     SettingsNumberInput: typeof import('./src/components/SettingsNumberInput.vue')['default']
     SettingsSwitch: typeof import('./src/components/SettingsSwitch.vue')['default']
     TemplateSettings: typeof import('./src/components/settings/TemplateSettings.vue')['default']
+    TranslatorSettings: typeof import('./src/components/settings/TranslatorSettings.vue')['default']
     UserSettings: typeof import('./src/components/settings/UserSettings.vue')['default']
   }
 }

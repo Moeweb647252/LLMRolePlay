@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LLMRolePlay.Controllers
 {
-  public class LoginRequst
+  public class LoginRequest
   {
     public required string email { get; set; }
     public required string password { get; set; }
@@ -16,7 +16,7 @@ namespace LLMRolePlay.Controllers
   {
     [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<ApiResponse> Login([FromBody] LoginRequst req)
+    public async Task<ApiResponse> Login([FromBody] LoginRequest req)
     {
       User? user = await _dBContext.Users.Where((user) => user.Email == req.email & user.Password == req.password).FirstOrDefaultAsync();
       if (user == null) user = await _dBContext.Users.Where((user) => user.UserName == req.email & user.Password == req.password).FirstOrDefaultAsync();

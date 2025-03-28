@@ -7,7 +7,7 @@ namespace LLMRolePlay.Controllers
 {
   public class UpdateTranslatorRequest
   {
-    public required uint id { get; set; }
+    public required uint translatorId { get; set; }
     public string? name { get; set; } = null;
     public string? description { get; set; } = null;
     public string? settings { get; set; } = null;
@@ -29,9 +29,9 @@ namespace LLMRolePlay.Controllers
       if (user == null) return ApiResponse.TokenError();
 
       Translator? translator
-        = await _dBContext.Translators.Where(t => t.Id == data.id).FirstOrDefaultAsync();
+        = await _dBContext.Translators.Where(t => t.Id == data.translatorId).FirstOrDefaultAsync();
       if (translator == null) return ApiResponse.MessageOnly(500, "translator not found");
-      if (translator.Model.Provider.UserId != user.Id) return ApiResponse.MessageOnly(500, "translator does not belong to user");
+      if (translator.UserId != user.Id) return ApiResponse.MessageOnly(500, "translator does not belong to user");
       if (data.name != null) translator.Name = data.name;
       if (data.description != null) translator.Description = data.description;
       if (data.settings != null) translator.Settings = data.settings;

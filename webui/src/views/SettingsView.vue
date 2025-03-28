@@ -17,6 +17,7 @@ const links = [
     { name: '预设', path: '/main/settings/preset' },
     { name: '模板', path: '/main/settings/template' },
     { name: 'Provider', path: '/main/settings/provider' },
+    { name: '翻译器', path: '/main/settings/translator' },
   ],
   ...(settings.user?.group == 2
     ? [{ name: '用户', path: '/main/settings/user' }]

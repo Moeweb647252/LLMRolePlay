@@ -9,6 +9,7 @@ import CharacterSettings from '@/components/settings/CharacterSettings.vue'
 import GeneralSettings from '@/components/settings/GeneralSettings.vue'
 import ProviderSettings from '@/components/settings/ProviderSettings.vue'
 import TemplateSettings from '@/components/settings/TemplateSettings.vue'
+import TranslatorSettings from '@/components/settings/TranslatorSettings.vue'
 import TranslateView from '@/views/TranslateView.vue'
 import { useSettingsStore } from '@/stores/settings'
 
@@ -57,6 +58,10 @@ const router = createRouter({
             {
               path: 'template',
               component: TemplateSettings,
+            },
+            {
+              path: 'translator',
+              component: TranslatorSettings,
             },
           ],
         },

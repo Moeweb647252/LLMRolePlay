@@ -2,18 +2,18 @@ export class Translator {
   id: number
   name: string
   description: string | null
-  modelId: number | null
+  modelId: number
   presetIds: number[]
-  templateId: number | null
+  templateId: number
   settings: object
 
   constructor(
     id: number,
     name: string,
     description: string | null = null,
-    modelId: number | null = null,
+    modelId: number,
     presetIds: number[] = [],
-    templateId: number | null = null,
+    templateId: number,
     settings: object = {},
   ) {
     this.id = id

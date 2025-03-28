@@ -9,9 +9,15 @@ import {
   NInput,
   NCard,
   NButton,
+  NInputGroup,
+  NSelect,
 } from 'naive-ui'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useRouter } from 'vue-router'
+
+const choice = ref<number>()
+const input = ref('')
+const output = ref('')
 
 const router = useRouter()
 const translators = ref(await api.getTranslators())
@@ -19,8 +25,44 @@ const translators = ref(await api.getTranslators())
 const showAddModal = ref(false)
 const addModalKey = ref(0)
 
+const options = computed(() => {
+  return translators.value.map((t) => ({
+    label: t.name,
+    value: t.id,
+  }))
+})
+
 const onConfirmAdd = async (t: Translator) => {
   translators.value.push(t)
+}
+
+const translate = async () => {
+  output.value = ''
+  if (!choice.value) {
+    return
+  }
+  const translator = translators.value.find((t) => t.id === choice.value)
+  if (!translator) {
+    return
+  }
+  for (let i = 0; i < input.value.length; i += 1000) {
+    output.value += (
+      await api.translate(
+        choice.value,
+        input.value.slice(i, i + 1000),
+        '简体中文',
+      )
+    )
+      .split('\n')
+      .map((s) => {
+        let id = s.slice(0, s.indexOf(': '))
+        if (id === 'END') {
+          return ''
+        }
+        return s.slice(s.indexOf(': ') + 2)
+      })
+      .join('')
+  }
 }
 </script>
 
@@ -45,11 +87,18 @@ const onConfirmAdd = async (t: Translator) => {
         <div>
           <NCard>
             <template #header> 原文 </template>
-            <template #header-extra><NButton>翻译</NButton> </template>
+            <template #header-extra>
+              <NInputGroup style="width: fit-content; min-width: 15em">
+                <NSelect v-model:value="choice" :options="options"></NSelect>
+                <NButton @click="translate">翻译</NButton>
+              </NInputGroup>
+            </template>
             <NInput
+              v-model:value="input"
               type="textarea"
               :autosize="{
                 minRows: 4,
+                maxRows: 10,
               }"
             ></NInput>
           </NCard>
@@ -58,9 +107,11 @@ const onConfirmAdd = async (t: Translator) => {
         <div>
           <NCard>
             <NInput
+              v-model:value="output"
               type="textarea"
               :autosize="{
                 minRows: 4,
+                maxRows: 10,
               }"
             ></NInput>
           </NCard>

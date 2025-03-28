@@ -24,7 +24,10 @@ namespace LLMRolePlay.Controllers
       if (user == null) return;
       Participant? participant = await _dBContext.Participants.Include(p => p.Template).Include(p => p.Character).Include(p => p.Model).ThenInclude(m => m.Provider).FirstOrDefaultAsync(p => p.Id == participantId);
       if (participant == null) return;
+
       Chat? chat = await _dBContext.Chats.Include(c => c.Messages).FirstOrDefaultAsync(c => c.Id == participant.ChatId);
+      if (chat == null) return;
+      if (chat.UserId != user.Id) return;
       ChatSettings? chatSettings = JsonSerializer.Deserialize<ChatSettings>(chat?.Settings ?? "{}");
       if (chat == null) return;
       Response.Headers.Append("Content-Type", "text/event-stream");
@@ -32,14 +35,10 @@ namespace LLMRolePlay.Controllers
       Response.Headers.Append("Connection", "keep-alive");
       if (participant.Model.Provider.Type == "openai")
       {
-        var openai = new OpenAI(participant, _dBContext);
+        var systemPrompt = await participant.MakeSystemPrompt(_dBContext);
+        var openai = new OpenAI(participant.Model, _dBContext);
         var content = "";
-        var messages = new List<ChatMessage>().Append(new ChatMessage
-        {
-          content = await participant.MakeSystemPrompt(_dBContext),
-          role = "system",
-          name = "system"
-        }).Concat(await Utils.AwaitAll(chat.Messages.Select(async m =>
+        var stream = openai.Completion(await Utils.AwaitAll(chat.Messages.Select(async m =>
         {
           var participant = await _dBContext.Participants.Where(p => p.Id == m.ParticipantId).FirstOrDefaultAsync();
           return new ChatMessage
@@ -48,8 +47,7 @@ namespace LLMRolePlay.Controllers
             role = participant?.Id == participantId ? "assistant" : "user",
             name = participant == null ? chatSettings?.NameOfUser : participant.Name,
           };
-        }).ToList())).ToList();
-        var stream = openai.Completion(messages).GetAsyncEnumerator();
+        }).ToList()), systemPrompt).GetAsyncEnumerator();
         while (true)
         {
           var task = stream.MoveNextAsync().AsTask();
