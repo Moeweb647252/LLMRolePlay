@@ -4,8 +4,9 @@ import { User } from '@/types/user'
 import { useMessage, useModal } from 'naive-ui'
 import { ref } from 'vue'
 import { NButton, NList, NListItem, NSpace, NTag } from 'naive-ui'
-import type { AddUserForm, EditUserForm } from '@/types/modal'
+import type { EditUserForm } from '@/types/modal'
 import AddUserModal from '../modals/AddUserModal.vue'
+import EditUserModal from '../modals/EditUserModal.vue'
 
 const users = ref(await api.getUsers())
 const message = useMessage()
@@ -40,15 +41,8 @@ const editShow = ref(false)
 const editKey = ref(0)
 const editing = ref<EditUserForm | null>(null)
 
-const onConfirmAdd = async (form: AddUserForm) => {
-  let id = await api.addUser(
-    form.username!,
-    form.email!,
-    form.password!,
-    form.group!,
-  )
-  let newUser = new User(id, form.username!, form.email!, null, form.group!)
-  users.value.push(newUser)
+const onConfirmAdd = async (form: User) => {
+  users.value.push(form)
   message.success('添加成功')
 }
 
@@ -99,18 +93,19 @@ const startEdit = (user: User) => {
     </div>
   </div>
   <AddUserModal
-    v-if="addShow"
     :key="addKey"
+    v-model:show="addShow"
     @confirm="onConfirmAdd"
     @close="addShow = false"
   />
-  <AddUserModal
-    v-if="editShow"
+  <EditUserModal
+    v-if="editing"
     :key="editKey"
-    :user="editing"
+    v-model:show="editShow"
+    :value="editing"
     @confirm="onConfirmEdit"
     @close="editShow = false"
-  />
+  ></EditUserModal>
 </template>
 
 <style scoped>

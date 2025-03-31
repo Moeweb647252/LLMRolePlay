@@ -3,6 +3,8 @@ import { useMessage } from 'naive-ui'
 import { NModal, NForm, NFormItem, NInput, NSelect, NButton } from 'naive-ui'
 import { ref } from 'vue'
 import type { AddUserForm } from '@/types/modal/user'
+import type { User } from '@/types/user'
+import { api } from '@/api'
 
 const message = useMessage()
 
@@ -17,7 +19,10 @@ const form = ref<AddUserForm>({
   group: 1,
 })
 
-const emit = defineEmits(['cancel', 'confirm'])
+const emit = defineEmits<{
+  cancel: []
+  confirm: [User]
+}>()
 
 const validate = () => {
   if (!form.value.username) {
@@ -36,18 +41,42 @@ const validate = () => {
 }
 
 const cancel = () => {
+  show.value = false // 关闭模态框
   emit('cancel')
 }
 
 const confirm = async () => {
   if (validate()) {
-    emit('confirm', form.value)
+    let id = await api.addUser(
+      form.value.username!,
+      form.value.email!,
+      form.value.password!, // 密码不能为空
+      form.value.group!, // 使用默认值1，如果不传则为1
+    )
+    emit('confirm', {
+      id, // 返回新创建的用户ID
+      username: form.value.username!,
+      email: form.value.email!,
+      password: form.value.password!, // 密码
+      group: form.value.group!, // 用户组
+      token: null,
+    } as User)
+    show.value = false // 关闭模态框
   }
 }
 </script>
 
 <template>
-  <NModal v-model:show="show" title="添加模板">
+  <NModal
+    v-model:show="show"
+    title="添加模板"
+    preset="card"
+    style="width: fit-content; min-width: 25em"
+    size="medium"
+    :closable="true"
+    :mask-closable="true"
+    @close="cancel"
+  >
     <NForm>
       <NFormItem label="用户名">
         <NInput v-model:value="form.username" />
