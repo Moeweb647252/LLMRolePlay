@@ -28,6 +28,19 @@ const input = ref('')
 const generating = ref(false)
 const messageScroll = useTemplateRef('messageScroll')
 
+const increaseParticipantIndex = async () => {
+  participantIndex.value++
+  if (participantIndex.value >= props.chat.participants.length) {
+    participantIndex.value = 0
+  }
+  let settings = JSON.parse(JSON.stringify(props.chat.settings))
+  settings.currentParticipantId =
+    props.chat.participants[participantIndex.value].id!
+  await api.updateChat(props.chat.id!, {
+    settings: settings,
+  })
+}
+
 const addMessage = async () => {
   const msg = reactive({
     id: 0,
@@ -41,10 +54,7 @@ const addMessage = async () => {
   let id = await api.addMessage(props.chat.id!, msg.content, msg.role)
   msg.id = id
   await generateMessage(props.chat.participants[participantIndex.value].id!)
-  participantIndex.value++
-  if (participantIndex.value >= props.chat.participants.length) {
-    participantIndex.value = 0
-  }
+  await increaseParticipantIndex()
 }
 
 const generateMessage = async (participantId: number) => {
@@ -62,16 +72,11 @@ const generateMessage = async (participantId: number) => {
   })
   msg.id = id
   generating.value = false
-  let settings = JSON.parse(JSON.stringify(props.chat.settings))
-  settings.currentParticipantId =
-    props.chat.participants[participantIndex.value].id!
-  participantIndex.value += 1
-  if (participantIndex.value >= props.chat.participants.length) {
-    participantIndex.value = 0
-  }
-  await api.updateChat(props.chat.id!, {
-    settings: settings,
-  })
+}
+
+const doGenerate = async (participantId: number) => {
+  generateMessage(participantId)
+  increaseParticipantIndex()
 }
 
 const regenerateMessage = async (message: MessageT) => {
@@ -209,9 +214,7 @@ onMounted(async () => {
                   type="primary"
                   strong
                   secondary
-                  @click="
-                    generateMessage(chat.participants[participantIndex].id!)
-                  "
+                  @click="doGenerate(chat.participants[participantIndex].id!)"
                 >
                   生成
                 </NButton>

@@ -14,7 +14,6 @@ namespace LLMRolePlay.Controllers
     public required uint modelId { get; set; }
     public required string settings { get; set; }
   }
-
   public partial class API : ControllerBase
   {
     [HttpPost("createTranslator")]
