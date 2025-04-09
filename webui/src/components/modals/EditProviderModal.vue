@@ -66,7 +66,7 @@ const renderModelTags = (model: EditModelForm) => {
       },
     },
     {
-      default: () => model,
+      default: () => model.name,
     },
   )
 }
@@ -118,7 +118,13 @@ let onEditModelConfirm = (_form: EditModelForm) => {}
 </script>
 
 <template>
-  <NModal v-model:show="show">
+  <NModal
+    v-model:show="show"
+    :title="`编辑 ${form.name}`"
+    preset="card"
+    style="width: fit-content; min-width: 25em"
+    size="medium"
+  >
     <NForm v-if="form">
       <NFormItem label="名称">
         <SettingsInput
@@ -145,7 +151,10 @@ let onEditModelConfirm = (_form: EditModelForm) => {}
         />
       </NFormItem>
       <NFormItem label="模型">
-        <NDynamicTags :render-tag="renderModelTags as any">
+        <NDynamicTags
+          v-model:value="form.models as any"
+          :render-tag="renderModelTags as any"
+        >
           <template #trigger>
             <NButton size="small" type="primary" dashed @click="startAddModel">
               <template #icon>

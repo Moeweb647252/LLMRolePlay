@@ -49,6 +49,11 @@ const validate = () => {
   }
   return true
 }
+
+const cancel = () => {
+  show.value = false
+  emit('cancel')
+}
 </script>
 
 <template>
@@ -106,7 +111,7 @@ const validate = () => {
     </NForm>
     <template #footer>
       <NSpace justify="end">
-        <NButton @click="emit('cancel')"> 取消 </NButton>
+        <NButton @click="cancel"> 取消 </NButton>
         <NButton type="primary" @click="confirm"> 保存 </NButton>
       </NSpace>
     </template>
