@@ -38,6 +38,7 @@ namespace LLMRolePlay.Controllers
         var systemPrompt = await participant.MakeSystemPrompt(_dBContext);
         var openai = new OpenAI(participant.Model, _dBContext);
         var content = "";
+        var reasoning_content = "";
         var stream = openai.Completion(await Utils.AwaitAll(chat.Messages.Select(async m =>
         {
           var participant = await _dBContext.Participants.Where(p => p.Id == m.ParticipantId).FirstOrDefaultAsync();
@@ -57,12 +58,28 @@ namespace LLMRolePlay.Controllers
             {
               var chunk = stream.Current;
               string? delta = chunk.choices?.FirstOrDefault()?.delta?.content;
+              string? reasoning_delta = chunk.choices?.FirstOrDefault()?.delta?.reasoning_content;
               if (delta != null)
               {
                 content += delta;
                 await Response.WriteAsync("data: " + JsonSerializer.Serialize(new
                 {
                   delta
+                }) + "\n\n");
+              }
+              else if (reasoning_delta != null)
+              {
+                reasoning_content += reasoning_delta;
+                await Response.WriteAsync("data: " + JsonSerializer.Serialize(new
+                {
+                  reasoning_delta
+                }) + "\n\n");
+              }
+              else if (chunk.choices?.FirstOrDefault()?.finish_reason != null)
+              {
+                await Response.WriteAsync("data: " + JsonSerializer.Serialize(new
+                {
+                  finish_reason = chunk.choices.FirstOrDefault()?.finish_reason
                 }) + "\n\n");
               }
             }
@@ -76,12 +93,12 @@ namespace LLMRolePlay.Controllers
             await Response.WriteAsync("data: {\"action\": \"keep-alive\", \"delta\": \"\"}\n\n");
           }
         }
-        content = System.Text.RegularExpressions.Regex.Replace(content, @"<think>.*?</think>", "", System.Text.RegularExpressions.RegexOptions.Singleline);
         var newMessage = new Message
         {
           ChatId = chat.Id,
           ParticipantId = participantId,
           Content = content,
+          ReasoningContent = reasoning_content,
           CreatedAt = DateTime.UtcNow,
           Role = "assistant"
         };

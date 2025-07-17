@@ -30,7 +30,7 @@ namespace LLMRolePlay.Providers.OpenAI
   public class StreamingResponseChunkChoiceDelta
   {
     public string? content { get; set; }
-    public string? reasoning { get; set; }
+    public string? reasoning_content { get; set; }
     public string? role { get; set; }
     public string? refusal { get; set; }
     public ulong? index { get; set; }

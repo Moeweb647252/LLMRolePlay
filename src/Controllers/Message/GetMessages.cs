@@ -33,6 +33,7 @@ namespace LLMRolePlay.Controllers
           {
             id = m.Id,
             content = m.Content,
+            reasoningContent = m.ReasoningContent,
             role = m.Role,
             createdAt = m.CreatedAt,
             participantId = m.ParticipantId,

@@ -34,6 +34,7 @@ namespace LLMRolePlay.Controllers
       {
         ChatId = data.chatId,
         Content = data.content,
+        ReasoningContent = "", // Assuming reasoning content is not provided in this request
         Role = data.role,
       };
       _dBContext.Messages.Add(message);

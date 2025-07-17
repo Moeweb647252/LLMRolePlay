@@ -9,5 +9,6 @@
     "reloadable",
     "Sider",
     "webui"
-  ]
+  ],
+  "editor.tabSize": 2
 }

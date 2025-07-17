@@ -15,6 +15,7 @@ namespace LLMRolePlay.Models
     public ulong Id { get; set; }
     public required string Role { get; set; }
     public required string Content { get; set; }
+    public required string ReasoningContent { get; set; }
     public uint? Tokens { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public uint? ParticipantId { get; set; }

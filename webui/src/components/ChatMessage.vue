@@ -2,16 +2,21 @@
 import { MdContact, MdCreate, MdSync, MdClipboard } from '@vicons/ionicons4'
 import { DeleteFilled } from '@vicons/material'
 import { onMounted, ref, watch } from 'vue'
-import { NAvatar, NButton, NIcon, NSpace, NAlert, NInput } from 'naive-ui'
+import { NAvatar, NButton, NIcon, NSpace, NInput, NAlert } from 'naive-ui'
 
-const action = ref('')
+const parts = ref<
+  {
+    type: 'text' | 'action'
+    content: string
+  }[]
+>([])
 const text = ref('')
-const think = ref('')
 const editing = ref(false)
 const editingValue = ref('')
 
 const props = defineProps<{
   content: string
+  reasoningContent: string | null
   direction: 'left' | 'right' | null
   name: string
   avatar: string | null
@@ -48,68 +53,73 @@ onMounted(() => {
       processedContent = processedContent.replace(/&[^;]+;/g, (match) => {
         return entities[match] || match // 如果没有匹配到实体，保留原样
       })
-      think.value = ''
-      action.value = ''
+      parts.value = []
 
-      // 先处理 think 标签
-      let openTagStart = processedContent.indexOf('<think>')
-      if (openTagStart !== -1) {
-        const openTagEnd = openTagStart + '<think>'.length
-        const closeTagStart = processedContent.indexOf('</think>')
+      // 解析内容为 parts
+      let currentContent = processedContent
+      let currentIndex = 0
+      const tempParts: { type: 'text' | 'action'; content: string }[] = []
 
-        if (closeTagStart !== -1) {
-          // 完整的 think 标签
-          think.value = processedContent.substring(openTagEnd, closeTagStart)
-          processedContent =
-            processedContent.substring(0, openTagStart) +
-            processedContent.substring(closeTagStart + '</think>'.length)
-        } else {
-          // 只有开始标签，没有结束标签
-          think.value = processedContent.substring(openTagEnd)
-          processedContent = processedContent.substring(0, openTagStart)
+      while (currentIndex < currentContent.length) {
+        const actionStart = currentContent.indexOf('<action>', currentIndex)
+
+        if (actionStart === -1) {
+          // 没有更多 action 标签，剩余内容都是文本
+          const textContent = currentContent.substring(currentIndex)
+          if (textContent.trim()) {
+            tempParts.push({ type: 'text', content: textContent })
+          }
+          break
         }
 
-        // 清理可能残留的标签部分
-        think.value = think.value.replace(/<\/?think[^>]*>/g, '')
-      }
+        // 添加 action 前的文本部分
+        if (actionStart > currentIndex) {
+          const textContent = currentContent.substring(
+            currentIndex,
+            actionStart,
+          )
+          if (textContent.trim()) {
+            tempParts.push({ type: 'text', content: textContent })
+          }
+        }
 
-      // 接着处理 action 标签
-      openTagStart = processedContent.indexOf('<action>')
-      if (openTagStart === -1) {
-        // 没有 action 标签
-        text.value = processedContent
-      } else {
-        const openTagEnd = openTagStart + '<action>'.length
-        const closeTagStart = processedContent.indexOf('</action>')
-
-        if (closeTagStart !== -1) {
+        // 处理 action 标签
+        const actionEnd = currentContent.indexOf('</action>', actionStart)
+        if (actionEnd !== -1) {
           // 完整的 action 标签
-          action.value = processedContent.substring(openTagEnd, closeTagStart)
-          text.value =
-            processedContent.substring(0, openTagStart) +
-            processedContent.substring(closeTagStart + '</action>'.length)
+          const actionContent = currentContent.substring(
+            actionStart + '<action>'.length,
+            actionEnd,
+          )
+          tempParts.push({ type: 'action', content: actionContent })
+          currentIndex = actionEnd + '</action>'.length
         } else {
-          // 只有开始标签，没有结束标签
-          action.value = processedContent.substring(openTagEnd)
-          text.value = processedContent.substring(0, openTagStart)
+          // 没有结束标签，剩余内容都是 action
+          const actionContent = currentContent.substring(
+            actionStart + '<action>'.length,
+          )
+          tempParts.push({ type: 'action', content: actionContent })
+          break
         }
-
-        // 清理可能残留的标签部分
-        action.value = action.value.replace(/<\/?action[^>]*>/g, '')
-        text.value = text.value.replace(/<\/?action[^>]*>/g, '')
       }
 
-      // 确保 text 中不包含任何 think 标签残留
-      text.value = text.value.replace(/<\/?think[^>]*>/g, '')
+      parts.value = tempParts
+      text.value = currentContent
+        .replace(/<\/?action[^>]*>/g, '')
+        .replace(/<\/?think[^>]*>/g, '')
+      console.log('parts', parts.value)
     },
     { immediate: true },
   )
 })
 </script>
 <template>
-  <div v-if="action.length && !editing" class="action">
+  <div
+    v-if="props.reasoningContent?.length && !editing"
+    style="margin: 4px 8px 4px 8px"
+  >
     <NAlert :show-icon="false">
-      {{ action }}
+      {{ props.reasoningContent }}
     </NAlert>
   </div>
   <div class="message">
@@ -126,7 +136,12 @@ onMounted(() => {
       </div>
       <div v-if="!editing">
         <div class="text">
-          {{ text }}
+          <div v-for="(part, index) in parts" :key="index">
+            <span v-if="part.type === 'text'">{{ part.content }}</span>
+            <div v-else-if="part.type === 'action'" class="action">
+              {{ part.content }}
+            </div>
+          </div>
         </div>
         <div class="actions">
           <NSpace size="small">
@@ -187,7 +202,16 @@ onMounted(() => {
 
 <style scoped>
 .action {
-  margin: 1em 3em 1em 3em;
+  background-color: #f0a020;
+  border-radius: 4px;
+  padding: 4px 8px;
+  width: fit-content;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .message {

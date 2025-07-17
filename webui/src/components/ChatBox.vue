@@ -45,6 +45,7 @@ const addMessage = async () => {
   const msg = reactive({
     id: 0,
     content: input.value,
+    reasoningContent: '',
     role: 'user',
     participantId: undefined,
     createdAt: new Date().toISOString(),
@@ -62,14 +63,21 @@ const generateMessage = async (participantId: number) => {
   const msg = reactive({
     id: 0,
     content: '',
+    reasoningContent: '',
     role: 'assistant',
     participantId: participantId,
     createdAt: new Date().toISOString(),
   })
   messages.push(msg)
-  let id = await generate(participantId, (delta) => {
-    msg.content += delta
-  })
+  let id = await generate(
+    participantId,
+    (delta) => {
+      msg.content += delta
+    },
+    (delta) => {
+      msg.reasoningContent += delta
+    },
+  )
   msg.id = id
   generating.value = false
 }
@@ -142,6 +150,7 @@ onMounted(async () => {
               :key="i.id!"
               class="message"
               :content="i.content"
+              :reasoning-content="i.reasoningContent"
               :avatar="null"
               :direction="'left'"
               :reloadable="index == messages.length - 1"
@@ -177,6 +186,7 @@ onMounted(async () => {
                   minRows: 1,
                   maxRows: 5,
                 }"
+                @keyup.ctrl.enter="addMessage"
               >
                 <template #suffix>
                   <NButton

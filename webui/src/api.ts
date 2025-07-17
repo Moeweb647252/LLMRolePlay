@@ -527,6 +527,7 @@ export class Api {
       return {
         id: message.id,
         content: message.content,
+        reasoningContent: message.reasoningContent ?? null,
         role: message.role,
         participantId: message.participantId,
         createdAt: message.createdAt,
@@ -793,7 +794,8 @@ export const api = new Api()
 
 export const generate = async (
   participantId: number,
-  callback: (data: string) => void,
+  content_callback: (data: string) => void,
+  reasoning_callback: (data: string) => void,
 ): Promise<number> => {
   const token = api.store!.user?.token
   if (!token) {
@@ -813,7 +815,10 @@ export const generate = async (
     source.onmessage = (event) => {
       const data = JSON.parse(event.data)
       if (data.delta) {
-        callback(data.delta)
+        content_callback(data.delta)
+      }
+      if (data.reasoning_delta) {
+        reasoning_callback(data.reasoning_delta)
       }
       if (data.id) {
         resolve(data.id)

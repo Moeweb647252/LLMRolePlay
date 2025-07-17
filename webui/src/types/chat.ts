@@ -35,6 +35,7 @@ export class Participant {
 export interface Message {
   id: number
   content: string
+  reasoningContent: string | null
   role: string
   participantId: number | undefined
   createdAt: string
