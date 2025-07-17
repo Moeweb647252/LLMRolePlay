@@ -364,3 +364,5 @@ FodyWeavers.xsd
 
 /config.json
 lrp.db*
+
+.DS_Store
